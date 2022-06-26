@@ -1,251 +1,4 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Security Summer School – Webs</title><link>/web/</link><description>Recent content in Webs on Security Summer School</description><generator>Hugo -- gohugo.io</generator><atom:link href="/web/index.xml" rel="self" type="application/rss+xml"/><item><title>Web:</title><link>/web/02-web-basics-part-2/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/02-web-basics-part-2/readme/</guid><description>
-&lt;h1 id="introduction">Introduction&lt;/h1>
-&lt;p>In order to understand how to protect a web application, you need to understand how an attacker thinks. And in order to do that, you need to understand how a platform is built and what techniques are used to ensure minimum usability. As a first step, you can analyze web applications using the readily available tools, such as the browser’s built-in Developer Tools. Further on, you can attempt to find more information about the basic mechanisms that enable the server to identify its clients and keep tabs on who they are (authentication) and what they are allowed to do (authorization), through the use of cookies and sessions.&lt;/p>
-&lt;h1 id="stateful-http-cookies">Stateful HTTP: Cookies&lt;/h1>
-&lt;p>As we mentioned in the previous session, HTTP is a stateless protocol used to communicate over the internet. This means that a request is not aware about any of the previous ones, and each request is executed independently. Given its stateless nature, simple mechanisms such as HTTP cookies were created to overcome the issue.&lt;/p>
-&lt;p>An HTTP cookie (also called web cookie, Internet cookie, browser cookie, or simply cookie) is a small piece of data sent from a website and stored on the user&amp;rsquo;s computer by the user&amp;rsquo;s web browser while the user is browsing. Cookies were designed to be a reliable mechanism for websites to remember stateful information (such as items added in the shopping cart in an online store) or to record the user&amp;rsquo;s browsing activity (including clicking particular buttons, logging in, or recording which pages were visited in the past). They can also be used to remember pieces of information that the user previously entered into form fields, such as names, addresses, passwords, and credit-card numbers.&lt;/p>
-&lt;p>&lt;img src="https://github.com/hexcellents/sss-web/blob/master/02-web-basics/support/cookies.png" alt="Cookies">&lt;/p>
-&lt;h2 id="what-is-a-cookie">What is a cookie?&lt;/h2>
-&lt;p>A cookie is a &lt;em>key=value&lt;/em> pair stored in a text file on the user’s computer. This file can be found, for example, at the following path on a Windows 10 using Chrome:&lt;/p>
-&lt;p>&lt;code>C:\Users\Your User Name\AppData\Local\Google\Chrome\User Data\Default\Cookies&lt;/code>&lt;/p>
-&lt;p>An example of cookies set for a website could be:&lt;/p>
-&lt;ul>
-&lt;li>username=admin&lt;/li>
-&lt;li>cookie_consent=1&lt;/li>
-&lt;li>theme=dark&lt;/li>
-&lt;/ul>
-&lt;p>The first cookie stores the username, so it can be displayed to the user without querying the database. The second one stores the choice made by the user regarding the cookie consent, so the application would not continue to show the message every time. Finally, the third one stores which theme was selected (in this case, a dark theme).&lt;/p>
-&lt;p>Once a cookie has been set, the browser will send the cookie information in all subsequent HTTP requests until the cookie is deleted. Additionally, the cookie can have zero or more attributes, such as:&lt;/p>
-&lt;ul>
-&lt;li>&lt;em>Domain&lt;/em> and &lt;em>Path&lt;/em> attributes define the scope of the cookies. These attributes tell the browser what website they belong to.&lt;/li>
-&lt;li>&lt;em>Same origin policy&lt;/em> dictates that websites are only allowed to set cookies on their own domain. In other words, the &lt;code>www.example.com&lt;/code> website is not allowed to set cookies on &lt;code>www.test.com&lt;/code> and vice versa. A website is only able to control cookies which are within its own domain.&lt;/li>
-&lt;li>The &lt;em>Expires&lt;/em> attribute defines when the cookie is deleted. Alternatively, the Max-Age attribute can be used to state the amount of seconds after the cookie is to be deleted.&lt;/li>
-&lt;li>The &lt;em>Secure&lt;/em> attribute defines that cookies should only be sent using secure channels such as HTTPS. Cookies with the Secure attribute should only be sent through a secure connection. This protects the application&amp;rsquo;s cookies against theft attempts.&lt;/li>
-&lt;li>The &lt;em>http-only&lt;/em> attribute defines that cookie should be exposed only using HTTP or HTTPS channels. This means that the cookies with this attribute cannot be accessed via client-side scripting or other methods. This is a defense mechanism against &lt;a href="https://owasp.org/www-community/HttpOnly">some attacks&lt;/a>.&lt;/li>
-&lt;/ul>
-&lt;h1 id="stateful-http-sessions">Stateful HTTP: Sessions&lt;/h1>
-&lt;p>As previously stated, HTTP is stateless. Therefore, it needs a mechanism to remember information from previous requests and associate it with a user for authentication purposes. The cookies are one way to achieve this. However, they are considered highly insecure because the user can easily manipulate their content. We cannot directly use them for authentication and other sensitive data. The solution to this problem is the session, which stores the data on the server, rather than the client. The session ID can be used as a means of communication.&lt;/p>
-&lt;h2 id="how-does-a-session-work">How does a session work?&lt;/h2>
-&lt;p>When accessing a website that uses sessions, each user is assigned a session ID. They are more secure than the previously mentioned method mainly because the data never leaves the server, so an attacker cannot alter it. Instead, the ID is used to uniquely identify each user and associate the respective information with them.&lt;/p>
-&lt;p>Sessions are usually short-lived, which makes them ideal for storing temporary state between pages. Sessions also expire once the user closes his browser or after a predefined amount of time (for example, 30 minutes).&lt;/p>
-&lt;p>The basic workflow is:&lt;/p>
-&lt;ol>
-&lt;li>The server starts a new session (sets a cookie via the HTTP Cookie header).&lt;/li>
-&lt;li>The server sets a new session variable (stored on the server-side).&lt;/li>
-&lt;li>When the client changes the page, it sends all the cookies in the request, along with the session ID from step 1.&lt;/li>
-&lt;li>The server reads the session ID from the cookie.&lt;/li>
-&lt;li>The server matches the session ID with the entries of a local list (in-memory, text file etc.).&lt;/li>
-&lt;li>If the server finds a match, it reads the stored variables. For PHP, these variables will become available in the superglobal variable &lt;code>$_SESSION&lt;/code>.&lt;/li>
-&lt;li>If the server doesn’t find a match, it will create a new session and repeat the steps 1-6.&lt;/li>
-&lt;/ol>
-&lt;p>&lt;img src="https://github.com/hexcellents/sss-web/blob/master/02-web-basics/support/session.jpg" alt="Session lifecycle">&lt;/p>
-&lt;p>Example of a session in PHP:&lt;br>
-&lt;code>&amp;lt;?php&lt;/code>&lt;br>
-&lt;code>session_start(); // Start the session&lt;/code>&lt;br>
-&lt;code>$_SESSION['username'] = &amp;quot;John Doe&amp;quot;;&lt;/code>&lt;br>
-&lt;code>$_SESSION['is_admin'] = true;&lt;/code>&lt;br>
-&lt;code>echo &amp;quot;Hello &amp;quot; . $_SESSION['username'];&lt;/code>&lt;br>
-&lt;code>?&amp;gt;&lt;/code>&lt;/p>
-&lt;p>Example of a session in Python:&lt;br>
-&lt;code>s = requests.Session()&lt;/code>&lt;br>
-&lt;code>s.get('https://httpbin.org/cookies/set/sessioncookie/123456789')&lt;/code>&lt;br>
-&lt;code>r = s.get('https://httpbin.org/cookies')&lt;/code>&lt;/p>
-&lt;p>&lt;code>print(r.text)&lt;/code>&lt;br>
-&lt;code># '{&amp;quot;cookies&amp;quot;: {&amp;quot;sessioncookie&amp;quot;: &amp;quot;123456789&amp;quot;}}'&lt;/code>&lt;/p>
-&lt;p>One might consider that sessions are pretty secure. However, they won’t stop an attacker to intercept the cookie with the session ID, for example using a &lt;a href="https://www.imperva.com/learn/application-security/man-in-the-middle-attack-mitm/">Man-in-the-Middle attack&lt;/a> over an insecure Wi-Fi connection, and steal the session ID to use it. This won’t give them access to the values that are stored on the server, but they will be able to impersonate the user or perform actions on their behalf. This is known as session hijacking. You can read more on this subject &lt;a href="https://owasp.org/www-community/attacks/Session_hijacking_attack">here&lt;/a> and &lt;a href="https://www.netsparker.com/blog/web-security/session-hijacking/">here&lt;/a>.&lt;/p>
-&lt;h1 id="authentication-vs-authorization">Authentication vs Authorization&lt;/h1>
-&lt;p>Two concepts that usually make people confused are authentication and authorization. Both terms are often used in conjunction with each other when it comes to security and gaining access to the system. They are essential in almost every modern web application, as most of these apps need a way to uniquely identify their users using an account. These accounts can contain both personal information, available only to the logged in user, and public information, available to anybody. Based on the privilege level, users can have access to various functionalities, such as deleting other users, creating blog posts etc.&lt;/p>
-&lt;p>Fundamentally, authentication refers to &lt;strong>who you are&lt;/strong> while authorization refers to &lt;strong>what you can do&lt;/strong>.&lt;/p>
-&lt;p>&lt;strong>Authentication&lt;/strong> is the process of verifying the identity of a person or device. A common example is entering a username and password when you log in to a website. Entering the correct login information lets the website know 1) who you are and 2) that it is actually you accessing the website.&lt;/p>
-&lt;p>There could be other methods of authentication, such as passcodes, biometrics (fingerprints), Two-Factor Authentication, etc. We won’t insist too much on these other methods, but it’s good to know they exist.&lt;/p>
-&lt;p>&lt;strong>Authorization&lt;/strong> is a security mechanism to determine access levels or user/client privileges related to system resources including files, services, computer programs, data and application features. This is the process of granting or denying access to a network resource which allows the user access to various resources based on the user&amp;rsquo;s identity.&lt;/p>
-&lt;h2 id="real-life-scenarios">Real-life scenarios&lt;/h2>
-&lt;p>Now imagine what would happen if someone obtains access to your Facebook account. Besides the previously public information, such as your name and your birthday, they can now view your friend lists, private conversations, or even impersonate you through a post. Although this situation won’t affect Facebook directly, it will certainly affect you.&lt;/p>
-&lt;p>What if someone were to gain access to an administrator account of a university? They could remove all the students, erase their grades and all the study materials. This would be a really nefarious incident that would destroy the institution’s reputation and will also affect you as a student.&lt;/p>
-&lt;p>This is why authentication and authorization are very important and their security is crucial.&lt;/p>
-&lt;h1 id="path-traversal">Path Traversal&lt;/h1>
-&lt;p>In many web applications, resources are accessed using a filename as a parameter. This file is processed and displayed to the client by the application. If the application does not verify the parameter, the attacker might be able to exploit the application and display an arbitrary file from the target system. Normally an attacker would try to access password or configuration files to gain access to the system. Obviously, server-side script files could be accessed to perform manual inspection for vulnerabilities. Consider the following URL:&lt;/p>
-&lt;p>&lt;code>http://example.com/view.php?file=image.jpg&lt;/code>&lt;/p>
-&lt;p>If the attacker wants to investigate the view.php file for possible exploitable coding mistakes, he would try to use the script in order to open the file:&lt;/p>
-&lt;p>&lt;code>http://example.com/view.php?file=view.php &lt;/code>&lt;/p>
-&lt;p>It is likely that images are stored in a subdirectory, so the attacker might have to access the parent directory:&lt;/p>
-&lt;p>&lt;code>http://example.com/view.php?file=../view.php&lt;/code> or &lt;code>http://example.com/view.php?file=../../view.php&lt;/code>&lt;/p>
-&lt;p>Depending on the system, a backslash could also be used:&lt;/p>
-&lt;p>&lt;code>http://example.com/view.php?file=..\..\view.php &lt;/code>&lt;/p>
-&lt;p>An example of accessing system files:&lt;/p>
-&lt;p>&lt;code>http://example.com/view.php?file=../../../../etc/passwd&lt;/code>&lt;/p>
-&lt;p>&lt;img src="https://github.com/hexcellents/sss-web/blob/master/03-broken-access-control/support/path_traversal.png" alt="Path Traversal">&lt;/p>
-&lt;h2 id="path-traversal-prevention">Path Traversal Prevention&lt;/h2>
-&lt;p>The application should not allow directory traversal or the accessing of arbitrary files. If the files to be accessed are known, the application should implement a mapping between the file and application-specific identifier. This identifier can be hard coded in the application to prevent any malicious attempts to modify it.&lt;/p>
-&lt;p>If it is considered unavoidable to pass user-supplied input to filesystem APIs, then two layers of defense should be used together to prevent attacks:&lt;/p>
-&lt;ul>
-&lt;li>The application should validate the user input before processing it. Ideally, the validation should compare against a whitelist of permitted values. If that isn&amp;rsquo;t possible for the required functionality, then the validation should verify that the input contains only permitted content, such as purely alphanumeric characters.&lt;/li>
-&lt;li>After validating the supplied input, the application should append the input to the base directory and use a platform filesystem API to canonicalize the path. It should verify that the canonicalized path starts with the expected base directory.&lt;/li>
-&lt;/ul>
-&lt;p>Below is an example of some simple Java code to validate the canonical path of a file based on user input:&lt;/p>
-&lt;p>&lt;code>File file = new File(BASE_DIRECTORY, userInput);&lt;/code>&lt;br>
-&lt;code>if (file.getCanonicalPath().startsWith(BASE_DIRECTORY)) {&lt;/code>&lt;br>
-&lt;code>// process file&lt;/code>&lt;br>
-&lt;code>}&lt;/code>&lt;/p>
-&lt;h1 id="insecure-direct-object-references">Insecure Direct Object References&lt;/h1>
-&lt;p>Insecure direct object reference vulnerability is similar to path traversal vulnerability. The application allows access to resources using an identifier which is controllable by the user. In this case, however, the identifier is not a file / path as is the case with path traversal.&lt;/p>
-&lt;p>Consider the following case where a user is able to view his own invoice:&lt;/p>
-&lt;p>&lt;code>http://www.example.com/view.php?invoice=24411&lt;/code>&lt;/p>
-&lt;p>Now, by changing the invoice number the user might be able to access other invoices, including ones that are not his own, thereby gaining access to the sensitive information of other users. Obviously the application should enforce access control over the items to be accessed. If the application fails to do so, this would be a case of insecure direct object reference vulnerability.&lt;/p>
-&lt;p>When performing penetration tests, the application parameters should certainly be investigated by iterating through possible values and observing the responses.&lt;/p>
-&lt;p>&lt;img src="https://github.com/hexcellents/sss-web/blob/master/03-broken-access-control/support/insecure_direct_object_references.png" alt="Insecure Direct Object References">&lt;/p>
-&lt;h2 id="insecure-direct-object-references-prevention">Insecure Direct Object References Prevention&lt;/h2>
-&lt;p>First, you should control all normal, ajax and API requests when creating an app. For example, can a read-only user write anything in the app? Or can a non-admin user access and create API tokens that should only be created by an admin user? So, in order to test all the possible IDOR vulnerabilities, you should think like a hacker.&lt;/p>
-&lt;p>You can provide permissions on your application for all endpoints. If your “privatesection” endpoint includes the API requests such as “/api/privatesection/admins”, “/api/privatesection/console”, “/api/privatesection/tokens”, you can block the endpoint for non-admin users.&lt;/p>
-&lt;p>Moreover, to make the attacker’s job harder or prevent it altogether, you can use hash functions and hashed values instead of regular numbers and strings.&lt;/p>
-&lt;h1 id="google-hacking---google-dorking">Google Hacking - Google Dorking&lt;/h1>
-&lt;p>A Google Dork, also known as Google Dorking or Google hacking, is a valuable resource for security researchers. For the average person, Google is just a search engine used to find text, images, videos, and news. However, in the infosec world, Google is a useful hacking tool.&lt;/p>
-&lt;p>While you can’t hack sites directly using Google, it has tremendous web-crawling capabilities: it can index almost anything within your website, including sensitive information. This means you could be exposing too much information about your web technologies, usernames, passwords, and general vulnerabilities without even knowing it.&lt;/p>
-&lt;p>In other words: Google “Dorking” is the practice of using Google to find vulnerable web applications and servers by using native Google search engine capabilities.&lt;/p>
-&lt;p>Google hacking search queries can be used to identify security vulnerabilities in web applications, gather information for arbitrary or individual targets, discover error messages disclosing sensitive information, discover files containing credentials and other sensitive data.&lt;/p>
-&lt;p>Finding information using search engines is a skill which can be learned with training and using examples. &lt;a href="https://www.exploit-db.com/google-hacking-database">Google Hacking Database&lt;/a> is a great starting point.&lt;/p>
-&lt;p>&lt;strong>NOTE:&lt;/strong> Google has protections against automated search queries. Frequent queries with advanced operators will cause Captcha pages to appear. If frequent Google hacking queries are made despite Captchas, Google could block the IP of the sender for some days. This is an unfortunate incident if you happen to be inside a larger organizational network with NAT and one external IP. The whole organization will be blocked from using Google in this case. There are few possibilities for circumventing this, such as using web proxies.&lt;/p>
-&lt;h2 id="popular-google-dork-operators">Popular Google Dork operators&lt;/h2>
-&lt;ul>
-&lt;li>&lt;strong>quotes&lt;/strong> (“word”): using quotes around the phrases you are searching for will help you find results that are exact match results, rather than the broad results you will get with standard search. e.g. &lt;code>“security summer school”&lt;/code>&lt;/li>
-&lt;li>*: wildcard used to search pages that contain “anything” before your word, e.g. &lt;code>how to * a website&lt;/code>, will return “how to…” design/create/hack, etc… “a website”.&lt;/li>
-&lt;li>&lt;strong>|&lt;/strong>: this is a logical operator, e.g. &lt;code>&amp;quot;security&amp;quot; | &amp;quot;summer school&amp;quot;&lt;/code> will show all the sites which contain “security” or “summer school” or both words.&lt;/li>
-&lt;li>&lt;strong>+&lt;/strong>: used to concatenate words, useful to detect pages that use more than one specific key, e.g. &lt;code>security + summer school&lt;/code>&lt;/li>
-&lt;li>&lt;strong>–&lt;/strong>: minus operator is used to avoiding showing results that contain certain words, e.g. &lt;code>cat -dog&lt;/code> will show pages that use “cat” in their text, but not those that have the word “dog”&lt;/li>
-&lt;li>&lt;strong>cache&lt;/strong>: this dork returns the most recent cached version of a web page (providing the page is indexed, of course), e.g. &lt;code>cache:gov.ro&lt;/code>&lt;/li>
-&lt;li>&lt;strong>allintext&lt;/strong>: searches for specific text contained on any web page, e.g. &lt;code>allintext:hacking tools&lt;/code>&lt;/li>
-&lt;li>&lt;strong>intext&lt;/strong>: useful to locate pages that contain certain characters or strings inside their text. This operator is a more global operator that allows you to find any terms showing up on a webpage in any area – like the title, the page itself, the URL, and elsewhere. e.g. &lt;code>intext:&amp;quot;safe internet&amp;quot;&lt;/code>&lt;/li>
-&lt;li>&lt;strong>allintitle&lt;/strong>: exactly the same as allintext, but will show pages that contain titles with X characters, e.g. &lt;code>allintitle:&amp;quot;Security Companies&amp;quot;&lt;/code>&lt;/li>
-&lt;li>&lt;strong>intitle&lt;/strong>: used to search for various keywords inside the title, for example, &lt;code>intitle:security&lt;/code> tools will search for titles beginning with “security” but “tools” can be somewhere else in the page&lt;/li>
-&lt;li>&lt;strong>allinurl&lt;/strong>: it can be used to fetch results whose URL contains all the specified characters, e.g: &lt;code>allinurl:amazon drawing tablet&lt;/code>. This will bring up all internal URLs on Amazon.com that have the terms “drawing tablet”.&lt;/li>
-&lt;li>&lt;strong>inurl&lt;/strong>: if you wanted to find pages on a site that has your targeted search term in the URL, and the second term in content on a website, you could use this operator, e.g. &lt;code>inurl:drawing portraits&lt;/code>&lt;/li>
-&lt;li>&lt;strong>filetype&lt;/strong>: used to search for any kind of file extensions, for example, if you want to search for PDF files you can use: &lt;code>apple filetype:pdf&lt;/code>&lt;/li>
-&lt;li>&lt;strong>site&lt;/strong>: if you are in need of more specific results that are catered to a single website, this command will help you bring those results up. For example, if you wanted to find info about the CTFs from Security Summer School, you would use the following &lt;code>site:security.cs.pub.ro CTF&lt;/code>&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>NOTE:&lt;/strong> There’s no space between the operator, the colon, and the search term! e.g. &lt;code>operator:search_term&lt;/code>&lt;/p>
-&lt;h2 id="anonymous-googling">Anonymous Googling&lt;/h2>
-&lt;p>Google’s cache feature is very useful. If Google crawls a page or document, you can almost always get a copy of it, even if the original source has since dried up and blown away. The down side of this is that hackers can get a copy of your sensitive data even if you’ve pulled the plug on that pesky Web server.&lt;/p>
-&lt;p>Take, for example, the following google query: &lt;strong>cache:phrack.org&lt;/strong>&lt;/p>
-&lt;p>&lt;img src="https://github.com/hexcellents/sss-web/blob/master/03-broken-access-control/support/cache.png" alt="Cache">&lt;/p>
-&lt;p>Some folks use the cache link as an anonymizer, thinking the content comes from Google.&lt;/p>
-&lt;p>However, if we were to examine the output of the tcpdump, we would notice that when viewing the cached copy of the Phrack Web page, we are pulling images &lt;em>directly from the Phrack server itself&lt;/em>. If we were striving for anonymity by viewing the Google cached page, we just blew our cover!&lt;/p>
-&lt;p>Not only were we not anonymous, but our browser informed the Phrack Web server that we were trying to view a cached version of the page! So much for anonymity.&lt;/p>
-&lt;p>It’s worth noting that most real hackers use proxy servers when browsing a target’s Web pages, and even their Google activities are first bounced off a proxy server. If we had used an anonymous proxy server for our testing, the Phrack Web server would have gotten our proxy server’s IP address only, not our actual IP address.&lt;/p>
-&lt;p>The cache banner does, however, provide an option to view only the data that Google has captured, without any external references. If we take the URL of a website from a google search and append the following parameter &lt;strong>&amp;amp;strip=1&lt;/strong>, it will force a Google cache URL to display only cached text, avoiding any external references.&lt;/p>
-&lt;p>For this to work, instead of using &lt;strong>cache:example.com&lt;/strong> into a Google search, use the following URL, to view the Google’s cached data only, not the target’s:&lt;/p>
-&lt;p>&lt;code>http://webcache.googleusercontent.com/search?q=cache:http://www.example.com&amp;amp;strip=1&lt;/code>&lt;/p>
-&lt;h2 id="search-engine-hacking-prevention">Search Engine Hacking Prevention&lt;/h2>
-&lt;p>Unfortunately, once sensitive information is available on the Web, and thus available via a search engine, a professional information-digger will most probably get his or her hands on it. However, there are a few measures one can easily apply to prevent search engine related incidents. Prevention includes making sure that a search engine does not index sensitive information. An effective Web Application Firewall should have such a configurable feature – with the ability to correlate search engines’ user-agent or a range of search engines’ IP addresses with patterns on requests and replies that hint of sensitive information, such as non-public folder names like “/etc” and patterns that look like credit card numbers, and then blocking replies if there is a chance of leakage.&lt;/p>
-&lt;p>Detection of sensitive data appearing in a web search includes periodically checking Google to see whether information has leaked.&lt;/p>
-&lt;h2 id="robotstxt-preventing-caching">robots.txt: Preventing Caching&lt;/h2>
-&lt;p>The &lt;strong>robots.txt&lt;/strong> file provides a list of instructions for automated Web crawlers, also called robots or bots. Standardized at &lt;a href="http://www.robotstxt.org/robotstxt.html">http://www.robotstxt.org/robotstxt.html&lt;/a>, this file allows you to define, with a great deal of precision, which files and directories are off-limits to Web robots. The robots.txt file must be placed in the root of the Web server with permissions that allow the Web server to read the file. Lines in the file beginning with a # sign are considered comments and are ignored. Each line not beginning with a &lt;code>#&lt;/code> should begin with either a User-agent or a disallow statement, followed by a colon and an optional space. These lines are written to disallow certain crawlers from accessing certain directories or files.&lt;/p>
-&lt;p>Each Web crawler should send a user-agent field, which lists the name or type of the crawler. The value of Google’s user-agent field is Googlebot. To address a disallow to Google, the user-agent line should read:&lt;/p>
-&lt;p>&lt;code>User-agent: Googlebot&lt;/code>&lt;/p>
-&lt;p>According to the original specification, the wildcard character &lt;code>*&lt;/code> can be used in the user-agent field to indicate all crawlers. The disallow line describes what, exactly; the crawler should not look at.&lt;/p>
-&lt;p>&lt;strong>NOTE:&lt;/strong> Hackers don’t have to obey your robots.txt file. In fact, Web crawlers really don’t have to either, although most of the big-name Web crawlers will, if only for the “CYA” factor. One fairly common hacker trick is to view a site’s robots.txt file first to get an idea of how files and directories are mapped on the server. In fact a quick Google query can reveal lots of sites that have had their robots.txt files crawled. This, of course, is a misconfiguration, because the robots.txt file is meant to stay behind the scenes.&lt;/p>
-&lt;h2 id="wayback-machine">Wayback Machine&lt;/h2>
-&lt;p>The Wayback Machine is a digital archive of the entire internet. It allows the user to go “back in time” and see what websites looked like in the past. For a hacker, it can be useful to see what information was displayed on a website a few months ago or even a few years ago.&lt;br>
-The Wayback Machine can be found at &lt;a href="https://archive.org/web/">https://archive.org/web/&lt;/a>.&lt;/p>
-&lt;h2 id="sitemapxml">Sitemap.xml&lt;/h2>
-&lt;p>The sitemap.xml is a simple XML page which could be available on some websites and provide a “roadmap” for Google to the important pages that need to be crawled. It’s a SEO (Search Engine Optimization) tool to help with the visibility of your website on the internet, but it could also be useful for a hacker, serving basically the same purpose: to give him a roadmap to every page.&lt;/p>
-&lt;h2 id="examples-of-google-dorking">Examples of Google Dorking&lt;/h2>
-&lt;h3 id="explore-log-files-for-login-credentials">Explore LOG Files For Login Credentials&lt;/h3>
-&lt;p>&lt;code>allintext:password filetype:log after:2019&lt;/code> - Finds exposed log files that might contain passwords.&lt;/p>
-&lt;p>&lt;code>allintext:username filetype:log&lt;/code> - Finds logs that contain usernames.&lt;/p>
-&lt;p>&lt;strong>Prevention:&lt;/strong> Do not allow Google to access important data of your website, by properly configuring robots.txt.&lt;/p>
-&lt;h3 id="explore-configurations-using-env-files">Explore Configurations Using &lt;strong>ENV&lt;/strong> files&lt;/h3>
-&lt;p>.env is used by various popular web development frameworks to declare general variables and configurations.&lt;/p>
-&lt;p>&lt;code>DB_USERNAME filetype:env&lt;/code>&lt;br>
-&lt;code>DB_PASSWORD filetype:enc=v&lt;/code>&lt;/p>
-&lt;p>By using the command you can find a list of sites that expose their &lt;em>.env&lt;/em> file on the internet. Developers may accidentally include the &lt;em>.env&lt;/em> file in the public directory of the website, which can cause great harm if cyber criminals find it.&lt;/p>
-&lt;p>If you click into any of the exposed .env files, you will notice unencrypted usernames, passwords and IPs are directly exposed in the search results.
-&lt;strong>Prevention:&lt;/strong> &lt;em>.env&lt;/em> files should &lt;strong>not&lt;/strong> be in a publicly accessible folder.&lt;/p>
-&lt;h1 id="wrap-up">Wrap-up&lt;/h1>
-&lt;p>In this rapidly evolving world, the technologies we use change at a very fast pace. We need to constantly implement new systems to help solve the issues that arise. Since HTTP is stateless, dynamic web applications needed a way to preserve the state between requests, so they used cookies and sessions.&lt;/p>
-&lt;p>It’s very important to understand the difference between authentication and authorization. Almost every web application on the internet today has one form or another of authentication and authorization. Many &lt;a href="https://techterms.com/definition/framework#:~:text=A%20framework%2C%20or%20software%20framework,programs%20for%20a%20specific%20platform">frameworks&lt;/a> and &lt;a href="https://techterms.com/definition/cms">Content Management Systems&lt;/a> provide built-in implementations of authorization and authentication to make the job of web developers easier.&lt;/p>
-&lt;h1 id="optional-developer-tools">(Optional) Developer Tools&lt;/h1>
-&lt;p>Modern browsers, such as Google Chrome, Mozilla Firefox and Microsoft Edge, include some functionality aimed at developers for easier debugging, testing and previews. Anyone can use these tools to look at the internals of a web page. As a security professional, or even a hobbyist, these instruments provide you with insightful information about the inner workings of any web application out there. Even if it can only show the front-end code, it can create an overview of the structure and maybe reveal valuable details, such as the traffic sent from and received by the client.&lt;/p>
-&lt;p>In order to open these tools, you can press &lt;em>F12&lt;/em> while navigating a web page in any browser mentioned, or by using &lt;em>Mouse Right Click&lt;/em> and selecting the Inspect Element option. The latter lets you select which part of the page should be in focus when inspected.&lt;/p>
-&lt;p>Alternatively, you can see the entire HTML code of a web page by selecting View Page Source in the Mouse Right Click context menu.&lt;/p>
-&lt;p>Next, some of the core functionalities of these tools will be detailed (some names may vary slightly across browsers, but the functionality is mainly the same, so we will focus in Google Chrome here):&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>Elements&lt;/strong>: In this tab you can see the HTML structure of the page. On the right panel, you can see the styles applied to each element when selected and add, remove or edit the properties directly from there. This kind of inspection could lead to the discovery of hidden elements which can be toggled into view by altering the CSS code or could lead to the discovery of commented pieces of code which could contain sensitive data. Also, the &lt;a href="https://github.com/hexcellents/sss-web/wiki/Session-01:-Web-Basics-&amp;amp;-Browser-Security-Model#dom-document-object-model">DOM&lt;/a> (Document Object Model) structure of the page can be altered, and elements can be added or removed, such as scripts, input fields, etc. (any element in fact), which means that any JavaScript code used to sanitize user input or perform other functions can be bypassed.&lt;/li>
-&lt;/ul>
-&lt;p>&lt;img src="https://github.com/hexcellents/sss-web/blob/master/02-web-basics/support/devtools-1.png" alt="Elements - Developer Tools">&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>Console&lt;/strong>: The console prints errors which occurred during page rendering or during any action performed on the page, such as, but not limited to, error loading an image not found, error while performing an asynchronous request to fetch data, missing included file (such as CSS or Javascript files), errors in Javascript code from the included scripts, debug messages left by the developer, etc. The console also has the ability to run any Javascript code by typing it directly there and interacting with the page.&lt;/li>
-&lt;/ul>
-&lt;p>&lt;img src="https://github.com/hexcellents/sss-web/blob/master/02-web-basics/support/devtools-2.png" alt="Console - Developer Tools">&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>Sources&lt;/strong>: This tab lets you see any file from the loaded in the front-end, such as images, JS, CSS, etc. in an arborescent way. This could be a good tool to inspect the JS scripts included in the current page. They could reveal possibly valuable information, such as hidden paths or resources, or even critical pieces of functionality, which, if understood, could lead to successful exploits.&lt;/li>
-&lt;/ul>
-&lt;p>&lt;img src="https://github.com/hexcellents/sss-web/blob/master/02-web-basics/support/devtools-3.png" alt="Sources - Developer Tools">&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>Network&lt;/strong>: The network tab shows detailed information about every file loaded and every request and response made by the page. You can find in-depth info about the &lt;a href="https://github.com/hexcellents/sss-web/wiki/Session-01:-Web-Basics-&amp;amp;-Browser-Security-Model#http-hypertext-transfer-protocol">HTTP requests&lt;/a>, such as HTTP parameters, HTTP methods (GET, POST), HTTP status codes (200, 404, 500, etc.), loading time and size of each loaded element (image, script, etc). Furthermore, clicking on one of the requests there, you can see the headers, the preview, the response (as raw content) and others. This is useful for listing all the resources needed by a page, such as if there are any requests to APIs, additional scripts loaded, etc.&lt;/li>
-&lt;/ul>
-&lt;p>&lt;img src="https://github.com/hexcellents/sss-web/blob/master/02-web-basics/support/devtools-4.png" alt="Network - Developer Tools">&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>Application&lt;/strong>: This tab lets you see some specific data about the page, such as cookies (which will be covered in depth in the next section), local storage, session storage, cache, etc. This can be useful to see which data is stored on the client-side and it may contain useful values.&lt;/li>
-&lt;/ul>
-&lt;p>&lt;img src="https://github.com/hexcellents/sss-web/blob/master/02-web-basics/support/devtools-5.png" alt="Application - Developer Tools">&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>Security&lt;/strong>: Detailed information about the protocol used (HTTP or HTTPS) and the website certificates. Insecure websites can be vulnerable because HTTP sends data in plain text across the connection, which may be intercepted (e.g. Man in the Middle).&lt;/li>
-&lt;/ul>
-&lt;p>&lt;img src="https://github.com/hexcellents/sss-web/blob/master/02-web-basics/support/devtools-6.png" alt="Security - Developer Tools">&lt;/p>
-&lt;h1 id="browser-extensions">Browser Extensions&lt;/h1>
-&lt;p>Some browser extensions can make your life easier when interacting with the websites. Some examples would be:&lt;/p>
-&lt;ul>
-&lt;li>
-&lt;p>&lt;strong>EditThisCookie&lt;/strong>: Lets you quickly add, edit or delete a cookie. It could be useful to open a context-menu with one click and edit a cookie on the fly while navigating, without the need to open the developer tools console.&lt;/p>
-&lt;ul>
-&lt;li>Google Chrome link: &lt;a href="https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg">https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg&lt;/a>&lt;/li>
-&lt;li>Mozilla Firefox link: &lt;a href="https://addons.mozilla.org/en-US/firefox/addon/etc2/">https://addons.mozilla.org/en-US/firefox/addon/etc2/&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>ModHeader&lt;/strong>: Lets you to add, modify and remove request headers and response headers. You can use this extension to set &lt;strong>X-Forwarded-For&lt;/strong>, &lt;strong>Authorization&lt;/strong>, &lt;strong>Access-Control-Allow-Origin&lt;/strong> and other headers and remember your settings across your account.&lt;/p>
-&lt;ul>
-&lt;li>Google Chrome link: &lt;a href="https://chrome.google.com/webstore/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj">https://chrome.google.com/webstore/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj&lt;/a>&lt;/li>
-&lt;li>Mozilla Firefox link: &lt;a href="https://addons.mozilla.org/en-US/firefox/addon/modheader-firefox/">https://addons.mozilla.org/en-US/firefox/addon/modheader-firefox/&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>Hasher&lt;/strong>: An extension to quickly generate most common &lt;strong>hashes&lt;/strong> (&lt;em>MD5&lt;/em>, &lt;em>SHA-1&lt;/em>, &lt;em>SHA-224&lt;/em>, &lt;em>SHA-256&lt;/em>, &lt;em>SHA-384&lt;/em>, &lt;em>SHA-512&lt;/em>, etc), &lt;strong>ciphers&lt;/strong> (&lt;em>AES-256&lt;/em>, &lt;em>DES&lt;/em>, &lt;em>Triple-DES&lt;/em>, &lt;em>RC4&lt;/em>, etc), &lt;strong>ROT13&lt;/strong>, &lt;strong>HMAC&lt;/strong>, &lt;strong>CRC&lt;/strong> (&lt;em>CRC-8&lt;/em>, &lt;em>CRC 16&lt;/em>), for a given input. You can also convert timestamps to human readable formats, convert numbers from different bases (hex, binary, dec), encode or decode strings and convert between &lt;em>ASCII&lt;/em>, &lt;em>HEX&lt;/em>, &lt;em>UTF-8&lt;/em>, etc.&lt;/p>
-&lt;ul>
-&lt;li>Google Chrome link: &lt;a href="https://chrome.google.com/webstore/detail/hasher/kignjplbjlocolcfldfhbonmbblpfbjb">https://chrome.google.com/webstore/detail/hasher/kignjplbjlocolcfldfhbonmbblpfbjb&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;h1 id="further-reading">Further Reading&lt;/h1>
-&lt;ul>
-&lt;li>[1] Metropolia University of Applied Sciences - Applied Web Application Security Course&lt;/li>
-&lt;li>[2] &lt;a href="https://en.wikipedia.org/wiki/HTTP_cookie">https://en.wikipedia.org/wiki/HTTP_cookie&lt;/a>&lt;/li>
-&lt;li>[3] &lt;a href="https://stackoverflow.com/questions/11142882/what-are-cookies-and-sessions-and-how-do-they-relate-to-each-other">https://stackoverflow.com/questions/11142882/what-are-cookies-and-sessions-and-how-do-they-relate-to-each-other&lt;/a>&lt;/li>
-&lt;li>[4] &lt;a href="https://docs.python-requests.org/en/master/user/advanced/">https://docs.python-requests.org/en/master/user/advanced/&lt;/a>&lt;/li>
-&lt;li>[5] &lt;a href="https://stackoverflow.com/questions/11142882/what-are-cookies-and-sessions-and-how-do-they-relate-to-each-other">https://stackoverflow.com/questions/11142882/what-are-cookies-and-sessions-and-how-do-they-relate-to-each-other&lt;/a>&lt;/li>
-&lt;li>[6] &lt;a href="https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg">https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg&lt;/a>&lt;/li>
-&lt;li>[7] &lt;a href="https://danielmiessler.com/study/encoding-encryption-hashing-obfuscation/">https://danielmiessler.com/study/encoding-encryption-hashing-obfuscation/&lt;/a>&lt;/li>
-&lt;li>[8] &lt;a href="https://searchsecurity.techtarget.com/tip/How-to-encrypt-and-secure-a-website-using-HTTPS">https://searchsecurity.techtarget.com/tip/How-to-encrypt-and-secure-a-website-using-HTTPS&lt;/a>&lt;/li>
-&lt;li>[9] &lt;a href="https://www.linkedin.com/learning/asp-dot-net-core-identity-authentication-management">https://www.linkedin.com/learning/asp-dot-net-core-identity-authentication-management&lt;/a>&lt;/li>
-&lt;li>[10] &lt;a href="https://techterms.com/definition/authentication">https://techterms.com/definition/authentication&lt;/a>&lt;/li>
-&lt;li>[11] &lt;a href="https://www.bugcrowd.com/blog/how-to-find-idor-insecure-direct-object-reference-vulnerabilities-for-large-bounty-rewards/">https://www.bugcrowd.com/blog/how-to-find-idor-insecure-direct-object-reference-vulnerabilities-for-large-bounty-rewards/&lt;/a>&lt;/li>
-&lt;li>[12] &lt;a href="https://portswigger.net/web-security/file-path-traversal">https://portswigger.net/web-security/file-path-traversal&lt;/a>&lt;/li>
-&lt;li>[13] &lt;a href="https://www.amazon.com/Google-Hacking-Penetration-Testers-1/dp/1931836361">https://www.amazon.com/Google-Hacking-Penetration-Testers-1/dp/1931836361&lt;/a>&lt;/li>
-&lt;li>[14] &lt;a href="https://securitytrails.com/blog/google-hacking-techniques">https://securitytrails.com/blog/google-hacking-techniques&lt;/a>&lt;/li>
-&lt;li>[15] &lt;a href="https://www.acunetix.com/websitesecurity/google-hacking/">https://www.acunetix.com/websitesecurity/google-hacking/&lt;/a>&lt;/li>
-&lt;li>[16] &lt;a href="https://www.sciencedirect.com/science/article/pii/B9781931836364500087">https://www.sciencedirect.com/science/article/pii/B9781931836364500087&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;h1 id="exercises">Exercises&lt;/h1>
-&lt;p>&lt;strong>1.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Nobody loves me&lt;/a>&lt;br>
-&lt;strong>2.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Do you need glasses?&lt;/a>&lt;br>
-&lt;strong>3.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Chef hacky mchack&lt;/a>&lt;br>
-&lt;strong>4.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Santa&lt;/a>&lt;br>
-&lt;strong>5.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Great Names&lt;/a>&lt;br>
-&lt;strong>6.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Mind your own business&lt;/a>&lt;br>
-&lt;strong>7.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Beep Beep Boop&lt;/a>&lt;br>
-&lt;strong>8.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Let&amp;rsquo;s traverse the universe&lt;/a>&lt;br>
-&lt;strong>9.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Color&lt;/a>&lt;/p></description></item><item><title>Web:</title><link>/web/02-web-basics/support/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/02-web-basics/support/readme/</guid><description>
-&lt;p>Images used on the wiki page.&lt;/p></description></item><item><title>Web:</title><link>/web/03-broken-access-control/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/03-broken-access-control/readme/</guid><description>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Security Summer School – Webs</title><link>/web/</link><description>Recent content in Webs on Security Summer School</description><generator>Hugo -- gohugo.io</generator><atom:link href="/web/index.xml" rel="self" type="application/rss+xml"/><item><title>Web:</title><link>/web/03-broken-access-control/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/03-broken-access-control/readme/</guid><description>
 &lt;h1 id="burp-suite-configuration">Burp Suite configuration&lt;/h1>
 &lt;p>&lt;a href="https://portswigger.net/support/configuring-your-browser-to-work-with-burp">https://portswigger.net/support/configuring-your-browser-to-work-with-burp&lt;/a>&lt;/p>
 &lt;p>&lt;a href="https://portswigger.net/support/checking-your-browser-proxy-configuration">https://portswigger.net/support/checking-your-browser-proxy-configuration&lt;/a>&lt;/p>
@@ -1209,7 +962,275 @@ So, in order to exploit the above Python code, the attacker places a program cal
 &lt;ul>
 &lt;li>Escalation&lt;/li>
 &lt;/ul></description></item><item><title>Web:</title><link>/web/10-best-practices/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/10-best-practices/readme/</guid><description>
-&lt;p>Session 10 content&lt;/p></description></item><item><title>Web:</title><link>/web/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/readme/</guid><description>
+&lt;p>Session 10 content&lt;/p></description></item><item><title>Web:</title><link>/web/cookies-session-management-access-control/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/cookies-session-management-access-control/readme/</guid><description>
+&lt;h1 id="introduction">Introduction&lt;/h1>
+&lt;p>In order to understand how to protect a web application, you need to understand how an attacker thinks.
+And in order to do that, you need to understand how a platform is built and what techniques are used to ensure minimum usability.
+As a first step, you can analyze web applications using readily available tools, such as the browser’s built-in Developer Tools.
+Further on, you can attempt to find more information about the basic mechanisms that enable the server to identify its clients and keep tabs on who they are (authentication) and what they are allowed to do (authorization), through the use of cookies and sessions.&lt;/p>
+&lt;h1 id="stateful-http-cookies">Stateful HTTP: Cookies&lt;/h1>
+&lt;p>As we mentioned in the previous session, HTTP is a stateless protocol used to communicate over the internet.
+This means that a request is not aware of any of the previous ones, and each request is executed independently.
+Given its stateless nature, simple mechanisms such as HTTP cookies were created to overcome the issue.&lt;/p>
+&lt;p>An HTTP cookie (also called web cookie, Internet cookie, browser cookie, or simply cookie) is a small piece of data sent from a website and stored on the user&amp;rsquo;s computer by the user&amp;rsquo;s web browser while the user is browsing.
+Cookies were designed to be a reliable mechanism for websites to remember stateful information (such as items added in the shopping cart in an online store) or to record the user&amp;rsquo;s browsing activity (including clicking particular buttons, logging in, or recording which pages were visited in the past).
+They can also be used to remember pieces of information that the user previously entered into form fields, such as names, addresses, passwords, and credit card numbers.&lt;/p>
+&lt;p>&lt;img src="./assets/cookies.png" alt="Cookies">&lt;/p>
+&lt;h2 id="what-is-a-cookie">What is a cookie?&lt;/h2>
+&lt;p>A cookie is a &lt;em>key=value&lt;/em> pair stored in a text file on the user’s computer.
+This file can be found, for example, at the following path on a Windows 10 using Chrome:&lt;/p>
+&lt;p>&lt;code>C:\Users\Your User Name\AppData\Local\Google\Chrome\User Data\Default\Cookies&lt;/code>&lt;/p>
+&lt;p>An example of cookies set for a website could be:&lt;/p>
+&lt;ul>
+&lt;li>username=admin&lt;/li>
+&lt;li>cookie_consent=1&lt;/li>
+&lt;li>theme=dark&lt;/li>
+&lt;/ul>
+&lt;p>The first cookie stores the username, so it can be displayed to the user without querying the database.
+The second one stores the choice made by the user regarding the cookie consent, so the application would not continue to show the message every time.
+Finally, the third one stores which theme was selected (in this case, a dark theme).&lt;/p>
+&lt;p>Once a cookie has been set, the browser will send the cookie information in all subsequent HTTP requests until the cookie is deleted.
+Additionally, the cookie can have zero or more attributes, such as:&lt;/p>
+&lt;ul>
+&lt;li>&lt;em>Domain&lt;/em> and &lt;em>Path&lt;/em> attributes define the scope of the cookies.
+These attributes tell the browser what website they belong to.&lt;/li>
+&lt;li>&lt;em>Same origin policy&lt;/em> dictates that websites are only allowed to set cookies on their own domain.
+In other words, the &lt;code>www.example.com&lt;/code> website is not allowed to set cookies on &lt;code>www.test.com&lt;/code> and vice versa.
+A website is only able to control cookies that are within its own domain.&lt;/li>
+&lt;li>The &lt;em>Expires&lt;/em> attribute defines when the cookie is deleted.
+Alternatively, the Max-Age attribute can be used to state the number of seconds after the cookie is to be deleted.&lt;/li>
+&lt;li>The &lt;em>Secure&lt;/em> attribute defines that cookies should only be sent using secure channels such as HTTPS.
+Cookies with the Secure attribute should only be sent through a secure connection.
+This protects the application&amp;rsquo;s cookies against theft attempts.&lt;/li>
+&lt;li>The &lt;em>http-only&lt;/em> attribute defines that cookie should be exposed only using HTTP or HTTPS channels.
+This means that the cookies with this attribute cannot be accessed via client-side scripting or other methods.
+This is a defense mechanism against &lt;a href="https://owasp.org/www-community/HttpOnly">some attacks&lt;/a>.&lt;/li>
+&lt;/ul>
+&lt;h1 id="stateful-http-sessions">Stateful HTTP: Sessions&lt;/h1>
+&lt;p>As previously stated, HTTP is stateless.
+Therefore, it needs a mechanism to remember information from previous requests and associate it with a user for authentication purposes.
+The cookies are one way to achieve this.
+However, they are considered highly insecure because the user can easily manipulate their content.
+We cannot directly use them for authentication and other sensitive data.
+The solution to this problem is the session, which stores the data on the server, rather than the client.
+The session ID can be used as a means of communication.&lt;/p>
+&lt;h2 id="how-does-a-session-work">How does a session work?&lt;/h2>
+&lt;p>When accessing a website that uses sessions, each user is assigned a session ID.
+They are more secure than the previously mentioned method mainly because the data never leaves the server, so an attacker cannot alter it.
+Instead, the ID is used to uniquely identify each user and associate the respective information with them.&lt;/p>
+&lt;p>Sessions are usually short-lived, which makes them ideal for storing temporary states between pages.
+Sessions also expire once the user closes his browser or after a predefined amount of time (for example, 30 minutes).&lt;/p>
+&lt;p>The basic workflow is:&lt;/p>
+&lt;ol>
+&lt;li>The server starts a new session (sets a cookie via the HTTP Cookie header).&lt;/li>
+&lt;li>The server sets a new session variable (stored on the server-side).&lt;/li>
+&lt;li>When the client changes the page, it sends all the cookies in the request, along with the session ID from step 1.&lt;/li>
+&lt;li>The server reads the session ID from the cookie.&lt;/li>
+&lt;li>The server matches the session ID with the entries of a local list (in-memory, text file etc.).&lt;/li>
+&lt;li>If the server finds a match, it reads the stored variables. For PHP, these variables will become available in the superglobal variable &lt;code>$_SESSION&lt;/code>.&lt;/li>
+&lt;li>If the server doesn’t find a match, it will create a new session and repeat steps 1-6.&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="./assets/session.jpg" alt="Session lifecycle">&lt;/p>
+&lt;p>Example of a session in PHP:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-php" data-lang="php">&lt;span style="color:#ce5c00;font-weight:bold">&amp;lt;?&lt;/span>&lt;span style="color:#000">php&lt;/span>
+&lt;span style="color:#000">session_start&lt;/span>&lt;span style="color:#000;font-weight:bold">();&lt;/span> &lt;span style="color:#8f5902;font-style:italic">// Start the session
+&lt;/span>&lt;span style="color:#8f5902;font-style:italic">&lt;/span>&lt;span style="color:#000">$_SESSION&lt;/span>&lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;username&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;John Doe&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#000">$_SESSION&lt;/span>&lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;is_admin&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#204a87;font-weight:bold">true&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">echo&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;Hello &amp;#34;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span> &lt;span style="color:#000">$_SESSION&lt;/span>&lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;username&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">];&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">?&amp;gt;&lt;/span>&lt;span style="color:#a40000">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Example of a session in Python:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">s&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">requests&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">Session&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;span style="color:#000">s&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;https://httpbin.org/cookies/set/sessioncookie/123456789&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">r&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">s&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;https://httpbin.org/cookies&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#204a87">print&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">r&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">text&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># &amp;#39;{&amp;#34;cookies&amp;#34;: {&amp;#34;sessioncookie&amp;#34;: &amp;#34;123456789&amp;#34;}}&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>One might consider that sessions are pretty secure.
+However, they won’t stop an attacker to intercept the cookie with the session ID, for example using a &lt;a href="https://www.imperva.com/learn/application-security/man-in-the-middle-attack-mitm/">Man-in-the-Middle attack&lt;/a> over an insecure Wi-Fi connection, and steal the session ID to use it.
+This won’t give them access to the values that are stored on the server, but they will be able to impersonate the user or perform actions on their behalf.
+This is known as session hijacking.
+You can read more on this subject &lt;a href="https://owasp.org/www-community/attacks/Session_hijacking_attack">here&lt;/a> and &lt;a href="https://www.netsparker.com/blog/web-security/session-hijacking/">here&lt;/a>.&lt;/p>
+&lt;h1 id="authentication-vs-authorization">Authentication vs Authorization&lt;/h1>
+&lt;p>Two concepts that usually make people confused are authentication and authorization.
+Both terms are often used in conjunction with each other when it comes to security and gaining access to the system.
+They are essential in almost every modern web application, as most of these apps need a way to uniquely identify their users using an account.
+These accounts can contain both personal information, available only to the logged in user, and public information, available to anybody.
+Based on the privilege level, users can have access to various functionalities, such as deleting other users, creating blog posts etc.&lt;/p>
+&lt;p>Fundamentally, authentication refers to &lt;strong>who you are&lt;/strong> while authorization refers to &lt;strong>what you can do&lt;/strong>.&lt;/p>
+&lt;p>&lt;strong>Authentication&lt;/strong> is the process of verifying the identity of a person or device.
+A common example is entering a username and password when you log in to a website.
+Entering the correct login information lets the website know who you are and that it is actually you accessing the website.&lt;/p>
+&lt;p>There could be other methods of authentication, such as passcodes, biometrics (fingerprints), Two-Factor Authentication, etc.
+We won’t insist too much on these other methods, but it’s good to know they exist.&lt;/p>
+&lt;p>&lt;strong>Authorization&lt;/strong> is a security mechanism to determine access levels or user/client privileges related to system resources including files, services, computer programs, data and application features.
+This is the process of granting or denying access to a network resource that allows the user access to various resources based on the user&amp;rsquo;s identity.&lt;/p>
+&lt;h2 id="real-life-scenarios">Real-life scenarios&lt;/h2>
+&lt;p>Now imagine what would happen if someone obtains access to your Facebook account.
+Besides the previously public information, such as your name and your birthday, they can now view your friend lists, private conversations, or even impersonate you through a post.
+Although this situation won’t affect Facebook directly, it will certainly affect you.&lt;/p>
+&lt;p>What if someone were to gain access to an administrator account of a university?
+They could remove all the students, erase their grades and all the study materials.
+This would be a really nefarious incident that would destroy the institution’s reputation and will also affect you as a student.&lt;/p>
+&lt;p>This is why authentication and authorization are very important and their security is crucial.&lt;/p>
+&lt;h1 id="path-traversal">Path Traversal&lt;/h1>
+&lt;p>In many web applications, resources are accessed using a filename as a parameter.
+This file is processed and displayed to the client by the application.
+If the application does not verify the parameter, the attacker might be able to exploit the application and display an arbitrary file from the target system.
+Normally an attacker would try to access password or configuration files to gain access to the system.
+Obviously, server-side script files could be accessed to perform manual inspection for vulnerabilities.
+Consider the following URL:&lt;/p>
+&lt;p>&lt;code>http://example.com/view.php?file=image.jpg&lt;/code>&lt;/p>
+&lt;p>If the attacker wants to investigate the view.php file for possible exploitable coding mistakes, he would try to use the script in order to open the file:&lt;/p>
+&lt;p>&lt;code>http://example.com/view.php?file=view.php &lt;/code>&lt;/p>
+&lt;p>It is likely that images are stored in a subdirectory, so the attacker might have to access the parent directory:&lt;/p>
+&lt;p>&lt;code>http://example.com/view.php?file=../view.php&lt;/code> or &lt;code>http://example.com/view.php?file=../../view.php&lt;/code>&lt;/p>
+&lt;p>Depending on the system, a backslash could also be used:&lt;/p>
+&lt;p>&lt;code>http://example.com/view.php?file=..\..\view.php &lt;/code>&lt;/p>
+&lt;p>An example of accessing system files:&lt;/p>
+&lt;p>&lt;code>http://example.com/view.php?file=../../../../etc/passwd&lt;/code>&lt;/p>
+&lt;p>&lt;img src="./assets/path_traversal.png" alt="Path Traversal">&lt;/p>
+&lt;h2 id="path-traversal-prevention">Path Traversal Prevention&lt;/h2>
+&lt;p>The application should not allow directory traversal or the accessing of arbitrary files.
+If the files to be accessed are known, the application should implement a mapping between the file and application-specific identifier.
+This identifier can be hardcoded in the application to prevent any malicious attempts to modify it.&lt;/p>
+&lt;p>If it is considered unavoidable to pass user-supplied input to filesystem APIs, then two layers of defense should be used together to prevent attacks:&lt;/p>
+&lt;ul>
+&lt;li>The application should validate the user input before processing it.
+Ideally, the validation should compare against a whitelist of permitted values.
+If that isn&amp;rsquo;t possible for the required functionality, then the validation should verify that the input contains only permitted content, such as purely alphanumeric characters.&lt;/li>
+&lt;li>After validating the supplied input, the application should append the input to the base directory and use a platform filesystem API to canonicalize the path.
+It should verify that the canonicalized path starts with the expected base directory.&lt;/li>
+&lt;/ul>
+&lt;p>Below is an example of some simple Java code to validate the canonical path of a file based on user input:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#000">File&lt;/span> &lt;span style="color:#000">file&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#204a87;font-weight:bold">new&lt;/span> &lt;span style="color:#000">File&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">(&lt;/span>&lt;span style="color:#000">BASE_DIRECTORY&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">,&lt;/span> &lt;span style="color:#000">userInput&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">);&lt;/span>&lt;span style="color:#a40000">`&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">if&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">(&lt;/span>&lt;span style="color:#000">file&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#c4a000">getCanonicalPath&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">().&lt;/span>&lt;span style="color:#c4a000">startsWith&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">(&lt;/span>&lt;span style="color:#000">BASE_DIRECTORY&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">))&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">{&lt;/span>&lt;span style="color:#a40000">`&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">// process file
+&lt;/span>&lt;span style="color:#8f5902;font-style:italic">&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="insecure-direct-object-references">Insecure Direct Object References&lt;/h1>
+&lt;p>Insecure direct object reference vulnerability is similar to path traversal vulnerability.
+The application allows access to resources using an identifier that is controllable by the user.
+In this case, however, the identifier is not a file / path as is the case with path traversal.&lt;/p>
+&lt;p>Consider the following case where a user is able to view his own invoice:&lt;/p>
+&lt;p>&lt;code>http://www.example.com/view.php?invoice=24411&lt;/code>&lt;/p>
+&lt;p>Now, by changing the invoice number the user might be able to access other invoices, including ones that are not his own, thereby gaining access to the sensitive information of other users.
+Obviously the application should enforce access control over the items to be accessed.
+If the application fails to do so, this would be a case of insecure direct object reference vulnerability.&lt;/p>
+&lt;p>When performing penetration tests, the application parameters should certainly be investigated by iterating through possible values and observing the responses.&lt;/p>
+&lt;p>&lt;img src="./assets/insecure_direct_object_references.png" alt="Insecure Direct Object References">&lt;/p>
+&lt;h2 id="insecure-direct-object-references-prevention">Insecure Direct Object References Prevention&lt;/h2>
+&lt;p>First, you should control all normal, ajax and API requests when creating an application.
+For example, can a read-only user write anything in the app?
+Or can a non-admin user access and create API tokens that should only be created by an admin user?
+So, in order to test all the possible IDOR vulnerabilities, you should think like a hacker.&lt;/p>
+&lt;p>You can provide permissions on your application for all endpoints.
+If your &lt;code>privatesection&lt;/code> endpoint includes the API requests such as &lt;code>/api/privatesection/admins&lt;/code>, &lt;code>/api/privatesection/console&lt;/code>, &lt;code>/api/privatesection/tokens&lt;/code>, you can block the endpoint for non-admin users.&lt;/p>
+&lt;p>Moreover, to make the attacker’s job harder or prevent it altogether, you can use hash functions and hashed values instead of regular numbers and strings.&lt;/p>
+&lt;h2 id="robotstxt-preventing-caching">robots.txt: Preventing Caching&lt;/h2>
+&lt;p>The &lt;strong>robots.txt&lt;/strong> file provides a list of instructions for automated Web crawlers, also called robots or bots.
+Standardized at &lt;a href="http://www.robotstxt.org/robotstxt.html">robotstxt&lt;/a>, this file allows you to define, with a great deal of precision, which files and directories are off-limits to Web robots.
+The robots.txt file must be placed in the root of the Web server with permissions that allow the Web server to read the file.
+Lines in the file beginning with a # sign are considered comments and are ignored.
+Each line not beginning with a &lt;code>#&lt;/code> should begin with either a User-agent or a disallow statement, followed by a colon and an optional space.
+These lines are written to disallow certain crawlers from accessing certain directories or files.&lt;/p>
+&lt;p>Each Web crawler should send a user-agent field, which lists the name or type of the crawler.
+The value of Google’s user-agent field is &lt;code>Googlebot&lt;/code>.
+To address a disallow to Google, the user-agent line should read:&lt;/p>
+&lt;p>&lt;code>User-agent: Googlebot&lt;/code>&lt;/p>
+&lt;p>According to the original specification, the wildcard character &lt;code>*&lt;/code> can be used in the user-agent field to indicate all crawlers.
+The disallow line describes what, exactly; the crawler should not look at.&lt;/p>
+&lt;p>&lt;strong>NOTE:&lt;/strong> Hackers don’t have to obey your robots.txt file.
+In fact, Web crawlers really don’t have to either, although most of the big-name Web crawlers will, if only for the “CYA” factor.
+One fairly common hacker trick is to view a site’s robots.txt file first to get an idea of how files and directories are mapped on the server.
+In fact a quick Google query can reveal lots of sites that have had their robots.txt files crawled.
+This, of course, is a misconfiguration, because the robots.txt file is meant to stay behind the scenes.&lt;/p>
+&lt;h2 id="sitemapxml">Sitemap.xml&lt;/h2>
+&lt;p>The sitemap.xml is a simple XML page which could be available on some websites and provide a “roadmap” for Google to the important pages that need to be crawled.
+It’s a SEO (Search Engine Optimization) tool to help with the visibility of your website on the internet, but it could also be useful for a hacker, serving basically the same purpose: to give him a roadmap to every page.&lt;/p>
+&lt;h2 id="examples-of-google-dorking">Examples of Google Dorking&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>Google Hacking tool from &lt;a href="https://pentest-tools.com/information-gathering/google-hacking">Pentest-Tools&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Passive Google Dork &lt;a href="https://github.com/opsdisk/pagodo">Pagodo&lt;/a>&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="explore-log-files-for-login-credentials">Explore LOG Files For Login Credentials&lt;/h3>
+&lt;p>&lt;code>allintext:password filetype:log after:2019&lt;/code> - Finds exposed log files that might contain passwords.&lt;/p>
+&lt;p>&lt;code>allintext:username filetype:log&lt;/code> - Finds logs that contain usernames.&lt;/p>
+&lt;p>&lt;strong>Prevention:&lt;/strong> Do not allow Google to access important data of your website, by properly configuring robots.txt.&lt;/p>
+&lt;h3 id="explore-configurations-using-env-files">Explore Configurations Using &lt;strong>ENV&lt;/strong> files&lt;/h3>
+&lt;p>.env is used by various popular web development frameworks to declare general variables and configurations.&lt;/p>
+&lt;p>&lt;code>DB_USERNAME filetype:env&lt;/code>&lt;br>
+&lt;code>DB_PASSWORD filetype:enc=v&lt;/code>&lt;/p>
+&lt;p>By using the command you can find a list of sites that expose their &lt;em>.env&lt;/em> file on the internet.
+Developers may accidentally include the &lt;em>.env&lt;/em> file in the public directory of the website, which can cause great harm if cyber criminals find it.&lt;/p>
+&lt;p>If you click into any of the exposed .env files, you will notice unencrypted usernames, passwords and IPs are directly exposed in the search results.
+&lt;strong>Prevention:&lt;/strong> &lt;em>.env&lt;/em> files should &lt;strong>not&lt;/strong> be in a publicly accessible folder.&lt;/p>
+&lt;h2 id="wayback-machine">Wayback Machine&lt;/h2>
+&lt;p>The &lt;a href="https://archive.org/web/">Wayback Machine&lt;/a> is a digital archive of the entire internet.
+It allows the user to go “back in time” and see what websites looked like in the past.
+For a hacker, it can be useful to see what information was displayed on a website a few months ago or even a few years ago.&lt;/p>
+&lt;h1 id="wrap-up">Wrap-up&lt;/h1>
+&lt;p>In this rapidly evolving world, the technologies we use change at a very fast pace.
+We need to constantly implement new systems to help solve the issues that arise.
+Since HTTP is stateless, dynamic web applications needed a way to preserve the state between requests, so they used cookies and sessions.&lt;/p>
+&lt;p>It’s very important to understand the difference between authentication and authorization.
+Almost every web application on the internet today has one form or another of authentication and authorization.
+Many &lt;a href="https://techterms.com/definition/framework#:~:text=A%20framework%2C%20or%20software%20framework,programs%20for%20a%20specific%20platform">frameworks&lt;/a> and &lt;a href="https://techterms.com/definition/cms">Content Management Systems&lt;/a> provide built-in implementations of authorization and authentication to make the job of web developers easier.&lt;/p>
+&lt;h1 id="browser-extensions">Browser Extensions&lt;/h1>
+&lt;p>Some browser extensions can make your life easier when interacting with the websites. Some examples would be:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>EditThisCookie&lt;/strong>: Lets you quickly add, edit or delete a cookie.
+It could be useful to open a context-menu with one click and edit a cookie on the fly while navigating, without the need to open the developer tools console.&lt;/p>
+&lt;ul>
+&lt;li>Google Chrome link: &lt;a href="https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg">https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg&lt;/a>&lt;/li>
+&lt;li>Mozilla Firefox link: &lt;a href="https://addons.mozilla.org/en-US/firefox/addon/etc2/">https://addons.mozilla.org/en-US/firefox/addon/etc2/&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>ModHeader&lt;/strong>: Lets you add, modify and remove request headers and response headers. You can use this extension to set &lt;strong>X-Forwarded-For&lt;/strong>, &lt;strong>Authorization&lt;/strong>, &lt;strong>Access-Control-Allow-Origin&lt;/strong> and other headers and remember your settings across your account.&lt;/p>
+&lt;ul>
+&lt;li>Google Chrome link: &lt;a href="https://chrome.google.com/webstore/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj">https://chrome.google.com/webstore/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj&lt;/a>&lt;/li>
+&lt;li>Mozilla Firefox link: &lt;a href="https://addons.mozilla.org/en-US/firefox/addon/modheader-firefox/">https://addons.mozilla.org/en-US/firefox/addon/modheader-firefox/&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Hasher&lt;/strong>: An extension to quickly generate most common &lt;strong>hashes&lt;/strong> (&lt;em>MD5&lt;/em>, &lt;em>SHA-1&lt;/em>, &lt;em>SHA-224&lt;/em>, &lt;em>SHA-256&lt;/em>, &lt;em>SHA-384&lt;/em>, &lt;em>SHA-512&lt;/em>, etc), &lt;strong>ciphers&lt;/strong> (&lt;em>AES-256&lt;/em>, &lt;em>DES&lt;/em>, &lt;em>Triple-DES&lt;/em>, &lt;em>RC4&lt;/em>, etc), &lt;strong>ROT13&lt;/strong>, &lt;strong>HMAC&lt;/strong>, &lt;strong>CRC&lt;/strong> (&lt;em>CRC-8&lt;/em>, &lt;em>CRC 16&lt;/em>), for a given input. You can also convert timestamps to human readable formats, convert numbers from different bases (hex, binary, dec), encode or decode strings and convert between &lt;em>ASCII&lt;/em>, &lt;em>HEX&lt;/em>, &lt;em>UTF-8&lt;/em>, etc.&lt;/p>
+&lt;ul>
+&lt;li>Google Chrome link: &lt;a href="https://chrome.google.com/webstore/detail/hasher/kignjplbjlocolcfldfhbonmbblpfbjb">https://chrome.google.com/webstore/detail/hasher/kignjplbjlocolcfldfhbonmbblpfbjb&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h1 id="further-reading">Further Reading&lt;/h1>
+&lt;ul>
+&lt;li>[1] Metropolia University of Applied Sciences - Applied Web Application Security Course&lt;/li>
+&lt;li>[2] &lt;a href="https://en.wikipedia.org/wiki/HTTP_cookie">https://en.wikipedia.org/wiki/HTTP_cookie&lt;/a>&lt;/li>
+&lt;li>[3] &lt;a href="https://stackoverflow.com/questions/11142882/what-are-cookies-and-sessions-and-how-do-they-relate-to-each-other">https://stackoverflow.com/questions/11142882/what-are-cookies-and-sessions-and-how-do-they-relate-to-each-other&lt;/a>&lt;/li>
+&lt;li>[4] &lt;a href="https://docs.python-requests.org/en/master/user/advanced/">https://docs.python-requests.org/en/master/user/advanced/&lt;/a>&lt;/li>
+&lt;li>[5] &lt;a href="https://stackoverflow.com/questions/11142882/what-are-cookies-and-sessions-and-how-do-they-relate-to-each-other">https://stackoverflow.com/questions/11142882/what-are-cookies-and-sessions-and-how-do-they-relate-to-each-other&lt;/a>&lt;/li>
+&lt;li>[6] &lt;a href="https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg">https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg&lt;/a>&lt;/li>
+&lt;li>[7] &lt;a href="https://danielmiessler.com/study/encoding-encryption-hashing-obfuscation/">https://danielmiessler.com/study/encoding-encryption-hashing-obfuscation/&lt;/a>&lt;/li>
+&lt;li>[8] &lt;a href="https://searchsecurity.techtarget.com/tip/How-to-encrypt-and-secure-a-website-using-HTTPS">https://searchsecurity.techtarget.com/tip/How-to-encrypt-and-secure-a-website-using-HTTPS&lt;/a>&lt;/li>
+&lt;li>[9] &lt;a href="https://www.linkedin.com/learning/asp-dot-net-core-identity-authentication-management">https://www.linkedin.com/learning/asp-dot-net-core-identity-authentication-management&lt;/a>&lt;/li>
+&lt;li>[10] &lt;a href="https://techterms.com/definition/authentication">https://techterms.com/definition/authentication&lt;/a>&lt;/li>
+&lt;li>[11] &lt;a href="https://www.bugcrowd.com/blog/how-to-find-idor-insecure-direct-object-reference-vulnerabilities-for-large-bounty-rewards/">https://www.bugcrowd.com/blog/how-to-find-idor-insecure-direct-object-reference-vulnerabilities-for-large-bounty-rewards/&lt;/a>&lt;/li>
+&lt;li>[12] &lt;a href="https://portswigger.net/web-security/file-path-traversal">https://portswigger.net/web-security/file-path-traversal&lt;/a>&lt;/li>
+&lt;li>[13] &lt;a href="https://www.amazon.com/Google-Hacking-Penetration-Testers-1/dp/1931836361">https://www.amazon.com/Google-Hacking-Penetration-Testers-1/dp/1931836361&lt;/a>&lt;/li>
+&lt;li>[14] &lt;a href="https://securitytrails.com/blog/google-hacking-techniques">https://securitytrails.com/blog/google-hacking-techniques&lt;/a>&lt;/li>
+&lt;li>[15] &lt;a href="https://www.acunetix.com/websitesecurity/google-hacking/">https://www.acunetix.com/websitesecurity/google-hacking/&lt;/a>&lt;/li>
+&lt;li>[16] &lt;a href="https://www.sciencedirect.com/science/article/pii/B9781931836364500087">https://www.sciencedirect.com/science/article/pii/B9781931836364500087&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h1 id="activities">Activities&lt;/h1>
+&lt;p>&lt;strong>1.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Nobody loves me&lt;/a>&lt;br>
+&lt;strong>2.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Do you need glasses?&lt;/a>&lt;br>
+&lt;strong>3.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Chef hacky mchack&lt;/a>&lt;br>
+&lt;strong>4.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Santa&lt;/a>&lt;br>
+&lt;strong>5.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Great Names&lt;/a>&lt;br>
+&lt;strong>6.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Mind your own business&lt;/a>&lt;br>
+&lt;strong>7.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Beep Beep Boop&lt;/a>&lt;br>
+&lt;strong>8.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Let&amp;rsquo;s traverse the universe&lt;/a>&lt;br>
+&lt;strong>9.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Color&lt;/a>&lt;/p></description></item><item><title>Web:</title><link>/web/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/readme/</guid><description>
 &lt;h1 id="security-summer-school-web-track">Security Summer School: Web Track&lt;/h1>
 &lt;p>Welcome to the Web Track of the Security Summer School.&lt;/p>
 &lt;p>Each session is located in their specific folder.
@@ -1218,7 +1239,7 @@ And, if the case, subfolders with support data for challenges.&lt;/p>
 &lt;p>Sessions are:&lt;/p>
 &lt;ul>
 &lt;li>&lt;a href="web-basics-browser-security-model/README.md">Session 01: Web Basics &amp;amp; Browser Security Model&lt;/a>&lt;/li>
-&lt;li>&lt;a href="02-web-basics-part-2/README.md">Session 02: Cookies &amp;amp; Session Management &amp;amp; Access Control&lt;/a>&lt;/li>
+&lt;li>&lt;a href="cookies-session-management-access-control/README.md">Session 02: Cookies &amp;amp; Session Management &amp;amp; Access Control&lt;/a>&lt;/li>
 &lt;li>&lt;a href="03-broken-access-control/README.md">Session 03: Broken Access Control&lt;/a>&lt;/li>
 &lt;li>&lt;a href="sql-injection/README.md">Session 04: SQL Injection&lt;/a>&lt;/li>
 &lt;li>&lt;a href="05-injection-part-2/README.md">Session 05: Injection (part 2)&lt;/a>&lt;/li>
@@ -2041,7 +2062,17 @@ Write the answer to the instructor.&lt;/p>
 &lt;strong>11.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Give to Get&lt;/a>&lt;br>
 &lt;strong>12.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Give to Post&lt;/a>&lt;br>
 &lt;strong>13.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">One by One&lt;/a>&lt;br>
-&lt;strong>14.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Produce-consume&lt;/a>&lt;/p></description></item><item><title>Web: SSS: Session: SQL Injection</title><link>/web/sql-injection/slides/slides/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/sql-injection/slides/slides/</guid><description>
+&lt;strong>14.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Produce-consume&lt;/a>&lt;/p></description></item><item><title>Web: SSS: Session: Cookies session management and Access Control</title><link>/web/cookies-session-management-access-control/slides/slides/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/cookies-session-management-access-control/slides/slides/</guid><description>
+&lt;h1 id="centered-text">Centered Text&lt;/h1>
+&lt;p>Nice words&lt;/p>
+&lt;p>From presenter&lt;/p>
+&lt;p>Note: test note&lt;/p>
+&lt;hr>
+&lt;h1 id="list-test">List Test&lt;/h1>
+&lt;ul>
+&lt;li>About binary executables&lt;/li>
+&lt;li>Sections&lt;/li>
+&lt;/ul></description></item><item><title>Web: SSS: Session: SQL Injection</title><link>/web/sql-injection/slides/slides/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/sql-injection/slides/slides/</guid><description>
 &lt;h1 id="centered-text">Centered Text&lt;/h1>
 &lt;p>Nice words&lt;/p>
 &lt;p>From presenter&lt;/p>
