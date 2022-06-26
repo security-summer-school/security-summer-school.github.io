@@ -525,288 +525,7 @@ The Wayback Machine can be found at &lt;a href="https://archive.org/web/">https:
 &lt;li>[14] &lt;a href="https://portswigger.net/web-security/os-command-injection">https://portswigger.net/web-security/os-command-injection&lt;/a>&lt;/li>
 &lt;li>[15] &lt;a href="https://gracefulsecurity.com/command-injection-the-good-the-bad-and-the-blind/">https://gracefulsecurity.com/command-injection-the-good-the-bad-and-the-blind/&lt;/a>&lt;/li>
 &lt;li>[16] &lt;a href="https://www.acunetix.com/blog/articles/injection-attacks/">https://www.acunetix.com/blog/articles/injection-attacks/&lt;/a>&lt;/li>
-&lt;/ul></description></item><item><title>Web:</title><link>/web/04-injection-part-1/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/04-injection-part-1/readme/</guid><description>
-&lt;h1 id="sql-injection">SQL Injection&lt;/h1>
-&lt;p>In this session, we&amp;rsquo;ll explain what SQL injection is, describe some common examples, explain how to find and exploit various kinds of SQL injection vulnerabilities, and summarize how to prevent SQL injection.&lt;/p>
-&lt;p>&lt;strong>NOTE:&lt;/strong>&lt;/p>
-&lt;p>For this session you&amp;rsquo;ll need to use &lt;a href="https://portswigger.net/burp">Burp Suite&lt;/a> so please follow the links in the &lt;a href="#further-reading">Further Reading&lt;/a> section to set it up if you haven&amp;rsquo;t done so yet.[&lt;a href="https://portswigger.net/support/configuring-your-browser-to-work-with-burp">2&lt;/a>,&lt;a href="https://portswigger.net/support/checking-your-browser-proxy-configuration">3&lt;/a>,&lt;a href="https://portswigger.net/support/installing-burp-suites-ca-certificate-in-your-browser">4&lt;/a>]&lt;/p>
-&lt;h2 id="what-is-sql-injection">What is SQL injection&lt;/h2>
-&lt;p>SQL injection is a web security vulnerability that allows an attacker to interfere with the queries that an application makes to its database. It generally allows attackers to view data that they are not normally able to retrieve. This might include data belonging to other users, or any other data that the application itself is able to access. In many cases, an attacker can modify or delete this data, causing persistent changes to the application&amp;rsquo;s content or behavior.&lt;/p>
-&lt;p>In some situations, an attacker can escalate an SQL injection attack to compromise the underlying server or other back-end infrastructure or perform a denial-of-service attack.&lt;/p>
-&lt;h3 id="what-is-the-impact-of-a-successful-sql-injection-attack">What is the impact of a successful SQL injection attack?&lt;/h3>
-&lt;p>A successful SQL injection attack can result in unauthorized access to sensitive data, such as passwords, credit card details, or personal user information. Many high-profile data breaches in recent years have been the result of SQL injection attacks, leading to reputational damage and regulatory fines. In some cases, an attacker can obtain a persistent backdoor into an organization&amp;rsquo;s systems, leading to a long-term compromise that can go unnoticed for an extended period.&lt;/p>
-&lt;h3 id="sql-injection-examples">SQL injection examples&lt;/h3>
-&lt;p>There are a wide variety of SQL injection vulnerabilities, attacks, and techniques, which arise in different situations. Some common SQL injection examples include:&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>&lt;a href="##retrieving-hidden-data">Retrieving hidden data&lt;/a>&lt;/strong> - you can modify an SQL query to return additional results.&lt;/li>
-&lt;li>&lt;strong>&lt;a href="##subverting-application-logic">Subverting application logic&lt;/a>&lt;/strong> - you can change a query to interfere with the application&amp;rsquo;s logic.&lt;/li>
-&lt;li>&lt;strong>&lt;a href="##SQL-injection-UNION-attacks">UNION attacks&lt;/a>&lt;/strong> - you can retrieve data from different database tables.&lt;/li>
-&lt;li>&lt;strong>&lt;a href="##Examining-the-database">Examining the database&lt;/a>&lt;/strong> - you can extract information about the version and structure of the database.&lt;/li>
-&lt;li>&lt;strong>&lt;a href="##Blind-SQL-injection">Blind SQL injection&lt;/a>&lt;/strong> - the results of a query you control are not returned in the application&amp;rsquo;s responses.&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;h2 id="retrieving-hidden-data">Retrieving hidden data&lt;/h2>
-&lt;p>Consider a shopping application that displays products in different categories. When the user clicks on the Gifts category, their browser requests the URL:&lt;/p>
-&lt;p>&lt;code>https://insecure-website.com/products?category=Gifts&lt;/code>&lt;/p>
-&lt;p>This causes the application to make an SQL query to retrieve details of the relevant products from the database:&lt;/p>
-&lt;p>&lt;code>SELECT * FROM products WHERE category = 'Gifts' AND released = 1&lt;/code>&lt;/p>
-&lt;p>This SQL query asks the database to return:&lt;/p>
-&lt;ul>
-&lt;li>all details (*)&lt;/li>
-&lt;li>from the products table&lt;/li>
-&lt;li>where the category is Gifts&lt;/li>
-&lt;li>and released is 1.&lt;/li>
-&lt;/ul>
-&lt;p>The restriction &lt;code>released = 1&lt;/code> is being used to hide products that are not released. For unreleased products, presumably &lt;code>released = 0&lt;/code>.&lt;/p>
-&lt;p>The application doesn&amp;rsquo;t implement any defenses against SQL injection attacks, so an attacker can construct an attack like:&lt;/p>
-&lt;p>&lt;code>https://insecure-website.com/products?category=Gifts'--&lt;/code>&lt;/p>
-&lt;p>This results in the SQL query:&lt;/p>
-&lt;p>&lt;code>SELECT * FROM products WHERE category = 'Gifts'--' AND released = 1&lt;/code>&lt;/p>
-&lt;p>The key thing here is that the double-dash sequence &lt;code>--&lt;/code> is a comment indicator in SQL, and means that the rest of the query is interpreted as a comment. This effectively removes the remainder of the query, so it no longer includes &lt;code>AND released = 1&lt;/code>. This means that all products are displayed, including unreleased products.&lt;/p>
-&lt;p>Going further, an attacker can cause the application to display all the products in any category, including categories that they don&amp;rsquo;t know about:&lt;/p>
-&lt;p>&lt;code>https://insecure-website.com/products?category=Gifts'+OR+1=1--&lt;/code>&lt;/p>
-&lt;p>This results in the SQL query:&lt;/p>
-&lt;p>&lt;code>SELECT * FROM products WHERE category = 'Gifts' OR 1=1--' AND released = 1&lt;/code>&lt;/p>
-&lt;p>The modified query will return all items where either the category is Gifts, or 1 is equal to 1. Since 1=1 is always true, the query will return all items.&lt;/p>
-&lt;h2 id="subverting-application-logic">Subverting application logic&lt;/h2>
-&lt;p>Consider an application that lets users log in with a username and password. If a user submits the username &lt;code>wiener&lt;/code> and the password &lt;code>bluecheese&lt;/code>, the application checks the credentials by performing the following SQL query:&lt;/p>
-&lt;p>&lt;code>SELECT * FROM users WHERE username = 'wiener' AND password = 'bluecheese'&lt;/code>&lt;/p>
-&lt;p>If the query returns the details of a user, then the login is successful. Otherwise, it is rejected.&lt;/p>
-&lt;p>Here, an attacker can log in as any user without a password simply by using the SQL comment sequence &lt;code>--&lt;/code> to remove the password check from the &lt;code>WHERE&lt;/code> clause of the query. For example, submitting the username &lt;code>administrator'--&lt;/code> and a blank password results in the following query:&lt;/p>
-&lt;p>&lt;code>SELECT * FROM users WHERE username = 'administrator'--' AND password = ''&lt;/code>&lt;/p>
-&lt;p>This query returns the user whose username is &lt;code>administrator&lt;/code> and successfully logs the attacker in as that user.&lt;/p>
-&lt;h2 id="retrieving-data-from-other-database-tables">Retrieving data from other database tables&lt;/h2>
-&lt;p>In cases where the results of an SQL query are returned within the application&amp;rsquo;s responses, an attacker can leverage an SQL injection vulnerability to retrieve data from other tables within the database. This is done using the &lt;code>UNION&lt;/code> keyword, which lets you execute an additional &lt;code>SELECT&lt;/code> query and append the results to the original query.&lt;/p>
-&lt;p>For example, if an application executes the following query containing the user input &amp;ldquo;Gifts&amp;rdquo;:&lt;/p>
-&lt;p>&lt;code>SELECT name, description FROM products WHERE category = 'Gifts'&lt;/code>&lt;/p>
-&lt;p>then an attacker can submit the input:&lt;/p>
-&lt;p>&lt;code>' UNION SELECT username, password FROM users--&lt;/code>&lt;/p>
-&lt;p>This will cause the application to return all usernames and passwords along with the names and descriptions of products.&lt;/p>
-&lt;h2 id="sql-injection-union-attacks">SQL injection UNION attacks&lt;/h2>
-&lt;p>When an application is vulnerable to SQL injection and the results of the query are returned within the application&amp;rsquo;s responses, the &lt;code>UNION&lt;/code> keyword can be used to retrieve data from other tables within the database. This results in an SQL injection UNION attack.&lt;/p>
-&lt;p>The &lt;code>UNION&lt;/code> keyword lets you execute one or more additional &lt;code>SELECT&lt;/code> queries and append the results to the original query. For example:&lt;/p>
-&lt;p>&lt;code>SELECT a, b FROM table1 UNION SELECT c, d FROM table2&lt;/code>&lt;/p>
-&lt;p>This SQL query will return a single result set with two columns, containing values from columns &lt;code>a&lt;/code> and &lt;code>b&lt;/code> in &lt;code>table1&lt;/code> and columns &lt;code>c&lt;/code> and &lt;code>d&lt;/code> in &lt;code>table2&lt;/code>.&lt;/p>
-&lt;p>For a &lt;code>UNION&lt;/code> query to work, two key requirements must be met:&lt;/p>
-&lt;ul>
-&lt;li>The individual queries must return the same number of columns.&lt;/li>
-&lt;li>The data types in each column must be compatible between the individual queries.&lt;/li>
-&lt;/ul>
-&lt;p>To carry out an SQL injection UNION attack, you need to ensure that your attack meets these two requirements. This generally involves figuring out:&lt;/p>
-&lt;ul>
-&lt;li>How many columns are being returned from the original query?&lt;/li>
-&lt;li>Which columns returned from the original query are of a suitable data type to hold the results from the injected query?&lt;/li>
-&lt;/ul>
-&lt;h3 id="determining-the-number-of-columns-required-in-an-sql-injection-union-attack">Determining the number of columns required in an SQL injection UNION attack&lt;/h3>
-&lt;p>When performing an SQL injection UNION attack, there are two effective methods to determine how many columns are being returned from the original query.&lt;/p>
-&lt;p>The first method involves injecting a series of &lt;code>ORDER BY&lt;/code> clauses and incrementing the specified column index until an error occurs. For example, assuming the injection point is a quoted string within the &lt;code>WHERE&lt;/code> clause of the original query, you would submit:&lt;/p>
-&lt;ul>
-&lt;li>&lt;code>' ORDER BY 1--&lt;/code>&lt;/li>
-&lt;li>&lt;code>' ORDER BY 2--&lt;/code>&lt;/li>
-&lt;li>&lt;code>' ORDER BY 3--&lt;/code>&lt;/li>
-&lt;/ul>
-&lt;p>etc.&lt;/p>
-&lt;p>This series of payloads modifies the original query to order the results by different columns in the result set. The column in an &lt;code>ORDER BY&lt;/code> clause can be specified by its index, so you don&amp;rsquo;t need to know the names of any columns. When the specified column index exceeds the number of actual columns in the result set, the database returns an error, such as:&lt;/p>
-&lt;p>&lt;code>The ORDER BY position number 3 is out of range of the number of items in the select list.&lt;/code>&lt;/p>
-&lt;p>The application might actually return the database error in its HTTP response, or it might return a generic error, or simply return no results. Provided you can detect some difference in the application&amp;rsquo;s response, you can infer how many columns are being returned from the query.&lt;/p>
-&lt;p>The second method involves submitting a series of &lt;code>UNION SELECT&lt;/code> payloads specifying a different number of null values:&lt;/p>
-&lt;ul>
-&lt;li>&lt;code>' UNION SELECT NULL--&lt;/code>&lt;/li>
-&lt;li>&lt;code>' UNION SELECT NULL,NULL--&lt;/code>&lt;/li>
-&lt;li>&lt;code>' UNION SELECT NULL,NULL,NULL--&lt;/code>&lt;/li>
-&lt;/ul>
-&lt;p>etc.&lt;/p>
-&lt;p>If the number of nulls does not match the number of columns, the database returns an error, such as:&lt;/p>
-&lt;p>&lt;code>All queries combined using a UNION, INTERSECT or EXCEPT operator must have an equal number of expressions in their target lists.&lt;/code>&lt;/p>
-&lt;p>Again, the application might actually return this error message, or might just return a generic error or no results. When the number of nulls matches the number of columns, the database returns an additional row in the result set, containing null values in each column. The effect on the resulting HTTP response depends on the application&amp;rsquo;s code. If you are lucky, you will see some additional content within the response, such as an extra row on an HTML table. Otherwise, the null values might trigger a different error, such as a &lt;code>NullPointerException&lt;/code>. Worst case, the response might be indistinguishable from that which is caused by an incorrect number of nulls, making this method of determining the column count ineffective.&lt;/p>
-&lt;p>&lt;strong>NOTE:&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>The reason for using &lt;code>NULL&lt;/code> as the values returned from the injected &lt;code>SELECT&lt;/code> query is that the data types in each column must be compatible between the original and the injected queries. Since &lt;code>NULL&lt;/code> is convertible to every commonly used data type, using &lt;code>NULL&lt;/code> maximizes the chance that the payload will succeed when the column count is correct.&lt;/li>
-&lt;li>On Oracle, every &lt;code>SELECT&lt;/code> query must use the FROM keyword and specify a valid table. There is a built-in table on Oracle called &lt;code>DUAL&lt;/code> which can be used for this purpose. So the injected queries on Oracle would need to look like: &lt;code>' UNION SELECT NULL FROM DUAL--&lt;/code>.&lt;/li>
-&lt;li>The payloads described use the double-dash comment sequence &lt;code>--&lt;/code> to comment out the remainder of the original query following the injection point. On MySQL, the double-dash sequence must be followed by a space. Alternatively, the hash character &lt;code>#&lt;/code> can be used to identify a comment.&lt;/li>
-&lt;/ul>
-&lt;p>For more details of database-specific syntax, see the &lt;a href="https://portswigger.net/web-security/sql-injection/cheat-sheet">SQL injection cheat sheet&lt;/a>.&lt;/p>
-&lt;h3 id="finding-columns-with-a-useful-data-type-in-an-sql-injection-union-attack">Finding columns with a useful data type in an SQL injection UNION attack&lt;/h3>
-&lt;p>The reason for performing an SQL injection UNION attack is to be able to retrieve the results from an injected query. Generally, the interesting data that you want to retrieve will be in string form, so you need to find one or more columns in the original query results whose data type is, or is compatible with, string data.&lt;/p>
-&lt;p>Having already determined the number of required columns, you can probe each column to test whether it can hold string data by submitting a series of &lt;code>UNION SELECT&lt;/code> payloads that place a string value into each column in turn. For example, if the query returns four columns, you would submit:&lt;/p>
-&lt;ul>
-&lt;li>&lt;code>' UNION SELECT 'a',NULL,NULL,NULL--&lt;/code>&lt;/li>
-&lt;li>&lt;code>' UNION SELECT NULL,'a',NULL,NULL--&lt;/code>&lt;/li>
-&lt;li>&lt;code>' UNION SELECT NULL,NULL,'a',NULL--&lt;/code>&lt;/li>
-&lt;li>&lt;code>' UNION SELECT NULL,NULL,NULL,'a'--&lt;/code>&lt;/li>
-&lt;/ul>
-&lt;p>If the data type of a column is not compatible with string data, the injected query will cause a database error, such as:&lt;/p>
-&lt;p>&lt;code>Conversion failed when converting the varchar value 'a' to data type int.&lt;/code>&lt;/p>
-&lt;p>If an error does not occur, and the application&amp;rsquo;s response contains some additional content including the injected string value, then the relevant column is suitable for retrieving string data.&lt;/p>
-&lt;h3 id="using-an-sql-injection-union-attack-to-retrieve-interesting-data">Using an SQL injection UNION attack to retrieve interesting data&lt;/h3>
-&lt;p>When you have determined the number of columns returned by the original query and found which columns can hold string data, you are in a position to retrieve interesting data.&lt;/p>
-&lt;p>Suppose that:&lt;/p>
-&lt;ul>
-&lt;li>The original query returns two columns, both of which can hold string data.&lt;/li>
-&lt;li>The injection point is a quoted string within the &lt;code>WHERE&lt;/code> clause.&lt;/li>
-&lt;li>The database contains a table called &lt;code>users&lt;/code> with the columns &lt;code>username&lt;/code> and &lt;code>password&lt;/code>.&lt;/li>
-&lt;/ul>
-&lt;p>In this situation, you can retrieve the contents of the &lt;code>users&lt;/code> table by submitting the input:&lt;/p>
-&lt;p>&lt;code>' UNION SELECT username, password FROM users--&lt;/code>&lt;/p>
-&lt;p>Of course, the crucial information needed to perform this attack is that there is a table called &lt;code>users&lt;/code> with two columns called &lt;code>username&lt;/code> and &lt;code>password&lt;/code>. Without this information, you would be left trying to guess the names of tables and columns. In fact, all modern databases provide ways of examining the database structure, to determine what tables and columns it contains.&lt;/p>
-&lt;h3 id="retrieving-multiple-values-within-a-single-column">Retrieving multiple values within a single column&lt;/h3>
-&lt;p>In the preceding example, suppose instead that the query only returns a single column.&lt;/p>
-&lt;p>You can easily retrieve multiple values together within this single column by concatenating the values together, ideally including a suitable separator to let you distinguish the combined values. For example, on Oracle you could submit the input:&lt;/p>
-&lt;p>&lt;code>' UNION SELECT username || '~' || password FROM users--&lt;/code>&lt;/p>
-&lt;p>This uses the double-pipe sequence &lt;code>||&lt;/code> which is a string concatenation operator on Oracle. The injected query concatenates together the values of the &lt;code>username&lt;/code> and &lt;code>password&lt;/code> fields, separated by the &lt;code>~&lt;/code> character.&lt;/p>
-&lt;p>The results from the query will let you read all of the usernames and passwords, for example:&lt;/p>
-&lt;pre>&lt;code>...
-administrator~s3cure
-wiener~peter
-carlos~montoya
-...
-&lt;/code>&lt;/pre>&lt;p>Note that different databases use different syntax to perform string concatenation. For more details, see the &lt;a href="https://portswigger.net/web-security/sql-injection/cheat-sheet">SQL injection cheat sheet&lt;/a>.&lt;/p>
-&lt;h2 id="examining-the-database">Examining the database&lt;/h2>
-&lt;p>Following the initial identification of an SQL injection vulnerability, it is generally useful to obtain some information about the database itself. This information can often pave the way for further exploitation.&lt;/p>
-&lt;p>You can query the version details for the database. The way that this is done depends on the database type, so you can infer the database type from whichever technique works. For example, on Oracle you can execute:&lt;/p>
-&lt;p>&lt;code>SELECT * FROM v$version&lt;/code>&lt;/p>
-&lt;p>You can also determine what database tables exist, and which columns they contain. For example, on most databases you can execute the following query to list the tables:&lt;/p>
-&lt;p>&lt;code>SELECT * FROM information_schema.tables&lt;/code>&lt;/p>
-&lt;h3 id="querying-the-database-type-and-version">Querying the database type and version&lt;/h3>
-&lt;p>Different databases provide different ways of querying their version. You often need to try out different queries to find one that works, allowing you to determine both the type and version of the database software.&lt;/p>
-&lt;p>The queries to determine the database version for some popular database types are as follows:&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>Database type&lt;/th>
-&lt;th>Query&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>Microsoft, MySQL&lt;/td>
-&lt;td>&lt;code>SELECT @@version&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>Oracle&lt;/td>
-&lt;td>&lt;code>SELECT * FROM v$version&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>PostgreSQL&lt;/td>
-&lt;td>&lt;code>SELECT version()&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;p>For example, you could use a &lt;code>UNION&lt;/code> attack with the following input:&lt;/p>
-&lt;p>&lt;code>' UNION SELECT @@version--&lt;/code>&lt;/p>
-&lt;p>This might return output like the following, confirming that the database is Microsoft SQL Server, and the version that is being used:&lt;/p>
-&lt;pre>&lt;code>Microsoft SQL Server 2016 (SP2) (KB4052908) - 13.0.5026.0 (X64)
-Mar 18 2018 09:11:49
-Copyright (c) Microsoft Corporation
-Standard Edition (64-bit) on Windows Server 2016 Standard 10.0 &amp;lt;X64&amp;gt; (Build 14393: ) (Hypervisor)
-&lt;/code>&lt;/pre>&lt;h2 id="blind-sql-injection">Blind SQL injection&lt;/h2>
-&lt;p>In this section, we&amp;rsquo;ll describe what blind SQL injection is, explain various techniques for finding and exploiting blind SQL injection vulnerabilities.&lt;/p>
-&lt;h3 id="what-is-blind-sql-injection">What is blind SQL injection?&lt;/h3>
-&lt;p>Blind SQL injection arises when an application is vulnerable to SQL injection, but its HTTP responses do not contain the results of the relevant SQL query or the details of any database errors.&lt;/p>
-&lt;p>With blind SQL injection vulnerabilities, many techniques such as UNION attacks are not effective, because they rely on being able to see the results of the injected query within the application&amp;rsquo;s responses. It is still possible to exploit blind SQL injection to access unauthorized data, but different techniques must be used.&lt;/p>
-&lt;h3 id="exploiting-blind-sql-injection-by-triggering-conditional-responses">Exploiting blind SQL injection by triggering conditional responses&lt;/h3>
-&lt;p>Consider an application that uses tracking cookies to gather analytics about usage. Requests to the application include a cookie header like this:&lt;/p>
-&lt;p>&lt;code>Cookie: TrackingId=u5YD3PapBcR4lN3e7Tj4&lt;/code>&lt;/p>
-&lt;p>When a request containing a &lt;code>TrackingId&lt;/code> cookie is processed, the application determines whether this is a known user using an SQL query like this:&lt;/p>
-&lt;p>&lt;code>SELECT TrackingId FROM TrackedUsers WHERE TrackingId = 'u5YD3PapBcR4lN3e7Tj4'&lt;/code>&lt;/p>
-&lt;p>This query is vulnerable to SQL injection, but the results from the query are not returned to the user. However, the application does behave differently depending on whether the query returns any data. If it returns data (because a recognized &lt;code>TrackingId&lt;/code> was submitted), then a &amp;ldquo;Welcome back&amp;rdquo; message is displayed within the page.&lt;/p>
-&lt;p>This behavior is enough to be able to exploit the blind SQL injection vulnerability and retrieve information by triggering different responses conditionally, depending on an injected condition. To see how this works, suppose that two requests are sent containing the following &lt;code>TrackingId&lt;/code> cookie values in turn:&lt;/p>
-&lt;p>&lt;code>xyz' AND '1'='1&lt;/code>&lt;br/>
-&lt;code>xyz' AND '1'='2&lt;/code>&lt;/p>
-&lt;p>The first of these values will cause the query to return results, because the injected &lt;code>AND '1'='1&lt;/code> condition is true, and so the &amp;ldquo;Welcome back&amp;rdquo; message will be displayed. Whereas the second value will cause the query to not return any results, because the injected condition is false, and so the &amp;ldquo;Welcome back&amp;rdquo; message will not be displayed. This allows us to determine the answer to any single injected condition, and so extract data one bit at a time.&lt;/p>
-&lt;p>For example, suppose there is a table called &lt;code>Users&lt;/code> with the columns &lt;code>Username&lt;/code> and &lt;code>Password&lt;/code>, and a user called &lt;code>Administrator&lt;/code>. We can systematically determine the password for this user by sending a series of inputs to test the password one character at a time.&lt;/p>
-&lt;p>To do this, we start with the following input:&lt;/p>
-&lt;p>&lt;code>xyz' AND SUBSTRING((SELECT Password FROM Users WHERE Username = 'Administrator'), 1, 1) &amp;gt; 'm&lt;/code>&lt;/p>
-&lt;p>This returns the &amp;ldquo;Welcome back&amp;rdquo; message, indicating that the injected condition is true, and so the first character of the password is greater than &lt;code>m&lt;/code>.&lt;/p>
-&lt;p>Next, we send the following input:&lt;/p>
-&lt;p>&lt;code>xyz' AND SUBSTRING((SELECT Password FROM Users WHERE Username = 'Administrator'), 1, 1) &amp;gt; 't&lt;/code>&lt;/p>
-&lt;p>This does not return the &amp;ldquo;Welcome back&amp;rdquo; message, indicating that the injected condition is false, and so the first character of the password is not greater than &lt;code>t&lt;/code>.&lt;/p>
-&lt;p>Eventually, we send the following input, which returns the &amp;ldquo;Welcome back&amp;rdquo; message, thereby confirming that the first character of the password is &lt;code>s&lt;/code>:&lt;/p>
-&lt;p>&lt;code>xyz' AND SUBSTRING((SELECT Password FROM Users WHERE Username = 'Administrator'), 1, 1) = 's&lt;/code>&lt;/p>
-&lt;p>We can continue this process to systematically determine the full password for the &lt;code>Administrator&lt;/code> user.&lt;/p>
-&lt;p>&lt;strong>NOTE:&lt;/strong>&lt;/p>
-&lt;p>The &lt;code>SUBSTRING&lt;/code> function is called &lt;code>SUBSTR&lt;/code> on some types of database. For more details, see the &lt;a href="https://portswigger.net/web-security/sql-injection/cheat-sheet">SQL injection cheat sheet&lt;/a>.&lt;/p>
-&lt;h3 id="inducing-conditional-responses-by-triggering-sql-errors">Inducing conditional responses by triggering SQL errors&lt;/h3>
-&lt;p>In the preceding example, suppose instead that the application carries out the same SQL query, but does not behave any differently depending on whether the query returns any data. The preceding technique will not work, because injecting different Boolean conditions makes no difference to the application&amp;rsquo;s responses.&lt;/p>
-&lt;p>In this situation, it is often possible to induce the application to return conditional responses by triggering SQL errors conditionally, depending on an injected condition. This involves modifying the query so that it will cause a database error if the condition is true, but not if the condition is false. Very often, an unhandled error thrown by the database will cause some difference in the application&amp;rsquo;s response (such as an error message), allowing us to infer the truth of the injected condition.&lt;/p>
-&lt;p>To see how this works, suppose that two requests are sent containing the following &lt;code>TrackingId&lt;/code> cookie values in turn:&lt;/p>
-&lt;p>&lt;code>xyz' AND (SELECT CASE WHEN (1=2) THEN 1/0 ELSE 'a' END)='a&lt;/code>
-&lt;code>xyz' AND (SELECT CASE WHEN (1=1) THEN 1/0 ELSE 'a' END)='a&lt;/code>&lt;/p>
-&lt;p>These inputs use the &lt;code>CASE&lt;/code> keyword to test a condition and return a different expression depending on whether the expression is true. With the first input, the &lt;code>CASE&lt;/code> expression evaluates to &lt;code>'a'&lt;/code>, which does not cause any error. With the second input, it evaluates to &lt;code>1/0&lt;/code>, which causes a divide-by-zero error. Assuming the error causes some difference in the application&amp;rsquo;s HTTP response, we can use this difference to infer whether the injected condition is true.&lt;/p>
-&lt;p>Using this technique, we can retrieve data in the way already described, by systematically testing one character at a time:&lt;/p>
-&lt;p>&lt;code>xyz' AND (SELECT CASE WHEN (Username = 'Administrator' AND SUBSTRING(Password, 1, 1) &amp;gt; 'm') THEN 1/0 ELSE 'a' END FROM Users)='a&lt;/code>&lt;/p>
-&lt;h3 id="exploiting-blind-sql-injection-by-triggering-time-delays">Exploiting blind SQL injection by triggering time delays&lt;/h3>
-&lt;p>In the preceding example, suppose that the application now catches database errors and handles them gracefully. Triggering a database error when the injected SQL query is executed no longer causes any difference in the application&amp;rsquo;s response, so the preceding technique of inducing conditional errors will not work.&lt;/p>
-&lt;p>In this situation, it is often possible to exploit the blind SQL injection vulnerability by triggering time delays conditionally, depending on an injected condition. Because SQL queries are generally processed synchronously by the application, delaying the execution of an SQL query will also delay the HTTP response. This allows us to infer the truth of the injected condition based on the time taken before the HTTP response is received.&lt;/p>
-&lt;p>The techniques for triggering a time delay are highly specific to the type of database being used. On Microsoft SQL Server, input like the following can be used to test a condition and trigger a delay depending on whether the expression is true:&lt;/p>
-&lt;p>&lt;code>'; IF (1=2) WAITFOR DELAY '0:0:10'--&lt;/code>
-&lt;code>'; IF (1=1) WAITFOR DELAY '0:0:10'--&lt;/code>&lt;/p>
-&lt;p>The first of these inputs will not trigger a delay, because the condition &lt;code>1=2&lt;/code> is false. The second input will trigger a delay of 10 seconds, because the condition &lt;code>1=1&lt;/code> is true.&lt;/p>
-&lt;p>Using this technique, we can retrieve data in the way already described, by systematically testing one character at a time:&lt;/p>
-&lt;p>&lt;code>'; IF (SELECT COUNT(username) FROM Users WHERE username = 'Administrator' AND SUBSTRING(password, 1, 1) &amp;gt; 'm') = 1 WAITFOR DELAY '0:0:{delay}'--&lt;/code>&lt;/p>
-&lt;h3 id="second-order-sql-injection">Second Order SQL Injection&lt;/h3>
-&lt;p>A Second Order Injection is the same as a traditional injection attack but the payload is already stored in the database intentionally placed so that it can be triggered in another area of code.&lt;/p>
-&lt;p>Let’s look at an example and see how easy it to exploit this vulnerability.
-This is a form of registration that uses parameterization, meaning that a vicious input will not affect the database.&lt;/p>
-&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-php" data-lang="php">&lt;span style="color:#000">$sql&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;INSERT INTO user (username, password) VALUES (:username, :password)&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
-&lt;span style="color:#000">$data&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>
-&lt;span style="color:#4e9a06">&amp;#39;username&amp;#39;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&amp;gt;&lt;/span> &lt;span style="color:#000">$userName&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
-&lt;span style="color:#4e9a06">&amp;#39;password&amp;#39;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&amp;gt;&lt;/span> &lt;span style="color:#000">$password&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
-&lt;span style="color:#4e9a06">&amp;#39;first_name&amp;#39;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&amp;gt;&lt;/span> &lt;span style="color:#000">$firstName&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
-&lt;span style="color:#4e9a06">&amp;#39;second_name&amp;#39;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&amp;gt;&lt;/span> &lt;span style="color:#000">$secondName&lt;/span>
-&lt;span style="color:#000;font-weight:bold">];&lt;/span>
-&lt;span style="color:#000">$stmt&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">$conn&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">-&amp;gt;&lt;/span>&lt;span style="color:#c4a000">prepare&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">$sql&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
-&lt;span style="color:#000">$stmt&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">-&amp;gt;&lt;/span>&lt;span style="color:#c4a000">execute&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">$data&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Suppose, however, that someone introduces the following structure as a name:&lt;/p>
-&lt;p>&lt;code>'; DROP TABLE user; --&lt;/code>&lt;/p>
-&lt;p>This will not be a problem for this form, however, this MySQL code is in the database, and if another part of the code uses this name it can be executed.
-Let&amp;rsquo;s say that we select the user by name use the following code:&lt;/p>
-&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-php" data-lang="php">&lt;span style="color:#000">$sql&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;SELECT * FROM user WHERE username = &amp;#39;&lt;/span>&lt;span style="color:#4e9a06">{&lt;/span>&lt;span style="color:#000">$userName&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
-&lt;span style="color:#000">$stmt&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">$conn&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">-&amp;gt;&lt;/span>&lt;span style="color:#c4a000">query&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">$sql&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
-&lt;span style="color:#000">$user&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">$stmt&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">-&amp;gt;&lt;/span>&lt;span style="color:#c4a000">fetch&lt;/span>&lt;span style="color:#000;font-weight:bold">();&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Because for this piece of code we do not use the parameterization, the code that will be executed will become:&lt;/p>
-&lt;p>&lt;code>SELECT * FROM user WHERE username = ''; DROP TABLE user; --';&lt;/code>&lt;/p>
-&lt;h3 id="how-to-prevent-blind-sql-injection-attacks">How to prevent &lt;strong>blind&lt;/strong> SQL injection attacks?&lt;/h3>
-&lt;p>Although the techniques needed to find and exploit blind SQL injection vulnerabilities are different and more sophisticated than for regular SQL injection, the measures needed to prevent SQL injection are the same regardless of whether the vulnerability is blind or not.&lt;/p>
-&lt;h2 id="how-to-prevent-sql-injection">How to prevent SQL injection&lt;/h2>
-&lt;p>Most instances of SQL injection can be prevented by using parameterized queries (also known as prepared statements) instead of string concatenation within the query.&lt;/p>
-&lt;p>The following code is vulnerable to SQL injection because the user input is concatenated directly into the query:&lt;/p>
-&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-php" data-lang="php">&lt;span style="color:#000">String&lt;/span> &lt;span style="color:#000">query&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;SELECT * FROM products WHERE category = &amp;#39;&amp;#34;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">+&lt;/span> &lt;span style="color:#000">input&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">+&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;&amp;#39;&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
-&lt;span style="color:#000">Statement&lt;/span> &lt;span style="color:#000">statement&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">connection&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">createStatement&lt;/span>&lt;span style="color:#000;font-weight:bold">();&lt;/span>
-&lt;span style="color:#000">ResultSet&lt;/span> &lt;span style="color:#000">resultSet&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">statement&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">executeQuery&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">query&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>This code can be easily rewritten in a way that prevents the user input from interfering with the query structure:&lt;/p>
-&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-php" data-lang="php">&lt;span style="color:#000">PreparedStatement&lt;/span> &lt;span style="color:#000">statement&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">connection&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">prepareStatement&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;SELECT * FROM products WHERE category = ?&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
-&lt;span style="color:#000">statement&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">setString&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">1&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">input&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
-&lt;span style="color:#000">ResultSet&lt;/span> &lt;span style="color:#000">resultSet&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">statement&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">executeQuery&lt;/span>&lt;span style="color:#000;font-weight:bold">();&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Parameterized queries can be used for any situation where untrusted input appears as data within the query, including the &lt;code>WHERE&lt;/code> clause and values in an &lt;code>INSERT&lt;/code> or &lt;code>UPDATE&lt;/code> statement. They can&amp;rsquo;t be used to handle untrusted input in other parts of the query, such as table or column names, or the &lt;code>ORDER BY&lt;/code> clause. Application functionality that places untrusted data into those parts of the query will need to take a different approach, such as white-listing permitted input values, or using different logic to deliver the required behavior.&lt;/p>
-&lt;p>For a parameterized query to be effective in preventing SQL injection, the string that is used in the query must always be a hard-coded constant, and must never contain any variable data from any origin. Do not be tempted to decide case-by-case whether an item of data is trusted, and continue using string concatenation within the query for cases that are considered safe. It is all too easy to make mistakes about the possible origin of data, or for changes in other code to violate assumptions about what data is tainted.&lt;/p>
-&lt;h1 id="tools">Tools&lt;/h1>
-&lt;h2 id="burp-suite">Burp Suite&lt;/h2>
-&lt;p>&lt;a href="https://portswigger.net/burp">Burp Suite&lt;/a> is one of the most popular penetration testing and vulnerability finder tools, and is often used for checking web application security. With this tool you can see all the requests that are executed when interacting with a web application. You can change the requests to see different behaviors and you can set automatic requests with different parameters.&lt;/p>
-&lt;h2 id="sqlmap">SQLmap&lt;/h2>
-&lt;p>&lt;a href="https://sqlmap.org/">SQLmap&lt;/a> is an open source penetration testing tool that automates the process of detecting and exploiting SQL injection flaws and taking over of database servers. It comes with a powerful detection engine, many niche features for the ultimate penetration tester and a broad range of switches lasting from database fingerprinting, over data fetching from the database, to accessing the underlying file system and executing commands on the operating system via out-of-band connections. You can see some of the features in this recording.
-&lt;a href="https://asciinema.cs.pub.ro/a/N1r0DeFboLW4GXj0rZb4jsYeU">&lt;img src="https://asciinema.cs.pub.ro/a/N1r0DeFboLW4GXj0rZb4jsYeU.png" alt="asciicast">&lt;/a>&lt;/p>
-&lt;h1 id="further-reading">Further Reading&lt;/h1>
-&lt;p>&lt;strong>1.&lt;/strong> &lt;a href="https://portswigger.net/burp">Burp&lt;/a> &lt;br>
-&lt;strong>2.&lt;/strong> &lt;a href="https://portswigger.net/support/configuring-your-browser-to-work-with-burp">Burp Browser Configuration&lt;/a> &lt;br>
-&lt;strong>3.&lt;/strong> &lt;a href="https://portswigger.net/support/checking-your-browser-proxy-configuration">Burp Proxy Configuration&lt;/a> &lt;br>
-&lt;strong>4.&lt;/strong> &lt;a href="https://portswigger.net/support/installing-burp-suites-ca-certificate-in-your-browser">Burp Certificate&lt;/a> &lt;br>
-&lt;strong>5.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/cheat-sheet">SQL Cheat Sheet&lt;/a> &lt;br>
-&lt;strong>6.&lt;/strong> &lt;a href="https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/SQL%20Injection">SQL Payloads&lt;/a>&lt;br>
-&lt;strong>7.&lt;/strong> &lt;a href="https://sqlmap.org/">SQLmap&lt;/a>&lt;/p>
-&lt;h1 id="challenges">Challenges&lt;/h1>
-&lt;p>&lt;strong>1.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/lab-retrieve-hidden-data">Retrieve hidden data&lt;/a>&lt;br>
-&lt;strong>2.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/lab-login-bypass">Login bypass&lt;/a>&lt;br>
-&lt;strong>3.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/union-attacks/lab-determine-number-of-columns">Determine number of columns&lt;/a>&lt;br>
-&lt;strong>4.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/union-attacks/lab-find-column-containing-text">Find column&lt;/a>&lt;br>
-&lt;strong>5.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/union-attacks/lab-retrieve-data-from-other-tables">Retrieve data from other tables&lt;/a>&lt;br>
-&lt;strong>6.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/union-attacks/lab-retrieve-multiple-values-in-single-column">Single column&lt;/a>&lt;br>
-&lt;strong>7.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/examining-the-database/lab-querying-database-version-oracle">What version?&lt;/a>&lt;br>
-&lt;strong>8.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/examining-the-database/lab-querying-database-version-mysql-microsoft">More versions&lt;/a>&lt;br>
-&lt;strong>9.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/blind/lab-conditional-responses">Conditional responses&lt;/a>&lt;br>
-&lt;strong>10.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/blind/lab-conditional-errors">Conditional errors&lt;/a>&lt;br>
-&lt;strong>11.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/blind/lab-time-delays">Time delays&lt;/a>&lt;br>
-&lt;strong>12.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/blind/lab-out-of-band">Out-of-band Application Security Testing&lt;/a>&lt;/p></description></item><item><title>Web:</title><link>/web/05-injection-part-2/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/05-injection-part-2/readme/</guid><description>
+&lt;/ul></description></item><item><title>Web:</title><link>/web/05-injection-part-2/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/05-injection-part-2/readme/</guid><description>
 &lt;h1 id="cross-site-scripting-xss">Cross-site Scripting (XSS)&lt;/h1>
 &lt;h2 id="intro">Intro&lt;/h2>
 &lt;p>Cross-site Scripting (XSS) is a web security vulnerability that allows an attacker to inject malicious code, usually JavaScript, in the web browser of the victim. This implies that the attacker can do a lot of damage from stealing data to perform actions on behalf of the user. This type of vulnerability implies that the web application uses the user input in the HTML page that it serves. As opposed to other types of code injections, the malicious code in an XSS will always run on the client-side shifting the target from the server hosting the application to the users of the application.&lt;/p>
@@ -1501,14 +1220,371 @@ And, if the case, subfolders with support data for challenges.&lt;/p>
 &lt;li>&lt;a href="web-basics-browser-security-model/README.md">Session 01: Web Basics &amp;amp; Browser Security Model&lt;/a>&lt;/li>
 &lt;li>&lt;a href="02-web-basics-part-2/README.md">Session 02: Cookies &amp;amp; Session Management &amp;amp; Access Control&lt;/a>&lt;/li>
 &lt;li>&lt;a href="03-broken-access-control/README.md">Session 03: Broken Access Control&lt;/a>&lt;/li>
-&lt;li>&lt;a href="04-injection-part-1/README.md">Session 04: Injection (part 1)&lt;/a>&lt;/li>
+&lt;li>&lt;a href="sql-injection/README.md">Session 04: SQL Injection&lt;/a>&lt;/li>
 &lt;li>&lt;a href="05-injection-part-2/README.md">Session 05: Injection (part 2)&lt;/a>&lt;/li>
 &lt;li>&lt;a href="06-recon-enumeration/README.md">Session 06: Reconnaissance &amp;amp; Enumeration &amp;amp; Exploiting Tools&lt;/a>&lt;/li>
 &lt;li>&lt;a href="07-api/README.md">Session 07: Framework &amp;amp; API Vulnerabilities&lt;/a>&lt;/li>
 &lt;li>&lt;a href="08-secure-communication/README.md">Session 08: Securing Communication&lt;/a>&lt;/li>
 &lt;li>&lt;a href="09-exotic/README.md">Session 09: Exotic Attacks&lt;/a>&lt;/li>
 &lt;li>&lt;a href="10-best-practices/README.md">Session 10: Code Review and Best Practices&lt;/a>&lt;/li>
-&lt;/ul></description></item><item><title>Web:</title><link>/web/web-basics-browser-security-model/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/web-basics-browser-security-model/readme/</guid><description>
+&lt;/ul></description></item><item><title>Web:</title><link>/web/sql-injection/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/sql-injection/readme/</guid><description>
+&lt;h1 id="sql-injection">SQL Injection&lt;/h1>
+&lt;p>In this session, we&amp;rsquo;ll explain what SQL injection is, describe some common examples, explain how to find and exploit various kinds of SQL injection vulnerabilities, and summarize how to prevent SQL injection.&lt;/p>
+&lt;p>&lt;strong>NOTE:&lt;/strong>&lt;/p>
+&lt;p>For this session you&amp;rsquo;ll need to use &lt;a href="https://portswigger.net/burp">Burp Suite&lt;/a> so please follow the links in the &lt;a href="#further-reading">Further Reading&lt;/a> section to set it up if you haven&amp;rsquo;t done so yet.[&lt;a href="https://portswigger.net/support/configuring-your-browser-to-work-with-burp">2&lt;/a>,&lt;a href="https://portswigger.net/support/checking-your-browser-proxy-configuration">3&lt;/a>,&lt;a href="https://portswigger.net/support/installing-burp-suites-ca-certificate-in-your-browser">4&lt;/a>]&lt;/p>
+&lt;h2 id="what-is-sql-injection">What is SQL injection&lt;/h2>
+&lt;p>SQL injection is a web security vulnerability that allows an attacker to interfere with the queries that an application makes to its database.
+It generally allows attackers to view data that they are not normally able to retrieve.
+This might include data belonging to other users, or any other data that the application itself is able to access.
+In many cases, an attacker can modify or delete this data, causing persistent changes to the application&amp;rsquo;s content or behavior.&lt;/p>
+&lt;p>In some situations, an attacker can escalate an SQL injection attack to compromise the underlying server or other back-end infrastructure or perform a denial-of-service attack.&lt;/p>
+&lt;h3 id="what-is-the-impact-of-a-successful-sql-injection-attack">What is the impact of a successful SQL injection attack?&lt;/h3>
+&lt;p>A successful SQL injection attack can result in unauthorized access to sensitive data, such as passwords, credit card details, or personal user information.
+Many high-profile data breaches in recent years have been the result of SQL injection attacks, leading to reputational damage and regulatory fines.
+In some cases, an attacker can obtain a persistent backdoor into an organization&amp;rsquo;s systems, leading to a long-term compromise that can go unnoticed for an extended period.&lt;/p>
+&lt;h3 id="sql-injection-examples">SQL injection examples&lt;/h3>
+&lt;p>There are a wide variety of SQL injection vulnerabilities, attacks, and techniques, which arise in different situations.
+Some common SQL injection examples include:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>&lt;a href="##retrieving-hidden-data">Retrieving hidden data&lt;/a>&lt;/strong> - you can modify an SQL query to return additional results.&lt;/li>
+&lt;li>&lt;strong>&lt;a href="##subverting-application-logic">Subverting application logic&lt;/a>&lt;/strong> - you can change a query to interfere with the application&amp;rsquo;s logic.&lt;/li>
+&lt;li>&lt;strong>&lt;a href="##SQL-injection-UNION-attacks">UNION attacks&lt;/a>&lt;/strong> - you can retrieve data from different database tables.&lt;/li>
+&lt;li>&lt;strong>&lt;a href="##Examining-the-database">Examining the database&lt;/a>&lt;/strong> - you can extract information about the version and structure of the database.&lt;/li>
+&lt;li>&lt;strong>&lt;a href="##Blind-SQL-injection">Blind SQL injection&lt;/a>&lt;/strong> - the results of a query you control are not returned in the application&amp;rsquo;s responses.&lt;/li>
+&lt;/ul>
+&lt;hr>
+&lt;h2 id="retrieving-hidden-data">Retrieving hidden data&lt;/h2>
+&lt;p>Consider a shopping application that displays products in different categories.
+When the user clicks on the Gifts category, their browser requests the URL:&lt;/p>
+&lt;p>&lt;code>https://insecure-website.com/products?category=Gifts&lt;/code>&lt;/p>
+&lt;p>This causes the application to make an SQL query to retrieve details of the relevant products from the database:&lt;/p>
+&lt;p>&lt;code>SELECT * FROM products WHERE category = 'Gifts' AND released = 1&lt;/code>&lt;/p>
+&lt;p>This SQL query asks the database to return:&lt;/p>
+&lt;ul>
+&lt;li>all details (*)&lt;/li>
+&lt;li>from the products table&lt;/li>
+&lt;li>where the category is Gifts&lt;/li>
+&lt;li>and released is 1.&lt;/li>
+&lt;/ul>
+&lt;p>The restriction &lt;code>released = 1&lt;/code> is being used to hide products that are not released.
+For unreleased products, presumably &lt;code>released = 0&lt;/code>.&lt;/p>
+&lt;p>The application doesn&amp;rsquo;t implement any defenses against SQL injection attacks, so an attacker can construct an attack like:&lt;/p>
+&lt;p>&lt;code>https://insecure-website.com/products?category=Gifts'--&lt;/code>&lt;/p>
+&lt;p>This results in the SQL query:&lt;/p>
+&lt;p>&lt;code>SELECT * FROM products WHERE category = 'Gifts'--' AND released = 1&lt;/code>&lt;/p>
+&lt;p>The key thing here is that the double-dash sequence &lt;code>--&lt;/code> is a comment indicator in SQL, and means that the rest of the query is interpreted as a comment.
+This effectively removes the remainder of the query, so it no longer includes &lt;code>AND released = 1&lt;/code>.
+This means that all products are displayed, including unreleased products.&lt;/p>
+&lt;p>Going further, an attacker can cause the application to display all the products in any category, including categories that they don&amp;rsquo;t know about:&lt;/p>
+&lt;p>&lt;code>https://insecure-website.com/products?category=Gifts'+OR+1=1--&lt;/code>&lt;/p>
+&lt;p>This results in the SQL query:&lt;/p>
+&lt;p>&lt;code>SELECT * FROM products WHERE category = 'Gifts' OR 1=1--' AND released = 1&lt;/code>&lt;/p>
+&lt;p>The modified query will return all items where either the category is Gifts, or 1 is equal to 1.
+Since 1=1 is always true, the query will return all items.&lt;/p>
+&lt;h2 id="subverting-application-logic">Subverting application logic&lt;/h2>
+&lt;p>Consider an application that lets users log in with a username and password.
+If a user submits the username &lt;code>wiener&lt;/code> and the password &lt;code>bluecheese&lt;/code>, the application checks the credentials by performing the following SQL query:&lt;/p>
+&lt;p>&lt;code>SELECT * FROM users WHERE username = 'wiener' AND password = 'bluecheese'&lt;/code>&lt;/p>
+&lt;p>If the query returns the details of a user, then the login is successful.
+Otherwise, it is rejected.&lt;/p>
+&lt;p>Here, an attacker can log in as any user without a password simply by using the SQL comment sequence &lt;code>--&lt;/code> to remove the password check from the &lt;code>WHERE&lt;/code> clause of the query.
+For example, submitting the username &lt;code>administrator'--&lt;/code> and a blank password results in the following query:&lt;/p>
+&lt;p>&lt;code>SELECT * FROM users WHERE username = 'administrator'--' AND password = ''&lt;/code>&lt;/p>
+&lt;p>This query returns the user whose username is &lt;code>administrator&lt;/code> and successfully logs the attacker in as that user.&lt;/p>
+&lt;h2 id="retrieving-data-from-other-database-tables">Retrieving data from other database tables&lt;/h2>
+&lt;p>In cases where the results of an SQL query are returned within the application&amp;rsquo;s responses, an attacker can leverage an SQL injection vulnerability to retrieve data from other tables within the database.
+This is done using the &lt;code>UNION&lt;/code> keyword, which lets you execute an additional &lt;code>SELECT&lt;/code> query and append the results to the original query.&lt;/p>
+&lt;p>For example, if an application executes the following query containing the user input &amp;ldquo;Gifts&amp;rdquo;:&lt;/p>
+&lt;p>&lt;code>SELECT name, description FROM products WHERE category = 'Gifts'&lt;/code>&lt;/p>
+&lt;p>then an attacker can submit the input:&lt;/p>
+&lt;p>&lt;code>' UNION SELECT username, password FROM users--&lt;/code>&lt;/p>
+&lt;p>This will cause the application to return all usernames and passwords along with the names and descriptions of products.&lt;/p>
+&lt;h2 id="sql-injection-union-attacks">SQL injection UNION attacks&lt;/h2>
+&lt;p>When an application is vulnerable to SQL injection and the results of the query are returned within the application&amp;rsquo;s responses, the &lt;code>UNION&lt;/code> keyword can be used to retrieve data from other tables within the database.
+This results in an SQL injection UNION attack.&lt;/p>
+&lt;p>The &lt;code>UNION&lt;/code> keyword lets you execute one or more additional &lt;code>SELECT&lt;/code> queries and append the results to the original query.
+For example:&lt;/p>
+&lt;p>&lt;code>SELECT a, b FROM table1 UNION SELECT c, d FROM table2&lt;/code>&lt;/p>
+&lt;p>This SQL query will return a single result set with two columns, containing values from columns &lt;code>a&lt;/code> and &lt;code>b&lt;/code> in &lt;code>table1&lt;/code> and columns &lt;code>c&lt;/code> and &lt;code>d&lt;/code> in &lt;code>table2&lt;/code>.&lt;/p>
+&lt;p>For a &lt;code>UNION&lt;/code> query to work, two key requirements must be met:&lt;/p>
+&lt;ul>
+&lt;li>The individual queries must return the same number of columns.&lt;/li>
+&lt;li>The data types in each column must be compatible between the individual queries.&lt;/li>
+&lt;/ul>
+&lt;p>To carry out an SQL injection UNION attack, you need to ensure that your attack meets these two requirements.
+This generally involves figuring out:&lt;/p>
+&lt;ul>
+&lt;li>How many columns are being returned from the original query?&lt;/li>
+&lt;li>Which columns returned from the original query are of a suitable data type to hold the results from the injected query?&lt;/li>
+&lt;/ul>
+&lt;h3 id="determining-the-number-of-columns-required-in-an-sql-injection-union-attack">Determining the number of columns required in an SQL injection UNION attack&lt;/h3>
+&lt;p>When performing an SQL injection UNION attack, there are two effective methods to determine how many columns are being returned from the original query.&lt;/p>
+&lt;p>The first method involves injecting a series of &lt;code>ORDER BY&lt;/code> clauses and incrementing the specified column index until an error occurs.
+For example, assuming the injection point is a quoted string within the &lt;code>WHERE&lt;/code> clause of the original query, you would submit:&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>' ORDER BY 1--&lt;/code>&lt;/li>
+&lt;li>&lt;code>' ORDER BY 2--&lt;/code>&lt;/li>
+&lt;li>&lt;code>' ORDER BY 3--&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>etc.&lt;/p>
+&lt;p>This series of payloads modifies the original query to order the results by different columns in the result set.
+The column in an &lt;code>ORDER BY&lt;/code> clause can be specified by its index, so you don&amp;rsquo;t need to know the names of any columns.
+When the specified column index exceeds the number of actual columns in the result set, the database returns an error, such as:&lt;/p>
+&lt;p>&lt;code>The ORDER BY position number 3 is out of range of the number of items in the select list.&lt;/code>&lt;/p>
+&lt;p>The application might actually return the database error in its HTTP response, or it might return a generic error, or simply return no results.
+Provided you can detect some difference in the application&amp;rsquo;s response, you can infer how many columns are being returned from the query.&lt;/p>
+&lt;p>The second method involves submitting a series of &lt;code>UNION SELECT&lt;/code> payloads specifying a different number of null values:&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>' UNION SELECT NULL--&lt;/code>&lt;/li>
+&lt;li>&lt;code>' UNION SELECT NULL,NULL--&lt;/code>&lt;/li>
+&lt;li>&lt;code>' UNION SELECT NULL,NULL,NULL--&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>etc.&lt;/p>
+&lt;p>If the number of nulls does not match the number of columns, the database returns an error, such as:&lt;/p>
+&lt;p>&lt;code>All queries combined using a UNION, INTERSECT or EXCEPT operator must have an equal number of expressions in their target lists.&lt;/code>&lt;/p>
+&lt;p>Again, the application might actually return this error message, or might just return a generic error or no results.
+When the number of nulls matches the number of columns, the database returns an additional row in the result set, containing null values in each column.
+The effect on the resulting HTTP response depends on the application&amp;rsquo;s code.
+If you are lucky, you will see some additional content within the response, such as an extra row on an HTML table.
+Otherwise, the null values might trigger a different error, such as a &lt;code>NullPointerException&lt;/code>.
+Worst case, the response might be indistinguishable from that which is caused by an incorrect number of nulls, making this method of determining the column count ineffective.&lt;/p>
+&lt;p>&lt;strong>NOTE:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>The reason for using &lt;code>NULL&lt;/code> as the values returned from the injected &lt;code>SELECT&lt;/code> query is that the data types in each column must be compatible between the original and the injected queries.
+Since &lt;code>NULL&lt;/code> is convertible to every commonly used data type, using &lt;code>NULL&lt;/code> maximizes the chance that the payload will succeed when the column count is correct.&lt;/li>
+&lt;li>In Oracle, every &lt;code>SELECT&lt;/code> query must use the FROM keyword and specify a valid table.
+There is a built-in table in Oracle called &lt;code>DUAL&lt;/code> which can be used for this purpose.
+So the injected queries in Oracle would need to look like: &lt;code>' UNION SELECT NULL FROM DUAL--&lt;/code>.&lt;/li>
+&lt;li>The payloads described use the double-dash comment sequence &lt;code>--&lt;/code> to comment out the remainder of the original query following the injection point.
+In MySQL, the double-dash sequence must be followed by a space. Alternatively, the hash character &lt;code>#&lt;/code> can be used to identify a comment.&lt;/li>
+&lt;/ul>
+&lt;p>For more details of database-specific syntax, see the &lt;a href="https://portswigger.net/web-security/sql-injection/cheat-sheet">SQL injection cheat sheet&lt;/a>.&lt;/p>
+&lt;h3 id="finding-columns-with-a-useful-data-type-in-an-sql-injection-union-attack">Finding columns with a useful data type in an SQL injection UNION attack&lt;/h3>
+&lt;p>The reason for performing an SQL injection UNION attack is to be able to retrieve the results from an injected query.
+Generally, the interesting data that you want to retrieve will be in string form, so you need to find one or more columns in the original query results whose data type is, or is compatible with, string data.&lt;/p>
+&lt;p>Having already determined the number of required columns, you can probe each column to test whether it can hold string data by submitting a series of &lt;code>UNION SELECT&lt;/code> payloads that place a string value into each column in turn.
+For example, if the query returns four columns, you would submit:&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>' UNION SELECT 'a',NULL,NULL,NULL--&lt;/code>&lt;/li>
+&lt;li>&lt;code>' UNION SELECT NULL,'a',NULL,NULL--&lt;/code>&lt;/li>
+&lt;li>&lt;code>' UNION SELECT NULL,NULL,'a',NULL--&lt;/code>&lt;/li>
+&lt;li>&lt;code>' UNION SELECT NULL,NULL,NULL,'a'--&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>If the data type of a column is not compatible with string data, the injected query will cause a database error, such as:&lt;/p>
+&lt;p>&lt;code>Conversion failed when converting the varchar value 'a' to data type int.&lt;/code>&lt;/p>
+&lt;p>If an error does not occur, and the application&amp;rsquo;s response contains some additional content including the injected string value, then the relevant column is suitable for retrieving string data.&lt;/p>
+&lt;h3 id="using-an-sql-injection-union-attack-to-retrieve-interesting-data">Using an SQL injection UNION attack to retrieve interesting data&lt;/h3>
+&lt;p>When you have determined the number of columns returned by the original query and found which columns can hold string data, you are in a position to retrieve interesting data.&lt;/p>
+&lt;p>Suppose that:&lt;/p>
+&lt;ul>
+&lt;li>The original query returns two columns, both of which can hold string data.&lt;/li>
+&lt;li>The injection point is a quoted string within the &lt;code>WHERE&lt;/code> clause.&lt;/li>
+&lt;li>The database contains a table called &lt;code>users&lt;/code> with the columns &lt;code>username&lt;/code> and &lt;code>password&lt;/code>.&lt;/li>
+&lt;/ul>
+&lt;p>In this situation, you can retrieve the contents of the &lt;code>users&lt;/code> table by submitting the input:&lt;/p>
+&lt;p>&lt;code>' UNION SELECT username, password FROM users--&lt;/code>&lt;/p>
+&lt;p>Of course, the crucial information needed to perform this attack is that there is a table called &lt;code>users&lt;/code> with two columns called &lt;code>username&lt;/code> and &lt;code>password&lt;/code>.
+Without this information, you would be left trying to guess the names of tables and columns.
+In fact, all modern databases provide ways of examining the database structure, to determine what tables and columns it contains.&lt;/p>
+&lt;h3 id="retrieving-multiple-values-within-a-single-column">Retrieving multiple values within a single column&lt;/h3>
+&lt;p>In the preceding example, suppose instead that the query only returns a single column.&lt;/p>
+&lt;p>You can easily retrieve multiple values together within this single column by concatenating the values together, ideally including a suitable separator to let you distinguish the combined values.
+For example, in Oracle you could submit the input:&lt;/p>
+&lt;p>&lt;code>' UNION SELECT username || '~' || password FROM users--&lt;/code>&lt;/p>
+&lt;p>This uses the double-pipe sequence &lt;code>||&lt;/code> which is a string concatenation operator in Oracle.
+The injected query concatenates together the values of the &lt;code>username&lt;/code> and &lt;code>password&lt;/code> fields, separated by the &lt;code>~&lt;/code> character.&lt;/p>
+&lt;p>The results from the query will let you read all of the usernames and passwords, for example:&lt;/p>
+&lt;pre>&lt;code>...
+administrator~s3cure
+wiener~peter
+carlos~montoya
+...
+&lt;/code>&lt;/pre>&lt;p>Note that different databases use different syntax to perform string concatenation.
+For more details, see the &lt;a href="https://portswigger.net/web-security/sql-injection/cheat-sheet">SQL injection cheat sheet&lt;/a>.&lt;/p>
+&lt;h2 id="examining-the-database">Examining the database&lt;/h2>
+&lt;p>Following the initial identification of an SQL injection vulnerability, it is generally useful to obtain some information about the database itself.
+This information can often pave the way for further exploitation.&lt;/p>
+&lt;p>You can query the version details for the database.
+The way that this is done depends on the database type, so you can infer the database type from whichever technique works.
+For example, in Oracle you can execute:&lt;/p>
+&lt;p>&lt;code>SELECT * FROM v$version&lt;/code>&lt;/p>
+&lt;p>You can also determine what database tables exist, and which columns they contain.
+For example, on most databases you can execute the following query to list the tables:&lt;/p>
+&lt;p>&lt;code>SELECT * FROM information_schema.tables&lt;/code>&lt;/p>
+&lt;h3 id="querying-the-database-type-and-version">Querying the database type and version&lt;/h3>
+&lt;p>Different databases provide different ways of querying their version.
+You often need to try out different queries to find one that works, allowing you to determine both the type and version of the database software.&lt;/p>
+&lt;p>The queries to determine the database version for some popular database types are as follows:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Database type&lt;/th>
+&lt;th>Query&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Microsoft, MySQL&lt;/td>
+&lt;td>&lt;code>SELECT @@version&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Oracle&lt;/td>
+&lt;td>&lt;code>SELECT * FROM v$version&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>PostgreSQL&lt;/td>
+&lt;td>&lt;code>SELECT version()&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>For example, you could use a &lt;code>UNION&lt;/code> attack with the following input:&lt;/p>
+&lt;p>&lt;code>' UNION SELECT @@version--&lt;/code>&lt;/p>
+&lt;p>This might return output like the following, confirming that the database is Microsoft SQL Server, and the version that is being used:&lt;/p>
+&lt;pre>&lt;code>Microsoft SQL Server 2016 (SP2) (KB4052908) - 13.0.5026.0 (X64)
+Mar 18 2018 09:11:49
+Copyright (c) Microsoft Corporation
+Standard Edition (64-bit) on Windows Server 2016 Standard 10.0 &amp;lt;X64&amp;gt; (Build 14393: ) (Hypervisor)
+&lt;/code>&lt;/pre>&lt;h2 id="blind-sql-injection">Blind SQL injection&lt;/h2>
+&lt;p>In this section, we&amp;rsquo;ll describe what blind SQL injection is, explain various techniques for finding and exploiting blind SQL injection vulnerabilities.&lt;/p>
+&lt;h3 id="what-is-blind-sql-injection">What is blind SQL injection?&lt;/h3>
+&lt;p>Blind SQL injection arises when an application is vulnerable to SQL injection, but its HTTP responses do not contain the results of the relevant SQL query or the details of any database errors.&lt;/p>
+&lt;p>With blind SQL injection vulnerabilities, many techniques such as UNION attacks are not effective, because they rely on being able to see the results of the injected query within the application&amp;rsquo;s responses.
+It is still possible to exploit blind SQL injection to access unauthorized data, but different techniques must be used.&lt;/p>
+&lt;h3 id="exploiting-blind-sql-injection-by-triggering-conditional-responses">Exploiting blind SQL injection by triggering conditional responses&lt;/h3>
+&lt;p>Consider an application that uses tracking cookies to gather analytics about usage.
+Requests to the application include a cookie header like this:&lt;/p>
+&lt;p>&lt;code>Cookie: TrackingId=u5YD3PapBcR4lN3e7Tj4&lt;/code>&lt;/p>
+&lt;p>When a request containing a &lt;code>TrackingId&lt;/code> cookie is processed, the application determines whether this is a known user using an SQL query like this:&lt;/p>
+&lt;p>&lt;code>SELECT TrackingId FROM TrackedUsers WHERE TrackingId = 'u5YD3PapBcR4lN3e7Tj4'&lt;/code>&lt;/p>
+&lt;p>This query is vulnerable to SQL injection, but the results from the query are not returned to the user.
+However, the application does behave differently depending on whether the query returns any data.
+If it returns data (because a recognized &lt;code>TrackingId&lt;/code> was submitted), then a &amp;ldquo;Welcome back&amp;rdquo; message is displayed within the page.&lt;/p>
+&lt;p>This behavior is enough to be able to exploit the blind SQL injection vulnerability and retrieve information by triggering different responses conditionally, depending on an injected condition.
+To see how this works, suppose that two requests are sent containing the following &lt;code>TrackingId&lt;/code> cookie values in turn:&lt;/p>
+&lt;p>&lt;code>xyz' AND '1'='1&lt;/code>&lt;br/>
+&lt;code>xyz' AND '1'='2&lt;/code>&lt;/p>
+&lt;p>The first of these values will cause the query to return results, because the injected &lt;code>AND '1'='1&lt;/code> condition is true, and so the &amp;ldquo;Welcome back&amp;rdquo; message will be displayed.
+Whereas the second value will cause the query to not return any results, because the injected condition is false, and so the &amp;ldquo;Welcome back&amp;rdquo; message will not be displayed.
+This allows us to determine the answer to any single injected condition, and so extract data one bit at a time.&lt;/p>
+&lt;p>For example, suppose there is a table called &lt;code>Users&lt;/code> with the columns &lt;code>Username&lt;/code> and &lt;code>Password&lt;/code>, and a user called &lt;code>Administrator&lt;/code>.
+We can systematically determine the password for this user by sending a series of inputs to test the password one character at a time.&lt;/p>
+&lt;p>To do this, we start with the following input:&lt;/p>
+&lt;p>&lt;code>xyz' AND SUBSTRING((SELECT Password FROM Users WHERE Username = 'Administrator'), 1, 1) &amp;gt; 'm&lt;/code>&lt;/p>
+&lt;p>This returns the &amp;ldquo;Welcome back&amp;rdquo; message, indicating that the injected condition is true, and so the first character of the password is greater than &lt;code>m&lt;/code>.&lt;/p>
+&lt;p>Next, we send the following input:&lt;/p>
+&lt;p>&lt;code>xyz' AND SUBSTRING((SELECT Password FROM Users WHERE Username = 'Administrator'), 1, 1) &amp;gt; 't&lt;/code>&lt;/p>
+&lt;p>This does not return the &amp;ldquo;Welcome back&amp;rdquo; message, indicating that the injected condition is false, and so the first character of the password is not greater than &lt;code>t&lt;/code>.&lt;/p>
+&lt;p>Eventually, we send the following input, which returns the &amp;ldquo;Welcome back&amp;rdquo; message, thereby confirming that the first character of the password is &lt;code>s&lt;/code>:&lt;/p>
+&lt;p>&lt;code>xyz' AND SUBSTRING((SELECT Password FROM Users WHERE Username = 'Administrator'), 1, 1) = 's&lt;/code>&lt;/p>
+&lt;p>We can continue this process to systematically determine the full password for the &lt;code>Administrator&lt;/code> user.&lt;/p>
+&lt;p>&lt;strong>NOTE:&lt;/strong>&lt;/p>
+&lt;p>The &lt;code>SUBSTRING&lt;/code> function is called &lt;code>SUBSTR&lt;/code> on some types of databases.
+For more details, see the &lt;a href="https://portswigger.net/web-security/sql-injection/cheat-sheet">SQL injection cheat sheet&lt;/a>.&lt;/p>
+&lt;h3 id="inducing-conditional-responses-by-triggering-sql-errors">Inducing conditional responses by triggering SQL errors&lt;/h3>
+&lt;p>In the preceding example, suppose instead that the application carries out the same SQL query, but does not behave any differently depending on whether the query returns any data.
+The preceding technique will not work, because injecting different Boolean conditions makes no difference to the application&amp;rsquo;s responses.&lt;/p>
+&lt;p>In this situation, it is often possible to induce the application to return conditional responses by triggering SQL errors conditionally, depending on an injected condition.
+This involves modifying the query so that it will cause a database error if the condition is true, but not if the condition is false.
+Very often, an unhandled error thrown by the database will cause some difference in the application&amp;rsquo;s response (such as an error message), allowing us to infer the truth of the injected condition.&lt;/p>
+&lt;p>To see how this works, suppose that two requests are sent containing the following &lt;code>TrackingId&lt;/code> cookie values in turn:&lt;/p>
+&lt;p>&lt;code>xyz' AND (SELECT CASE WHEN (1=2) THEN 1/0 ELSE 'a' END)='a&lt;/code>
+&lt;code>xyz' AND (SELECT CASE WHEN (1=1) THEN 1/0 ELSE 'a' END)='a&lt;/code>&lt;/p>
+&lt;p>These inputs use the &lt;code>CASE&lt;/code> keyword to test a condition and return a different expression depending on whether the expression is true.
+With the first input, the &lt;code>CASE&lt;/code> expression evaluates to &lt;code>'a'&lt;/code>, which does not cause any error.
+With the second input, it evaluates to &lt;code>1/0&lt;/code>, which causes a divide-by-zero error.
+Assuming the error causes some difference in the application&amp;rsquo;s HTTP response, we can use this difference to infer whether the injected condition is true.&lt;/p>
+&lt;p>Using this technique, we can retrieve data in the way already described, by systematically testing one character at a time:&lt;/p>
+&lt;p>&lt;code>xyz' AND (SELECT CASE WHEN (Username = 'Administrator' AND SUBSTRING(Password, 1, 1) &amp;gt; 'm') THEN 1/0 ELSE 'a' END FROM Users)='a&lt;/code>&lt;/p>
+&lt;h3 id="exploiting-blind-sql-injection-by-triggering-time-delays">Exploiting blind SQL injection by triggering time delays&lt;/h3>
+&lt;p>In the preceding example, suppose that the application now catches database errors and handles them gracefully.
+Triggering a database error when the injected SQL query is executed no longer causes any difference in the application&amp;rsquo;s response, so the preceding technique of inducing conditional errors will not work.&lt;/p>
+&lt;p>In this situation, it is often possible to exploit the blind SQL injection vulnerability by triggering time delays conditionally, depending on an injected condition.
+Because SQL queries are generally processed synchronously by the application, delaying the execution of an SQL query will also delay the HTTP response.
+This allows us to infer the truth of the injected condition based on the time taken before the HTTP response is received.&lt;/p>
+&lt;p>The techniques for triggering a time delay are highly specific to the type of database being used.
+On Microsoft SQL Server, input like the following can be used to test a condition and trigger a delay depending on whether the expression is true:&lt;/p>
+&lt;p>&lt;code>'; IF (1=2) WAITFOR DELAY '0:0:10'--&lt;/code>
+&lt;code>'; IF (1=1) WAITFOR DELAY '0:0:10'--&lt;/code>&lt;/p>
+&lt;p>The first of these inputs will not trigger a delay, because the condition &lt;code>1=2&lt;/code> is false.
+The second input will trigger a delay of 10 seconds, because the condition &lt;code>1=1&lt;/code> is true.&lt;/p>
+&lt;p>Using this technique, we can retrieve data in the way already described, by systematically testing one character at a time:&lt;/p>
+&lt;p>&lt;code>'; IF (SELECT COUNT(username) FROM Users WHERE username = 'Administrator' AND SUBSTRING(password, 1, 1) &amp;gt; 'm') = 1 WAITFOR DELAY '0:0:{delay}'--&lt;/code>&lt;/p>
+&lt;h3 id="second-order-sql-injection">Second Order SQL Injection&lt;/h3>
+&lt;p>A Second Order Injection is the same as a traditional injection attack but the payload is already stored in the database intentionally placed so that it can be triggered in another area of code.&lt;/p>
+&lt;p>Let’s look at an example and see how easy it is to exploit this vulnerability.
+This is a form of registration that uses parameterization, meaning that a vicious input will not affect the database.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-php" data-lang="php">&lt;span style="color:#000">$sql&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;INSERT INTO user (username, password) VALUES (:username, :password)&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#000">$data&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#39;username&amp;#39;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&amp;gt;&lt;/span> &lt;span style="color:#000">$userName&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#39;password&amp;#39;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&amp;gt;&lt;/span> &lt;span style="color:#000">$password&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#39;first_name&amp;#39;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&amp;gt;&lt;/span> &lt;span style="color:#000">$firstName&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#39;second_name&amp;#39;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&amp;gt;&lt;/span> &lt;span style="color:#000">$secondName&lt;/span>
+&lt;span style="color:#000;font-weight:bold">];&lt;/span>
+&lt;span style="color:#000">$stmt&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">$conn&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">-&amp;gt;&lt;/span>&lt;span style="color:#c4a000">prepare&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">$sql&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;span style="color:#000">$stmt&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">-&amp;gt;&lt;/span>&lt;span style="color:#c4a000">execute&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">$data&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Suppose, however, that someone introduces the following structure as a name:&lt;/p>
+&lt;p>&lt;code>'; DROP TABLE user; --&lt;/code>&lt;/p>
+&lt;p>This will not be a problem for this form, however, this MySQL code is in the database, and if another part of the code uses this name it can be executed.
+Let&amp;rsquo;s say that we select the user by name use the following code:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-php" data-lang="php">&lt;span style="color:#000">$sql&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;SELECT * FROM user WHERE username = &amp;#39;&lt;/span>&lt;span style="color:#4e9a06">{&lt;/span>&lt;span style="color:#000">$userName&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#000">$stmt&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">$conn&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">-&amp;gt;&lt;/span>&lt;span style="color:#c4a000">query&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">$sql&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;span style="color:#000">$user&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">$stmt&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">-&amp;gt;&lt;/span>&lt;span style="color:#c4a000">fetch&lt;/span>&lt;span style="color:#000;font-weight:bold">();&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Because for this piece of code we do not use the parameterization, the code that will be executed will become:&lt;/p>
+&lt;p>&lt;code>SELECT * FROM user WHERE username = ''; DROP TABLE user; --';&lt;/code>&lt;/p>
+&lt;h3 id="how-to-prevent-blind-sql-injection-attacks">How to prevent &lt;strong>blind&lt;/strong> SQL injection attacks?&lt;/h3>
+&lt;p>Although the techniques needed to find and exploit blind SQL injection vulnerabilities are different and more sophisticated than for regular SQL injection, the measures needed to prevent SQL injection are the same regardless of whether the vulnerability is blind or not.&lt;/p>
+&lt;h2 id="how-to-prevent-sql-injection">How to prevent SQL injection&lt;/h2>
+&lt;p>Most instances of SQL injection can be prevented by using parameterized queries (also known as prepared statements) instead of string concatenation within the query.&lt;/p>
+&lt;p>The following code is vulnerable to SQL injection because the user input is concatenated directly into the query:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-php" data-lang="php">&lt;span style="color:#000">String&lt;/span> &lt;span style="color:#000">query&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;SELECT * FROM products WHERE category = &amp;#39;&amp;#34;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">+&lt;/span> &lt;span style="color:#000">input&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">+&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;&amp;#39;&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#000">Statement&lt;/span> &lt;span style="color:#000">statement&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">connection&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">createStatement&lt;/span>&lt;span style="color:#000;font-weight:bold">();&lt;/span>
+&lt;span style="color:#000">ResultSet&lt;/span> &lt;span style="color:#000">resultSet&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">statement&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">executeQuery&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">query&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This code can be easily rewritten in a way that prevents the user input from interfering with the query structure:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-php" data-lang="php">&lt;span style="color:#000">PreparedStatement&lt;/span> &lt;span style="color:#000">statement&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">connection&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">prepareStatement&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;SELECT * FROM products WHERE category = ?&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;span style="color:#000">statement&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">setString&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">1&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">input&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;span style="color:#000">ResultSet&lt;/span> &lt;span style="color:#000">resultSet&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">statement&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">executeQuery&lt;/span>&lt;span style="color:#000;font-weight:bold">();&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Parameterized queries can be used for any situation where untrusted input appears as data within the query, including the &lt;code>WHERE&lt;/code> clause and values in an &lt;code>INSERT&lt;/code> or &lt;code>UPDATE&lt;/code> statement.
+They can&amp;rsquo;t be used to handle untrusted input in other parts of the query, such as table or column names, or the &lt;code>ORDER BY&lt;/code> clause.
+Application functionality that places untrusted data into those parts of the query will need to take a different approach, such as white-listing permitted input values, or using different logic to deliver the required behavior.&lt;/p>
+&lt;p>For a parameterized query to be effective in preventing SQL injection, the string that is used in the query must always be a hard-coded constant, and must never contain any variable data from any origin.
+Do not be tempted to decide case-by-case whether an item of data is trusted, and continue using string concatenation within the query for cases that are considered safe.
+It is all too easy to make mistakes about the possible origin of data, or for changes in other code to violate assumptions about what data is tainted.&lt;/p>
+&lt;h1 id="tools">Tools&lt;/h1>
+&lt;h2 id="burp-suite">Burp Suite&lt;/h2>
+&lt;p>&lt;a href="https://portswigger.net/burp">Burp Suite&lt;/a> is one of the most popular penetration testing and vulnerability finder tools, and is often used for checking web application security.
+With this tool you can see all the requests that are executed when interacting with a web application.
+You can change the requests to see different behaviors and you can set automatic requests with different parameters.&lt;/p>
+&lt;h2 id="sqlmap">SQLmap&lt;/h2>
+&lt;p>&lt;a href="https://sqlmap.org/">SQLmap&lt;/a> is an open source penetration testing tool that automates the process of detecting and exploiting SQL injection flaws and taking over database servers.
+It comes with a powerful detection engine, many niche features for the ultimate penetration tester and a broad range of switches lasting from database fingerprinting, over data fetching from the database, to accessing the underlying file system and executing commands on the operating system via out-of-band connections.
+You can see some of the features in this recording.
+&lt;a href="https://asciinema.org/a/434673">&lt;img src="https://asciinema.org/a/434673.svg" alt="asciicast">&lt;/a>&lt;/p>
+&lt;h1 id="further-reading">Further Reading&lt;/h1>
+&lt;p>&lt;strong>1.&lt;/strong> &lt;a href="https://portswigger.net/burp">Burp&lt;/a>&lt;br>
+&lt;strong>2.&lt;/strong> &lt;a href="https://portswigger.net/support/configuring-your-browser-to-work-with-burp">Burp Browser Configuration&lt;/a>&lt;br>
+&lt;strong>3.&lt;/strong> &lt;a href="https://portswigger.net/support/checking-your-browser-proxy-configuration">Burp Proxy Configuration&lt;/a>&lt;br>
+&lt;strong>4.&lt;/strong> &lt;a href="https://portswigger.net/support/installing-burp-suites-ca-certificate-in-your-browser">Burp Certificate&lt;/a>&lt;br>
+&lt;strong>5.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/cheat-sheet">SQL Cheat Sheet&lt;/a>&lt;br>
+&lt;strong>6.&lt;/strong> &lt;a href="https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/SQL%20Injection">SQL Payloads&lt;/a>&lt;br>
+&lt;strong>7.&lt;/strong> &lt;a href="https://sqlmap.org/">SQLmap&lt;/a>&lt;/p>
+&lt;h1 id="activities">Activities&lt;/h1>
+&lt;p>&lt;strong>1.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges">Demo SQL Injection&lt;/a>
+&lt;strong>2.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges">Blacklist&lt;/a>
+&lt;strong>3.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges">Nightmare Store&lt;/a>
+&lt;strong>4.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges">One by one&lt;/a>
+&lt;strong>5.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges">T0p S3cr3t&lt;/a>
+&lt;strong>6.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/lab-retrieve-hidden-data">Retrieve hidden data&lt;/a>&lt;br>
+&lt;strong>7.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/lab-login-bypass">Login bypass&lt;/a>&lt;br>
+&lt;strong>8.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/union-attacks/lab-determine-number-of-columns">Determine number of columns&lt;/a>&lt;br>
+&lt;strong>9.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/union-attacks/lab-find-column-containing-text">Find column&lt;/a>&lt;br>
+&lt;strong>10.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/union-attacks/lab-retrieve-data-from-other-tables">Retrieve data from other tables&lt;/a>&lt;br>
+&lt;strong>11.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/union-attacks/lab-retrieve-multiple-values-in-single-column">Single column&lt;/a>&lt;br>
+&lt;strong>12.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/examining-the-database/lab-querying-database-version-oracle">What version?&lt;/a>&lt;br>
+&lt;strong>13.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/examining-the-database/lab-querying-database-version-mysql-microsoft">More versions&lt;/a>&lt;br>
+&lt;strong>14.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/blind/lab-conditional-responses">Conditional responses&lt;/a>&lt;br>
+&lt;strong>15.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/blind/lab-conditional-errors">Conditional errors&lt;/a>&lt;br>
+&lt;strong>16.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/blind/lab-time-delays">Time delays&lt;/a>&lt;br>
+&lt;strong>17.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/blind/lab-out-of-band">Out-of-band Application Security Testing&lt;/a>&lt;/p></description></item><item><title>Web:</title><link>/web/web-basics-browser-security-model/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/web-basics-browser-security-model/readme/</guid><description>
 &lt;h1 id="introduction">Introduction&lt;/h1>
 &lt;hr>
 &lt;p>As the World Wide Web&amp;rsquo;s high-level topology consists mainly of personal computing devices (e.g. desktops, laptops, mobile devices) making HTTP requests to web servers, the general field of web security consists of three main sub-fields: client-side security (i.e. browser security), communications security and server-side security, or web application security.
@@ -1965,7 +2041,13 @@ Write the answer to the instructor.&lt;/p>
 &lt;strong>11.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Give to Get&lt;/a>&lt;br>
 &lt;strong>12.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Give to Post&lt;/a>&lt;br>
 &lt;strong>13.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">One by One&lt;/a>&lt;br>
-&lt;strong>14.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Produce-consume&lt;/a>&lt;/p></description></item><item><title>Web: SSS: Web Basics &amp; Browser Security Model</title><link>/web/web-basics-browser-security-model/slides/slides/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/web-basics-browser-security-model/slides/slides/</guid><description>
+&lt;strong>14.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Produce-consume&lt;/a>&lt;/p></description></item><item><title>Web: SSS: Session: SQL Injection</title><link>/web/sql-injection/slides/slides/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/sql-injection/slides/slides/</guid><description>
+&lt;h1 id="centered-text">Centered Text&lt;/h1>
+&lt;p>Nice words&lt;/p>
+&lt;p>From presenter&lt;/p>
+&lt;p>Note: test note&lt;/p>
+&lt;hr>
+&lt;h1 id="sql-injection">SQL Injection]&lt;/h1></description></item><item><title>Web: SSS: Web Basics &amp; Browser Security Model</title><link>/web/web-basics-browser-security-model/slides/slides/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/web-basics-browser-security-model/slides/slides/</guid><description>
 &lt;h1 id="web-basics--browser-security-model">Web Basics &amp;amp; Browser Security Model&lt;/h1>
 &lt;p>Security Summer School&lt;/p>
 &lt;hr>
