@@ -8,3 +8,6 @@
 [submodule "content/en/web"]
 	path = content/en/web
 	url = https://github.com/security-summer-school/web.git
+[submodule "content/en/binary"]
+	path = content/en/binary
+	url = https://github.com/security-summer-school/binary.git
