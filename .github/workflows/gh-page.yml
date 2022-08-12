@@ -12,10 +12,9 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          submodules: recursive # Fetch the Docsy theme
-          fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
+          submodules: recursive
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
@@ -36,9 +35,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - run: npm ci
-      - run: npm install
-      - run: hugo --minify
+      - name: Install npm general packages
+        run: npm ci
+
+      - name: Install npm docsy packages
+        run: cd themes/docsy && npm install
+
+      - name: Minify output
+        run: hugo --minify
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
