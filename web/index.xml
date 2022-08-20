@@ -819,4 +819,42 @@ A copy of each license is below.&lt;/p>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Web:</title><link>/web/reviewing/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/reviewing/</guid><description>
+&lt;h1 id="sss-reviewer-guidelines">SSS Reviewer Guidelines&lt;/h1>
+&lt;p>These are recommendations for reviewing contributions to SSS repositories.
+Reviewing is important to ensure high quality and consistency of content.
+As a reviewer, we trust you will vet contributions and provide constructive suggestions to update them to fit the SSS guidelines.&lt;/p>
+&lt;h2 id="activities--challenges">Activities / Challenges&lt;/h2>
+&lt;p>Make sure that activities / challenges are of good quality:&lt;/p>
+&lt;ul>
+&lt;li>Difficulty is properly set.&lt;/li>
+&lt;li>The topic of the activity / challenge is appropriate.&lt;/li>
+&lt;li>The provided solution is working.&lt;/li>
+&lt;li>Vulnerability and explanations are easy to understand.&lt;/li>
+&lt;/ul>
+&lt;h2 id="assets">Assets&lt;/h2>
+&lt;p>Check if all of them are used and mentioned in the content.
+If the assets are not original, make sure their license is compatible with &lt;a href="COPYING.md">ours&lt;/a> and that their source is properly cited.
+Verify that their names are appropriate and respect the following rules:&lt;/p>
+&lt;ul>
+&lt;li>Use dash between words (e.g. &lt;code>image-name.png&lt;/code>).&lt;/li>
+&lt;li>Use only lowercase ASCII characters.&lt;/li>
+&lt;/ul>
+&lt;h2 id="content">Content&lt;/h2>
+&lt;p>Make sure that the content is of good quality:&lt;/p>
+&lt;ul>
+&lt;li>It follows the general structure of a &lt;a href="https://github.com/security-summer-school/template-public/tree/master/session-name-1">session&lt;/a>.&lt;/li>
+&lt;li>Assets are displayed well.&lt;/li>
+&lt;li>Each sentence is on a separate line.&lt;/li>
+&lt;li>The content is easy to understand.&lt;/li>
+&lt;li>Wording and general spelling are correct.&lt;/li>
+&lt;li>Proper formatting is used (such as bold, italic, typewriter formats).&lt;/li>
+&lt;/ul>
+&lt;h2 id="working-on-pull-requests">Working on Pull Requests&lt;/h2>
+&lt;p>You will review contributions as pull requests, following the &lt;a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews">PR review guidelines from GitHub&lt;/a>.
+Contributions must follow the &lt;a href="CONTRIBUTING.md">contributing guidelines&lt;/a>.&lt;/p>
+&lt;p>Add your review as comments and request for changes to the PR until everything is ready to be approved.
+Add any comments regarding one or more explicit lines as review comments and only publish them together when submitting your review.
+Do not add each individual suggestion or comment as standalone.
+Before approving the PR, make sure that all GitHub Actions tests ended successfully.
+Once approved, either you or someone with proper access rights can use &lt;code>Rebase and merge&lt;/code> to merge the PR commits and integrate the contribution.&lt;/p></description></item></channel></rss>
