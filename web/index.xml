@@ -347,4 +347,13 @@ Commands to list SUID binaries:
 &lt;ul>
 &lt;li>Escalation&lt;/li>
 &lt;/ul></description></item><item><title>Web:</title><link>/web/10-best-practices/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/10-best-practices/readme/</guid><description>
-&lt;p>Session 10 content&lt;/p></description></item></channel></rss>
+&lt;p>Session 10 content&lt;/p></description></item><item><title>Web:</title><link>/web/contributing/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/contributing/</guid><description>
+&lt;h1 id="contributing-to-the-web-security-track">Contributing to the Web Security Track&lt;/h1>
+&lt;p>We welcome contributions to the content and source code of the Web Security Track.
+You may contribute by:&lt;/p>
+&lt;ul>
+&lt;li>opening &lt;a href="https://github.com/security-summer-school/web/issues">issues&lt;/a>&lt;/li>
+&lt;li>taking part in &lt;a href="https://github.com/security-summer-school/web/discussions">discussions&lt;/a>&lt;/li>
+&lt;li>creating &lt;a href="https://github.com/security-summer-school/web//pulls">pull requests&lt;/a> to update the content&lt;/li>
+&lt;/ul>
+&lt;p>Before you make any contribution, make sure it follows the &lt;a href="https://github.com/security-summer-school/meta/blob/master/docs/contributing.md">community guide&lt;/a>.&lt;/p></description></item></channel></rss>
