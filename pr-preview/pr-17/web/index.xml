@@ -1,0 +1,860 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Security Summer School –</title><link>/web/</link><description>Recent content on Security Summer School</description><generator>Hugo -- gohugo.io</generator><atom:link href="/web/index.xml" rel="self" type="application/rss+xml"/><item><title>Web:</title><link>/web/05-injection-part-2/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/05-injection-part-2/readme/</guid><description>
+&lt;h1 id="cross-site-scripting-xss">Cross-site Scripting (XSS)&lt;/h1>
+&lt;h2 id="intro">Intro&lt;/h2>
+&lt;p>Cross-site Scripting (XSS) is a web security vulnerability that allows an attacker to inject malicious code, usually JavaScript, in the web browser of the victim. This implies that the attacker can do a lot of damage from stealing data to perform actions on behalf of the user. This type of vulnerability implies that the web application uses the user input in the HTML page that it serves. As opposed to other types of code injections, the malicious code in an XSS will always run on the client-side shifting the target from the server hosting the application to the users of the application.&lt;/p>
+&lt;h2 id="impact">Impact&lt;/h2>
+&lt;p>The impact of the vulnerability is linked with the functionality that the web application provides. If the app is doesn&amp;rsquo;t have much functionality (e.g. a news website) the attacker might not obtain much, but if it&amp;rsquo;s a banking app, there is certainly something to obtain.&lt;/p>
+&lt;p>Cross-site Scripting can be used to achieve a lot of things:&lt;/p>
+&lt;ul>
+&lt;li>steal data - sensitive data as login credentials or credit card numbers&lt;/li>
+&lt;li>hijack the session of the user - get the user&amp;rsquo;s session token and browse the application as it&amp;rsquo;s your account without any credentials&lt;/li>
+&lt;li>track user movements - keylogging, taking screenshots of the page&lt;/li>
+&lt;li>perform actions on behalf of the user - sending payments to attacker&amp;rsquo;s account&lt;/li>
+&lt;li>alter the looks of the HTML page (virtual defacement) - fake the balance of the account while the attacker steals the money&lt;/li>
+&lt;li>mining - placing a cryptocurrency miner in the page while the user reads a long article&lt;/li>
+&lt;li>if that&amp;rsquo;s not enough, you may find more ideas &lt;a href="http://www.xss-payloads.com/payloads.html">here&lt;/a>.&lt;/li>
+&lt;/ul>
+&lt;h2 id="types">Types&lt;/h2>
+&lt;p>There are mainly three types of XSS:&lt;/p>
+&lt;ul>
+&lt;li>Reflected XSS&lt;/li>
+&lt;li>Stored XSS&lt;/li>
+&lt;li>DOM XSS&lt;/li>
+&lt;/ul>
+&lt;h3 id="reflected-xss">Reflected XSS&lt;/h3>
+&lt;p>Reflected XSS or non-persistent is the simplest form of XSS and occurs when user input is immediately returned by the web application in the HTTP response.&lt;/p>
+&lt;p>&lt;img src="../05-injection-2/support/reflected-xss.png" alt="Reflected XSS Steps">&lt;/p>
+&lt;p>&lt;img src="../05-injection-2/support/XSS_reflected.gif" alt="Reflected XSS steps">&lt;/p>
+&lt;ol>
+&lt;li>The attacker crafts a URL containing a malicious string and sends it to the victim.&lt;/li>
+&lt;li>The victim is tricked by the attacker into requesting the URL from the website.&lt;/li>
+&lt;li>The website includes the malicious string from the URL in the response.&lt;/li>
+&lt;li>The victim&amp;rsquo;s browser executes the malicious script inside the response, sending the victim&amp;rsquo;s cookies to the attacker&amp;rsquo;s server.&lt;/li>
+&lt;/ol>
+&lt;h4 id="example">Example&lt;/h4>
+&lt;p>Let&amp;rsquo;s consider a simple application that greets the user with the name passed through the parameter &lt;code>name&lt;/code> in the URL.
+&lt;code>https://example.com/greet?name=John&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">p&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>Hello John!&lt;span style="color:#000;font-weight:bold">&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">p&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Without changing the user input in any way, an attacker might give the following input:&lt;/p>
+&lt;p>&lt;code>https://example.com/greet?name=&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">p&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>Hello &lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">script&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>&lt;span style="color:#000">alert&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">1&lt;/span>&lt;span style="color:#000;font-weight:bold">)&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">script&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>!&lt;span style="color:#000;font-weight:bold">&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">p&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The attacker now has control to the JavaScript code using a parameter stored in the URL.&lt;/p>
+&lt;h3 id="stored-xss">Stored XSS&lt;/h3>
+&lt;p>Stored XSS or persistent XSS happens when user input is stored in the database and it is used non-sanitized in the response HTML pages.&lt;/p>
+&lt;p>&lt;img src="../05-injection-2/support/persistent-xss.png" alt="Persistent XSS Steps">&lt;/p>
+&lt;p>&lt;img src="../05-injection-2/support/XSS_stored.gif" alt="Stored XXS Steps">&lt;/p>
+&lt;ol>
+&lt;li>The attacker uses one of the website&amp;rsquo;s forms to insert a malicious string into the website&amp;rsquo;s database.&lt;/li>
+&lt;li>The victim requests a page from the website.&lt;/li>
+&lt;li>The website includes the malicious string from the database in the response and sends it to the victim.&lt;/li>
+&lt;li>The victim&amp;rsquo;s browser executes the malicious script inside the response, sending the victim&amp;rsquo;s cookies to the attacker&amp;rsquo;s server.&lt;/li>
+&lt;/ol>
+&lt;h4 id="example-1">Example&lt;/h4>
+&lt;p>A simple example would be an online shop with a review system that would let customers to write text/comments about the products.
+One might use it to say &lt;code>&amp;quot;This product is great! I recommend it!&amp;quot;&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">p&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>This product is great! I recommend it!&lt;span style="color:#000;font-weight:bold">&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">p&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>But an attacker might use it to send &lt;code>&amp;quot;&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;&amp;quot;&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">p&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">script&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>&lt;span style="color:#000">alert&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">1&lt;/span>&lt;span style="color:#000;font-weight:bold">)&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">script&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">p&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The difference between this example and the one at Reflected XSS is that the attacker uses a request to send the review that will be stored in the database of the server. Later on, when another user accesses the product page, the code behind the website will get from the database all reviews associated with the product and insert them in the HTML response page.&lt;/p>
+&lt;h3 id="dom-xss">DOM XSS&lt;/h3>
+&lt;p>DOM vulnerabilities usually arise when JavaScript code uses data from the user to construct the DOM / HTML page.&lt;/p>
+&lt;p>&lt;img src="../05-injection-2/support/dom-based-xss.png" alt="DOM XSS Steps">
+&lt;img src="../05-injection-2/support/XSS_dom.gif" alt="XSS DOM Steps">&lt;/p>
+&lt;ol>
+&lt;li>The attacker crafts a URL containing a malicious string and sends it to the victim.&lt;/li>
+&lt;li>The victim is tricked by the attacker into requesting the URL from the website.&lt;/li>
+&lt;li>The website receives the request, but does not include the malicious string in the response.&lt;/li>
+&lt;li>The victim&amp;rsquo;s browser executes the legitimate script inside the response, causing the malicious script to be inserted into the page.&lt;/li>
+&lt;li>The victim&amp;rsquo;s browser executes the malicious script inserted into the page, sending the victim&amp;rsquo;s cookies to the attacker&amp;rsquo;s server.&lt;/li>
+&lt;/ol>
+&lt;h4 id="example-2">Example&lt;/h4>
+&lt;p>Suppose the following code is used to create a form to let the user choose his/her preferred language. A default language is also provided in the query string, as the parameter “default”.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>Select your language:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">select&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">script&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#204a87">document&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">write&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&amp;lt;OPTION value=1&amp;gt;&amp;#34;&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">+&lt;/span>&lt;span style="color:#204a87">document&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">location&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">href&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">substring&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#204a87">document&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">location&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">href&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">indexOf&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;default=&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">+&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">8&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">+&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&amp;lt;/OPTION&amp;gt;&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#204a87">document&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">write&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&amp;lt;OPTION value=2&amp;gt;English&amp;lt;/OPTION&amp;gt;&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-weight:bold">&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">script&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">select&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The page is invoked with a URL such as:&lt;/p>
+&lt;p>&lt;code>https://example.com/page.html?default=French&lt;/code>&lt;/p>
+&lt;p>A DOM Based XSS attack against this page can be accomplished by sending the following URL to a victim:&lt;/p>
+&lt;p>&lt;code>https://example.com/page.html?default=&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;&lt;/code>&lt;/p>
+&lt;h2 id="note">Note&lt;/h2>
+&lt;p>The three types of XSS presented above are the ones that historically speaking were categorised, but in order to do a categorization a criteria is needed. The types above have no criteria on which they are sepparated, so let&amp;rsquo;s split XSS vulnerabilities by the place where data is used:&lt;/p>
+&lt;ul>
+&lt;li>Server XSS&lt;/li>
+&lt;li>Client XSS&lt;/li>
+&lt;/ul>
+&lt;p>By doing so, the three types above mentioned will look like this:
+&lt;img src="../05-injection-2/support/server-client-xss.png" alt="Server vs Client XSS">&lt;/p>
+&lt;h2 id="defense-mechanisms">Defense Mechanisms&lt;/h2>
+&lt;ol>
+&lt;li>&lt;strong>Filter input on arrival.&lt;/strong> At the point where user input is received, filter as strictly as possible based on what is expected or valid input.&lt;/li>
+&lt;li>&lt;strong>Encode data on output.&lt;/strong> At the point where user-controllable data is output in HTTP responses, encode the output to prevent it from being interpreted as active content. Depending on the output context, this might require applying combinations of HTML, URL, JavaScript, and CSS encoding.&lt;/li>
+&lt;li>&lt;strong>Use appropriate response headers.&lt;/strong> To prevent XSS in HTTP responses that aren&amp;rsquo;t intended to contain any HTML or JavaScript, you can use the &lt;code>Content-Type&lt;/code> and &lt;code>X-Content-Type-Options&lt;/code> headers to ensure that browsers interpret the responses in the way you intend.&lt;/li>
+&lt;li>&lt;strong>Content Security Policy.&lt;/strong> Use Content Security Policy (CSP) to reduce the severity of any XSS vulnerabilities that still occur.&lt;/li>
+&lt;li>&lt;strong>Continuous database scanning.&lt;/strong> For stored XSS is common practice to scan the database at regulated intervals, although XSS payloads can be written in multiple formats (base64, binary etc.).&lt;/li>
+&lt;/ol>
+&lt;h2 id="other-xss">Other XSS&lt;/h2>
+&lt;h3 id="self-xss">Self XSS&lt;/h3>
+&lt;p>Self XSS is a social engineering attack used to gain access to victim&amp;rsquo;s web accounts. The victim is tricked into running malicious JavaScript code into their own browser, in web developer console, which can either exfiltrate data or perform actions on behalf of the user.
+This is not a code injection vulnerability as each website is vulnerable to this type of attack. In order to prevent this, websites add warning messages in console. In the image below, there are two examples, from Google Meet and Facebook.&lt;/p>
+&lt;p>&lt;img src="../05-injection-2/support/self-xss.png" alt="Self XSS">&lt;/p>
+&lt;h3 id="mutated-xss">Mutated XSS&lt;/h3>
+&lt;p>Mutated XSS happens when the browser tries to fix and rewrite invaild HTML but fails doing so thus executing attacker&amp;rsquo;s code. Because it depends from browser to browser, is extremely hard to detect or sanitize within the websites application logic. At the end of this page you will find a video explaining a mXSS on Google Search, and also check the link for one of the first papers describing mXSS attacks.&lt;/p>
+&lt;h2 id="challenges">Challenges&lt;/h2>
+&lt;h3 id="1-dvwa">1. DVWA&lt;/h3>
+&lt;p>We will use Damn Vulnerable Web Application (DVWA) for this one. You may install it however you want, just to work, but a simple way to do it is by using Docker. Once you &lt;a href="https://docs.docker.com/engine/install/">installed&lt;/a> docker you must run&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ docker run --rm -it -p 8080:80 vulnerables/web-dvwa
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>To access the app, go to http://localhost:8080/setup.php and click on &lt;code>Create/Reset Database&lt;/code>. Login with username &lt;code>admin&lt;/code> and password &lt;code>password&lt;/code>.&lt;/p>
+&lt;p>DVWA has multipe vulnerable components, but today we will use the XSS related ones. The app has 4 levels of security that can be changed from &amp;lsquo;DVWA Security&amp;rsquo; section.
+All the DVWA challenges allow you to view the PHP source of the page to get additional info about the back-end script. However, in a real-world scenario you won&amp;rsquo;t have that kind of access, so please use this functionality only after you have finished the challenge.&lt;/p>
+&lt;p>The goal of this challenges is to rise an &lt;code>alert(1)&lt;/code> from JavaScript like this:
+&lt;img src="../05-injection-2/support/dvwa-alert-1.png" alt="DVWA Alert 1">&lt;/p>
+&lt;p>With the security level set on &lt;strong>low&lt;/strong> you will have to go through each XSS type. Raise the alert, then change the security level to &lt;strong>medium&lt;/strong> and then &lt;strong>high&lt;/strong>. After you are done with this, change on &lt;strong>impossible&lt;/strong> and click on &lt;code>View Source&lt;/code>. Why an exploit is not possible in this case? Check the PHP documentation to understand why.&lt;/p>
+&lt;p>Go thgough each on in the following order: Reflected, Stored, DOM&lt;/p>
+&lt;h3 id="2-xss-challenges">2. XSS Challenges&lt;/h3>
+&lt;p>You have 6 levels to finish here: &lt;a href="https://xss-game.appspot.com/">https://xss-game.appspot.com/&lt;/a>&lt;/p>
+&lt;h3 id="3-even-more-xss-challenges">3. Even more XSS Challenges&lt;/h3>
+&lt;p>&lt;a href="https://alf.nu/alert1">https://alf.nu/alert1&lt;/a>&lt;/p>
+&lt;h3 id="4-if-you-get-here">4. If you get here&lt;/h3>
+&lt;p>&lt;a href="http://prompt.ml/0">http://prompt.ml/0&lt;/a>&lt;/p>
+&lt;p>&lt;a href="https://xss-quiz.int21h.jp/">https://xss-quiz.int21h.jp/&lt;/a>&lt;/p>
+&lt;p>&lt;a href="http://sudo.co.il/xss/">http://sudo.co.il/xss/&lt;/a>&lt;/p>
+&lt;p>Those should be enough to suck the soul out of you.&lt;/p>
+&lt;h2 id="further-reading">Further reading&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://owasp.org/www-community/attacks/xss/">https://owasp.org/www-community/attacks/xss/&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://portswigger.net/web-security/cross-site-scripting">https://portswigger.net/web-security/cross-site-scripting&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://pentest-tools.com/blog/xss-attacks-practical-scenarios/">5 Practical Scenarios for XSS Attacks&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://www.xss-payloads.com/payloads.html">XSS Exploit Payloads&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://portswigger.net/web-security/cross-site-scripting/cheat-sheet">XSS Cheat Sheet 1&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://owasp.org/www-community/xss-filter-evasion-cheatsheet">XSS Cheat Sheet 2&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.youtube.com/watch?v=lG7U3fuNw3A">Mutated XSS on Google Search&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://cure53.de/fp170.pdf">mXSS paper&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;hr>
+&lt;h1 id="cross-site-request-forgery-csrf">Cross-Site Request Forgery (CSRF)&lt;/h1>
+&lt;h2 id="intro-1">Intro&lt;/h2>
+&lt;p>Cross-site request forgery is a vulnerability in web applications that allows an attacker to trick users into performing actions that they did not intend.&lt;/p>
+&lt;h2 id="impact-1">Impact&lt;/h2>
+&lt;p>Once again, the impact of the vulnerability is linked with the functionality that the web application provides, but it can range from posting a comment on behalf of the user with an outdated 2008 meme to making payments to attacker&amp;rsquo;s wallet to full account takeover.&lt;/p>
+&lt;h2 id="how-does-it-work">How does it work?&lt;/h2>
+&lt;p>For a CSRF attack to be possible, three key conditions must be in place:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>A relevant action.&lt;/strong> There is an action within the application that the attacker has a reason to induce. This might be a privileged action (such as modifying permissions for other users) or any action on user-specific data (such as changing the user&amp;rsquo;s own password).&lt;/li>
+&lt;li>&lt;strong>Cookie-based session handling.&lt;/strong> Performing the action involves issuing one or more HTTP requests, and the application relies solely on session cookies to identify the user who has made the requests. There is no other mechanism in place for tracking sessions or validating user requests.&lt;/li>
+&lt;li>&lt;strong>No unpredictable request parameters.&lt;/strong> The requests that perform the action do not contain any parameters whose values the attacker cannot determine or guess. For example, when causing a user to change their password, the function is not vulnerable if an attacker needs to know the value of the existing password.&lt;/li>
+&lt;/ul>
+&lt;p>For example, suppose an application contains a function that lets the user change the email address on their account. When a user performs this action, they make an HTTP request like the following:&lt;/p>
+&lt;pre tabindex="0">&lt;code>POST /email/change HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 30
+Cookie: session=yvthwsztyeQkAPzeQ5gHgTvlyxHfsAfE
+email=wiener@normal-user.com
+&lt;/code>&lt;/pre>&lt;p>This meets the conditions required for CSRF:&lt;/p>
+&lt;ul>
+&lt;li>The action of changing the email address on a user&amp;rsquo;s account is of interest to an attacker. Following this action, the attacker will typically be able to trigger a password reset and take full control of the user&amp;rsquo;s account.&lt;/li>
+&lt;li>The application uses a session cookie to identify which user issued the request. There are no other tokens or mechanisms in place to track user sessions.&lt;/li>
+&lt;li>The attacker can easily determine the values of the request parameters that are needed to perform the action.&lt;/li>
+&lt;/ul>
+&lt;p>With these conditions in place, the attacker can construct a web page containing the following HTML:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">html&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">body&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">form&lt;/span> &lt;span style="color:#c4a000">action&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;https://vulnerable-website.com/email/change&amp;#34;&lt;/span> &lt;span style="color:#c4a000">method&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;POST&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">input&lt;/span> &lt;span style="color:#c4a000">type&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;hidden&amp;#34;&lt;/span> &lt;span style="color:#c4a000">name&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;email&amp;#34;&lt;/span> &lt;span style="color:#c4a000">value&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;pwned@evil-user.net&amp;#34;&lt;/span> &lt;span style="color:#000;font-weight:bold">/&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">form&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">script&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87">document&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">forms&lt;/span>&lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">].&lt;/span>&lt;span style="color:#000">submit&lt;/span>&lt;span style="color:#000;font-weight:bold">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">script&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">body&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-weight:bold">&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">html&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="prevention">Prevention&lt;/h2>
+&lt;ul>
+&lt;li>Use SameSite cookie attribute (similar to HTTPOnly and Secure)&lt;/li>
+&lt;li>Add a CSRF token for each request that changes the state of the application (e.g. changing password, sending messages) and validate it on backend&lt;/li>
+&lt;li>Use user interaction based CSRF defense for sensitive actions such as changing credentials: re-authentication, one-time token, captcha&lt;/li>
+&lt;li>Use Cross-origin resource sharing (CORS) headers to prevent CSRF from your website&lt;/li>
+&lt;li>GET methods should not change the state of the application. Use appropriate HTTP methods for their intention.&lt;/li>
+&lt;li>in-depth list &lt;a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html">here&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>If you find an action/request to have a CSRF token don&amp;rsquo;t give up to that so easily, there are a number of ways that improper validation of the token will still result in a CSRF vulnerability:&lt;/p>
+&lt;ul>
+&lt;li>Validation of CSRF token depends on request method&lt;/li>
+&lt;li>Validation of CSRF token depends on token being present&lt;/li>
+&lt;li>CSRF token is not tied to the user session&lt;/li>
+&lt;li>CSRF token is tied to a non-session cookie&lt;/li>
+&lt;li>CSRF token is simply duplicated in a cookie&lt;/li>
+&lt;/ul>
+&lt;h2 id="note-1">Note&lt;/h2>
+&lt;p>You can combine XSS with CSRF :). If you have two websites that share a part of their user base, you can use a XSS vulnerability in one to abuse a CSRF vulnerability in the other one. For example if a company provides two related services (e.g. email and calendar) you can assume that there is a high probability that a user might have accounts on both of the services, making a Stored XSS in one app a great way to exploit a CSRF in the other one.&lt;/p>
+&lt;h2 id="challenges-1">Challenges&lt;/h2>
+&lt;h3 id="1-dvwa-1">1. DVWA&lt;/h3>
+&lt;p>Using the same setup as for XSS challenges, go to the CSRF page of DVWA and craft URLs that will change the password for the user accessing it for each security level: &lt;strong>low&lt;/strong>, &lt;strong>medium&lt;/strong>, &lt;strong>hard&lt;/strong>. Why a CSRF is not possible for &lt;strong>impossible&lt;/strong>?&lt;/p>
+&lt;h3 id="2-portswigger-academy">2. PortSwigger Academy&lt;/h3>
+&lt;p>You have 8 challenges here: &lt;a href="https://portswigger.net/web-security/all-labs#cross-site-request-forgery-csrf">https://portswigger.net/web-security/all-labs#cross-site-request-forgery-csrf&lt;/a>&lt;/p>
+&lt;h2 id="further-reading-1">Further reading&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://portswigger.net/web-security/csrf">https://portswigger.net/web-security/csrf&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://owasp.org/www-community/attacks/csrf">https://owasp.org/www-community/attacks/csrf&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html">CSRF Prevention Cheat Sheet&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>Web:</title><link>/web/09-privilege-escalation/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/09-privilege-escalation/readme/</guid><description>
+&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>When performing an attack on a target, the last step of a malicious actor, before achieving full system compromise, is to elevate his or her privileges to an administrative account. Once the attacker reached this phase and successully escalated his access rights, he can do anything with the vulnerable application or computer system.&lt;/p>
+&lt;h2 id="what-is-privilege-escalation">What is privilege escalation?&lt;/h2>
+&lt;p>Privilege escalation vulnerabilities are security issues that allow users to gain more permissions and a higher level of access to systems or applications than their administrators intended. These types of flaws are valuable for attackers because they&amp;rsquo;re needed for full exploit chains but can be overlooked by defenders or developers because of their lower severity scores.&lt;/p>
+&lt;p>In general, any violation of an intentional security boundary can be considered a privilege escalation issue, including gaining kernel access from a user application in an operating system, escaping a virtual machine to access the underlying hypervisor, gaining domain administrator access from a workstation, or gaining privileged roles in public web applications by exploiting misconfigurations.&lt;/p>
+&lt;p>There are two main types of privilege escalation:&lt;/p>
+&lt;ol>
+&lt;li>&lt;strong>Horizontal Privilege Escalation&lt;/strong> is when a user gains the access rights of another user who has the same access level as he or she does.&lt;/li>
+&lt;li>&lt;strong>Vertical Privilege Escalation&lt;/strong> is when an attacker uses a flaw in the system to gain access above what was intended for him or her.&lt;/li>
+&lt;/ol>
+&lt;h3 id="horizontal-privilege-escalation">Horizontal Privilege Escalation&lt;/h3>
+&lt;p>Gaining access to a user account with the same level of privileges as the malicious actor might sound a little weird, but there are legitimate use-cases for this. Think about the following scenario:&lt;/p>
+&lt;blockquote>
+&lt;p>Bob and Alice both have their own accounts at the same bank. Bob has malicious intents and exploits a misconfiguration to gain access to Alice&amp;rsquo;s account. Even though they have the same level of access to the application&amp;rsquo;s functionality, Bob can now access Alice&amp;rsquo;s personal information, and is able to alter her account, transfer money on her behalf and many other things.&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="vertical-privilege-escalation">Vertical Privilege Escalation&lt;/h3>
+&lt;p>Generally, when someone attempts to hack into a system, it’s because they want to perform some action on the system. This could be damaging the system or stealing information. Oftentimes, this requires a privilege level the attacker does not possess. This is where vertical privilege escalation comes in.&lt;/p>
+&lt;p>The attacker exploits a flaw in the system, abuses a misconfiguration, or uses another vector to elevate his privileges from a normal user to an administrator.&lt;/p>
+&lt;p>Once the attacker managed to elevate his access rights, he will be able to perform any action the compromised account was able to perform.&lt;/p>
+&lt;p>An actual scenario to better understand the potential damage:&lt;/p>
+&lt;blockquote>
+&lt;p>The attacker managed to capture the admin&amp;rsquo;s session cookies and takes over his session. Once logged in using the admin&amp;rsquo;s cookies, he has access to the administration panel of the web application. From here, he can steal sensitive information (such as users data), perform a Denial of Service (DoS) attack (by deleting website&amp;rsquo;s data), and create persistence (by locking out the actual administrators of the website).&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="application-vs-system-privesc">Application vs System PrivEsc&lt;/h2>
+&lt;p>In the context of Web Security, we can also speak of another way of categorizing privilege escalation:&lt;/p>
+&lt;ol>
+&lt;li>&lt;strong>Application Privilege Escalation&lt;/strong> is when the attacker uses the application accounts to gain further access to application functionality.&lt;/li>
+&lt;li>&lt;strong>System Privilege Escalation&lt;/strong> is when the attacker has already gained access to the underlying system where the web application runs and wishes to elevate his privileges to the administrator&amp;rsquo;s account of the server.&lt;/li>
+&lt;/ol>
+&lt;p>We have already given a few examples of application privilege escalations in thre previous section, so now we will focus on system privilege escalation.&lt;/p>
+&lt;h3 id="system-privilege-escalation">System Privilege Escalation&lt;/h3>
+&lt;p>Security best practices suggest a very useful principle, called the &lt;strong>Principle of Least Privilege&lt;/strong>, in which a user is given the minimum levels of access – or permissions – needed to perform his/her job functions.&lt;/p>
+&lt;p>Following this principle, web servers should always be run by an unprivileged user – say &lt;code>www-data&lt;/code> on a Linux system. The reciprocate of this is to &lt;strong>never&lt;/strong> run a web server as &lt;code>root&lt;/code>. This is &lt;em>very important&lt;/em>, as it adds an extra security layer in case the web application is compromised. If that happens, the attacker will have the same privileges on the system as the user running the application.&lt;/p>
+&lt;p>Let&amp;rsquo;s say that an attacker managed to find an &lt;strong>RCE vulnerability&lt;/strong> (Remote Code Execution) on the web application. If the application is run by &lt;code>root&lt;/code>, the attacker will be able to perform any command on the system with the same privileges as &lt;code>root&lt;/code>. If, however, the application is run as &lt;code>www-data&lt;/code>, the attacker will only have access to a small part of the system and will have to find another vulnerability to elevate his privileges.&lt;/p>
+&lt;h2 id="privilege-escalation-vectors">Privilege Escalation Vectors&lt;/h2>
+&lt;h3 id="application-vectors">Application Vectors&lt;/h3>
+&lt;p>First of all, let&amp;rsquo;s talk about how an attacker could perform a privilege escalation attack on the web application.&lt;/p>
+&lt;ol>
+&lt;li>&lt;strong>Broken Access Control&lt;/strong> - when a user can in fact access some resource or perform some action that they are not supposed to be able to access.&lt;/li>
+&lt;/ol>
+&lt;blockquote>
+&lt;p>&lt;strong>Example:&lt;/strong> The web application has an admin panel protected against unauthorized access, but uses API calls to retrieve users and perform actions. The developer forgot to secure these API endpoints with the same protection as the admin panel interface and the attacker discovered them, having unrestricted access to admin commands.&lt;/p>
+&lt;/blockquote>
+&lt;ol start="2">
+&lt;li>&lt;strong>Session Hijacking&lt;/strong> - when a user steals another user / administrator session cookies and impersonates him.&lt;/li>
+&lt;/ol>
+&lt;blockquote>
+&lt;p>&lt;strong>Example:&lt;/strong> The attacker found an XSS vulnerability / performed a Man in the Middle Attack and stole the session cookie of another user. Now he is able to impersonate that user in any request by using their cookies. If the compromised account is a normal user, it&amp;rsquo;s called horizontal privilege escalation. If it&amp;rsquo;s an administrator account, it&amp;rsquo;s called vertical privilege escalation.&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="system-vectors">System Vectors&lt;/h3>
+&lt;p>Finally, let&amp;rsquo;s analyze a few methods where an attacker could gain elevated privileges once he has a foothold of the system (is able to execute commands on the underlying system).&lt;/p>
+&lt;p>There are countless methods to elevate privileges on a Linux system. The key in finding them is to &lt;strong>enumerate&lt;/strong> the host for potential vectors.&lt;/p>
+&lt;ol>
+&lt;li>&lt;strong>Kernel Exploit&lt;/strong>
+&lt;ul>
+&lt;li>CVE-2016-5195 (&lt;a href="https://dirtycow.ninja/">DirtyCow&lt;/a>) - Linux Kernel &amp;lt;= &lt;code>3.19.0-73.8&lt;/code>.
+A race condition was found in the way the Linux kernel&amp;rsquo;s memory subsystem handled the copy-on-write (COW) breakage of private read-only memory mappings. An unprivileged local user could use this flaw to gain write access to otherwise read-only memory mappings and thus increase their privileges on the system.&lt;/li>
+&lt;li>sudo &amp;lt;= &lt;code>v1.28&lt;/code>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&amp;gt; sudo -u#-1 /bin/bash
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;pre tabindex="0">&lt;code>&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>More kernel exploits in this Git repos: &lt;a href="https://github.com/lucyoa/kernel-exploits">@lucyoa&lt;/a>, &lt;a href="https://github.com/offensive-security/exploitdb-bin-sploits/tree/master/bin-sploits">@offensive-security&lt;/a>.&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>Exploiting SUDO Rights / SUID Binaries&lt;/strong>
+&lt;ul>
+&lt;li>Sudo configuration might allow a user to execute some command with another user privileges without knowing the password:
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&amp;gt; sudo -l
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>User demo may run the following commands on demo-host:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ce5c00;font-weight:bold">(&lt;/span>root&lt;span style="color:#ce5c00;font-weight:bold">)&lt;/span> NOPASSWD: /usr/bin/vim
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;pre tabindex="0">&lt;code>is would allow the attacker to create a privileged shell:
+`bash
+sudo vim -c &amp;#39;!sh&amp;#39;
+&lt;/code>&lt;/pre>&lt;pre tabindex="0">&lt;code>&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>SUID Binaries. SUID/Setuid stands for &amp;ldquo;set user ID upon execution&amp;rdquo;, and it is enabled by default in every Linux distributions. If a file with this bit is ran, the &lt;code>uid&lt;/code> will be changed by the owner one. If the file owner is &lt;code>root&lt;/code>, the &lt;code>uid&lt;/code> will be changed to &lt;code>root&lt;/code> even if it was executed from user &lt;code>bob&lt;/code>. SUID bit is represented by an &lt;code>s&lt;/code>.
+Commands to list SUID binaries:
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&amp;gt; find / -perm -4000 -type f -exec ls -la &lt;span style="color:#ce5c00;font-weight:bold">{}&lt;/span> 2&amp;gt;/dev/null &lt;span style="color:#4e9a06">\;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; find / -uid &lt;span style="color:#0000cf;font-weight:bold">0&lt;/span> -perm -4000 -type f 2&amp;gt;/dev/null
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;pre tabindex="0">&lt;code>&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>&lt;a href="https://gtfobins.github.io/">GTFOBins&lt;/a> are a curated list of Unix binaries that can be exploited by an attacker to bypass local security restrictions.&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>Path Hijacking&lt;/strong>
+&lt;ul>
+&lt;li>Path Hijacking occurs when a program uses the relative path to another program instead of the absolute path. Consider the following Python code:
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#204a87;font-weight:bold">import&lt;/span> &lt;span style="color:#000">os&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">os&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;create_backup&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;pre tabindex="0">&lt;code>e `$PATH` variable is a Linux environment variable that specifies where to look for a specific binary when a full path is not provided. An attacker can exploit this mechanism by either being allowed to modify the `$PATH` variable or being able to write files inside directories specified there.
+, in order to exploit the above Python code, the attacker places a program called `create_backup` inside a location from the `$PATH` variable and Linux will execute the malicious program instead of the intended one.
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>Docker Privilege Escalation / Container Escape&lt;/strong>
+&lt;ul>
+&lt;li>This requires the user to be privileged enough to run docker, i.e. being in the &lt;code>docker&lt;/code> group or being &lt;code>root&lt;/code>.
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&amp;gt; docker run -v /:/mnt --rm -it alpine chroot /mnt sh
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;pre tabindex="0">&lt;code>e command above creates a new container based on the `Linux Alpine` image, mounts the `/` directory from the host on `/mnt` inside the container and runs it with `/bin/sh`. Now the attacker can read any file on the system.
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>Escaping Docker privileged containers. Docker privileged containers are those run with the &lt;code>--privileged&lt;/code> flag. Unlike regular containers, these have root privilege to the host machine. A detailed article can be read &lt;a href="https://betterprogramming.pub/escaping-docker-privileged-containers-a7ae7d17f5a1">here&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>Others&lt;/strong>
+&lt;ul>
+&lt;li>&lt;code>id&lt;/code> / &lt;code>whoami&lt;/code> - identify if the user is part of special groups, such as &lt;code>docker&lt;/code>, &lt;code>admin&lt;/code>, etc.&lt;/li>
+&lt;li>&lt;code>cat /etc/passwd&lt;/code> - list system users for potential privilege escalation&lt;/li>
+&lt;li>&lt;code>crontab -l&lt;/code> / &lt;code>ls -al /etc/cron* /etc/at*&lt;/code> - enumerate cron jobs (scheduled jobs) on the system.&lt;/li>
+&lt;li>&lt;code>ps aux&lt;/code> / &lt;code>ps -ef&lt;/code> - inspect running processes&lt;/li>
+&lt;li>&lt;code>find / -name authorized_keys 2&amp;gt; /dev/null&lt;/code> - find SSH authorized keys&lt;/li>
+&lt;li>&lt;code>find / -name id_rsa 2&amp;gt; /dev/null&lt;/code> - find SSH private keys&lt;/li>
+&lt;li>&lt;code>find / -type f -iname &amp;quot;.*&amp;quot; -ls 2&amp;gt;/dev/null&lt;/code> - find hidden files&lt;/li>
+&lt;li>&lt;code>grep --color=auto -rnw '/' -ie &amp;quot;PASSWORD&amp;quot; --color=always 2&amp;gt; /dev/null&lt;/code> - find files containing passwords.&lt;/li>
+&lt;li>Manually looking through web server logs, such as access or error logs for any sensitive information. Default locations for these logs:
+&lt;ul>
+&lt;li>&lt;code>/var/log/apache2/error.log&lt;/code>&lt;/li>
+&lt;li>&lt;code>/var/log/apache/access.log&lt;/code>&lt;/li>
+&lt;li>&lt;code>/var/log/apache2/access.log&lt;/code>&lt;/li>
+&lt;li>&lt;code>/etc/httpd/logs/access_log&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="tools">Tools&lt;/h3>
+&lt;p>There are many tools that automated the process of enumeration and could help you save a lot of time when looking for privilege escalation vectors. The best tool for Linux is &lt;a href="https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/linPEAS">LinPEAS&lt;/a>.&lt;/p>
+&lt;h2 id="preventing-privilege-escalation">Preventing Privilege Escalation&lt;/h2>
+&lt;p>When it comes to OS-level privilege escalation vulnerabilities, it&amp;rsquo;s vital to install security patches as soon as possible, not only for the OS, but for all third-party applications used on the system.&lt;/p>
+&lt;p>Application whitelisting technologies can be used to restrict which programs may run on a system, enabling organizations to reduce a machine&amp;rsquo;s attack surface. Making sure that unneeded services are turned off and that unused hardware components and drivers are disabled is also very important.&lt;/p>
+&lt;h2 id="further-reading">Further reading&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://www.csoonline.com/article/3564726/privilege-escalation-explained-why-these-flaws-are-so-valuable-to-hackers.html">https://www.csoonline.com/article/3564726/privilege-escalation-explained-why-these-flaws-are-so-valuable-to-hackers.html&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://portswigger.net/web-security/access-control">https://portswigger.net/web-security/access-control&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Linux%20-%20Privilege%20Escalation.md">https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Linux%20-%20Privilege%20Escalation.md&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://book.hacktricks.xyz/linux-unix/privilege-escalation">https://book.hacktricks.xyz/linux-unix/privilege-escalation&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://dirtycow.ninja/">https://dirtycow.ninja/&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/lucyoa/kernel-exploits">https://github.com/lucyoa/kernel-exploits&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/offensive-security/exploitdb-bin-sploits/tree/master/bin-sploits">https://github.com/offensive-security/exploitdb-bin-sploits/tree/master/bin-sploits&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gtfobins.github.io/">https://gtfobins.github.io/&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://betterprogramming.pub/escaping-docker-privileged-containers-a7ae7d17f5a1">https://betterprogramming.pub/escaping-docker-privileged-containers-a7ae7d17f5a1&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/linPEAS">https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/linPEAS&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://app.hackthebox.eu/machines">https://app.hackthebox.eu/machines&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="challenges">Challenges&lt;/h2>
+&lt;ul>
+&lt;li>Escalation&lt;/li>
+&lt;/ul></description></item><item><title>Web:</title><link>/web/10-best-practices/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/10-best-practices/readme/</guid><description>
+&lt;p>Session 10 content&lt;/p></description></item><item><title>Web:</title><link>/web/contributing/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/contributing/</guid><description>
+&lt;h1 id="contributing-to-the-web-security-track">Contributing to the Web Security Track&lt;/h1>
+&lt;p>We welcome contributions to the content and source code of the Web Security Track.
+You may contribute by:&lt;/p>
+&lt;ul>
+&lt;li>opening &lt;a href="https://github.com/security-summer-school/web/issues">issues&lt;/a>&lt;/li>
+&lt;li>taking part in &lt;a href="https://github.com/security-summer-school/web/discussions">discussions&lt;/a>&lt;/li>
+&lt;li>creating &lt;a href="https://github.com/security-summer-school/web//pulls">pull requests&lt;/a> to update the content&lt;/li>
+&lt;/ul>
+&lt;p>Before you make any contribution, make sure it follows the &lt;a href="https://github.com/security-summer-school/meta/blob/master/docs/contributing.md">community guide&lt;/a>.&lt;/p></description></item><item><title>Web:</title><link>/web/copying/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/copying/</guid><description>
+&lt;h1 id="license">License&lt;/h1>
+&lt;p>This repository consists of actual content (Markdown files, slides) and support code (for challenges and activities and for automation and deployment).
+Unless otherwise stated, actual content is licensed under the &lt;a href="https://creativecommons.org/licenses/by-sa/4.0/">Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) license&lt;/a>.
+Unless otherwise stated, support code is licensed under the &lt;a href="https://opensource.org/licenses/BSD-3-Clause">3-Clause BSD license&lt;/a> (SPDX short identifier: BSD-3-Clause).
+A copy of each license is below.&lt;/p>
+&lt;p>Copy of CC BY-SA 4.0:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>Attribution-NonCommercial-ShareAlike 4.0 International
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>=======================================================================
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creative Commons Corporation (&amp;#34;Creative Commons&amp;#34;) is not a law firm and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>does not provide legal services or legal advice. Distribution of
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creative Commons public licenses does not create a lawyer-client or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>other relationship. Creative Commons makes its licenses and related
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>information available on an &amp;#34;as-is&amp;#34; basis. Creative Commons gives no
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>warranties regarding its licenses, any material licensed under their
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>terms and conditions, or any related information. Creative Commons
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>disclaims all liability for damages resulting from their use to the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>fullest extent possible.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Using Creative Commons Public Licenses
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creative Commons public licenses provide a standard set of terms and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>conditions that creators and other rights holders may use to share
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>original works of authorship and other material subject to copyright
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>and certain other rights specified in the public license below. The
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>following considerations are for informational purposes only, are not
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>exhaustive, and do not form part of our licenses.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Considerations for licensors: Our public licenses are
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> intended for use by those authorized to give the public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> permission to use material in ways otherwise restricted by
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> copyright and certain other rights. Our licenses are
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> irrevocable. Licensors should read and understand the terms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> and conditions of the license they choose before applying it.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensors should also secure all rights necessary before
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> applying our licenses so that the public can reuse the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> material as expected. Licensors should clearly mark any
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> material not subject to the license. This includes other CC-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> licensed material, or material used under an exception or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> limitation to copyright. More considerations for licensors:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> wiki.creativecommons.org/Considerations_for_licensors
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Considerations for the public: By using one of our public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> licenses, a licensor grants the public permission to use the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> licensed material under specified terms and conditions. If
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the licensor&amp;#39;s permission is not necessary for any reason--for
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> example, because of any applicable exception or limitation to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> copyright--then that use is not regulated by the license. Our
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> licenses grant only permissions under copyright and certain
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> other rights that a licensor has authority to grant. Use of
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the licensed material may still be restricted for other
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> reasons, including because others have copyright or other
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rights in the material. A licensor may make special requests,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> such as asking that all changes be marked or described.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Although not required by our licenses, you are encouraged to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> respect those requests where reasonable. More considerations
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> for the public:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> wiki.creativecommons.org/Considerations_for_licensees
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>=======================================================================
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Public License
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>By exercising the Licensed Rights (defined below), You accept and agree
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>to be bound by the terms and conditions of this Creative Commons
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Attribution-NonCommercial-ShareAlike 4.0 International Public License
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>(&amp;#34;Public License&amp;#34;). To the extent this Public License may be
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>interpreted as a contract, You are granted the Licensed Rights in
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>consideration of Your acceptance of these terms and conditions, and the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Licensor grants You such rights in consideration of benefits the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Licensor receives from making the Licensed Material available under
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>these terms and conditions.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 1 -- Definitions.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a. Adapted Material means material subject to Copyright and Similar
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Rights that is derived from or based upon the Licensed Material
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>and in which the Licensed Material is translated, altered,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>arranged, transformed, or otherwise modified in a manner requiring
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>permission under the Copyright and Similar Rights held by the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Licensor. For purposes of this Public License, where the Licensed
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Material is a musical work, performance, or sound recording,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Adapted Material is always produced where the Licensed Material is
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>synched in timed relation with a moving image.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>b. Adapter&amp;#39;s License means the license You apply to Your Copyright
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>and Similar Rights in Your contributions to Adapted Material in
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>accordance with the terms and conditions of this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>c. BY-NC-SA Compatible License means a license listed at
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>creativecommons.org/compatiblelicenses, approved by Creative
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Commons as essentially the equivalent of this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>d. Copyright and Similar Rights means copyright and/or similar rights
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>closely related to copyright including, without limitation,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>performance, broadcast, sound recording, and Sui Generis Database
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Rights, without regard to how the rights are labeled or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>categorized. For purposes of this Public License, the rights
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>specified in Section 2(b)(1)-(2) are not Copyright and Similar
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Rights.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>e. Effective Technological Measures means those measures that, in the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>absence of proper authority, may not be circumvented under laws
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>fulfilling obligations under Article 11 of the WIPO Copyright
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Treaty adopted on December 20, 1996, and/or similar international
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>agreements.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>f. Exceptions and Limitations means fair use, fair dealing, and/or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>any other exception or limitation to Copyright and Similar Rights
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>that applies to Your use of the Licensed Material.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>g. License Elements means the license attributes listed in the name
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>of a Creative Commons Public License. The License Elements of this
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Public License are Attribution, NonCommercial, and ShareAlike.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>h. Licensed Material means the artistic or literary work, database,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>or other material to which the Licensor applied this Public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>i. Licensed Rights means the rights granted to You subject to the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>terms and conditions of this Public License, which are limited to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>all Copyright and Similar Rights that apply to Your use of the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Licensed Material and that the Licensor has authority to license.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>j. Licensor means the individual(s) or entity(ies) granting rights
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>under this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>k. NonCommercial means not primarily intended for or directed towards
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>commercial advantage or monetary compensation. For purposes of
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>this Public License, the exchange of the Licensed Material for
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>other material subject to Copyright and Similar Rights by digital
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>file-sharing or similar means is NonCommercial provided there is
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>no payment of monetary compensation in connection with the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>exchange.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>l. Share means to provide material to the public by any means or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>process that requires permission under the Licensed Rights, such
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>as reproduction, public display, public performance, distribution,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dissemination, communication, or importation, and to make material
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>available to the public including in ways that members of the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>public may access the material from a place and at a time
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>individually chosen by them.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>m. Sui Generis Database Rights means rights other than copyright
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>resulting from Directive 96/9/EC of the European Parliament and of
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>the Council of 11 March 1996 on the legal protection of databases,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>as amended and/or succeeded, as well as other essentially
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>equivalent rights anywhere in the world.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>n. You means the individual or entity exercising the Licensed Rights
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>under this Public License. Your has a corresponding meaning.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 2 -- Scope.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a. License grant.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">1.&lt;/span> Subject to the terms and conditions of this Public License,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the Licensor hereby grants You a worldwide, royalty-free,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> non-sublicensable, non-exclusive, irrevocable license to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> exercise the Licensed Rights in the Licensed Material to:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a. reproduce and Share the Licensed Material, in whole or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> in part, for NonCommercial purposes only; and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> b. produce, reproduce, and Share Adapted Material for
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> NonCommercial purposes only.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">2.&lt;/span> Exceptions and Limitations. For the avoidance of doubt, where
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Exceptions and Limitations apply to Your use, this Public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> License does not apply, and You do not need to comply with
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> its terms and conditions.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">3.&lt;/span> Term. The term of this Public License is specified in Section
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 6(a).
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">4.&lt;/span> Media and formats; technical modifications allowed. The
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensor authorizes You to exercise the Licensed Rights in
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> all media and formats whether now known or hereafter created,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> and to make technical modifications necessary to do so. The
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensor waives and/or agrees not to assert any right or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> authority to forbid You from making technical modifications
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> necessary to exercise the Licensed Rights, including
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> technical modifications necessary to circumvent Effective
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Technological Measures. For purposes of this Public License,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> simply making modifications authorized by this Section 2(a)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (4) never produces Adapted Material.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">5.&lt;/span> Downstream recipients.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a. Offer from the Licensor -- Licensed Material. Every
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> recipient of the Licensed Material automatically
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> receives an offer from the Licensor to exercise the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensed Rights under the terms and conditions of this
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> b. Additional offer from the Licensor -- Adapted Material.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Every recipient of Adapted Material from You
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> automatically receives an offer from the Licensor to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> exercise the Licensed Rights in the Adapted Material
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> under the conditions of the Adapter&amp;#39;s License You apply.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> c. No downstream restrictions. You may not offer or impose
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> any additional or different terms or conditions on, or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> apply any Effective Technological Measures to, the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensed Material if doing so restricts exercise of the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensed Rights by any recipient of the Licensed
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Material.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">6.&lt;/span> No endorsement. Nothing in this Public License constitutes or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> may be construed as permission to assert or imply that You
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> are, or that Your use of the Licensed Material is, connected
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> with, or sponsored, endorsed, or granted official status by,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the Licensor or others designated to receive attribution as
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> provided in Section 3(a)(1)(A)(i).
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>b. Other rights.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">1.&lt;/span> Moral rights, such as the right of integrity, are not
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> licensed under this Public License, nor are publicity,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> privacy, and/or other similar personality rights; however, to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the extent possible, the Licensor waives and/or agrees not to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> assert any such rights held by the Licensor to the limited
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> extent necessary to allow You to exercise the Licensed
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Rights, but not otherwise.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">2.&lt;/span> Patent and trademark rights are not licensed under this
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">3.&lt;/span> To the extent possible, the Licensor waives any right to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> collect royalties from You for the exercise of the Licensed
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Rights, whether directly or through a collecting society
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> under any voluntary or waivable statutory or compulsory
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> licensing scheme. In all other cases the Licensor expressly
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> reserves any right to collect such royalties, including when
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the Licensed Material is used other than for NonCommercial
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> purposes.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 3 -- License Conditions.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Your exercise of the Licensed Rights is expressly made subject to the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>following conditions.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a. Attribution.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">1.&lt;/span> If You Share the Licensed Material (including in modified
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> form), You must:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a. retain the following if it is supplied by the Licensor
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> with the Licensed Material:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> i. identification of the creator(s) of the Licensed
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Material and any others designated to receive
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> attribution, in any reasonable manner requested by
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the Licensor (including by pseudonym if
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> designated);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ii. a copyright notice;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> iii. a notice that refers to this Public License;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> iv. a notice that refers to the disclaimer of
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> warranties;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> v. a URI or hyperlink to the Licensed Material to the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> extent reasonably practicable;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> b. indicate if You modified the Licensed Material and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> retain an indication of any previous modifications; and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> c. indicate the Licensed Material is licensed under this
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Public License, and include the text of, or the URI or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> hyperlink to, this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">2.&lt;/span> You may satisfy the conditions in Section 3(a)(1) in any
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> reasonable manner based on the medium, means, and context in
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> which You Share the Licensed Material. For example, it may be
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> reasonable to satisfy the conditions by providing a URI or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> hyperlink to a resource that includes the required
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> information.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">3.&lt;/span> If requested by the Licensor, You must remove any of the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> information required by Section 3(a)(1)(A) to the extent
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> reasonably practicable.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>b. ShareAlike.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> In addition to the conditions in Section 3(a), if You Share
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Adapted Material You produce, the following conditions also apply.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">1.&lt;/span> The Adapter&amp;#39;s License You apply must be a Creative Commons
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> license with the same License Elements, this version or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> later, or a BY-NC-SA Compatible License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">2.&lt;/span> You must include the text of, or the URI or hyperlink to, the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Adapter&amp;#39;s License You apply. You may satisfy this condition
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> in any reasonable manner based on the medium, means, and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> context in which You Share Adapted Material.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">3.&lt;/span> You may not offer or impose any additional or different terms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> or conditions on, or apply any Effective Technological
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Measures to, Adapted Material that restrict exercise of the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rights granted under the Adapter&amp;#39;s License You apply.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 4 -- Sui Generis Database Rights.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Where the Licensed Rights include Sui Generis Database Rights that
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>apply to Your use of the Licensed Material:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a. for the avoidance of doubt, Section 2(a)(1) grants You the right
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>to extract, reuse, reproduce, and Share all or a substantial
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>portion of the contents of the database for NonCommercial purposes
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>only;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>b. if You include all or a substantial portion of the database
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>contents in a database in which You have Sui Generis Database
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Rights, then the database in which You have Sui Generis Database
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Rights (but not its individual contents) is Adapted Material,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>including for purposes of Section 3(b); and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>c. You must comply with the conditions in Section 3(a) if You Share
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>all or a substantial portion of the contents of the database.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>For the avoidance of doubt, this Section 4 supplements and does not
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>replace Your obligations under this Public License where the Licensed
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Rights include other Copyright and Similar Rights.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 5 -- Disclaimer of Warranties and Limitation of Liability.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a. UNLESS OTHERWISE SEPARATELY UNDERTAKEN BY THE LICENSOR, TO THE
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>EXTENT POSSIBLE, THE LICENSOR OFFERS THE LICENSED MATERIAL AS-IS
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>AND AS-AVAILABLE, AND MAKES NO REPRESENTATIONS OR WARRANTIES OF
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ANY KIND CONCERNING THE LICENSED MATERIAL, WHETHER EXPRESS,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>IMPLIED, STATUTORY, OR OTHER. THIS INCLUDES, WITHOUT LIMITATION,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARRANTIES OF TITLE, MERCHANTABILITY, FITNESS FOR A PARTICULAR
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PURPOSE, NON-INFRINGEMENT, ABSENCE OF LATENT OR OTHER DEFECTS,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ACCURACY, OR THE PRESENCE OR ABSENCE OF ERRORS, WHETHER OR NOT
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>KNOWN OR DISCOVERABLE. WHERE DISCLAIMERS OF WARRANTIES ARE NOT
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ALLOWED IN FULL OR IN PART, THIS DISCLAIMER MAY NOT APPLY TO YOU.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>b. TO THE EXTENT POSSIBLE, IN NO EVENT WILL THE LICENSOR BE LIABLE
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>TO YOU ON ANY LEGAL THEORY (INCLUDING, WITHOUT LIMITATION,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>NEGLIGENCE) OR OTHERWISE FOR ANY DIRECT, SPECIAL, INDIRECT,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>INCIDENTAL, CONSEQUENTIAL, PUNITIVE, EXEMPLARY, OR OTHER LOSSES,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>COSTS, EXPENSES, OR DAMAGES ARISING OUT OF THIS PUBLIC LICENSE OR
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>USE OF THE LICENSED MATERIAL, EVEN IF THE LICENSOR HAS BEEN
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ADVISED OF THE POSSIBILITY OF SUCH LOSSES, COSTS, EXPENSES, OR
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DAMAGES. WHERE A LIMITATION OF LIABILITY IS NOT ALLOWED IN FULL OR
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>IN PART, THIS LIMITATION MAY NOT APPLY TO YOU.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>c. The disclaimer of warranties and limitation of liability provided
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>above shall be interpreted in a manner that, to the extent
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>possible, most closely approximates an absolute disclaimer and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>waiver of all liability.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 6 -- Term and Termination.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a. This Public License applies for the term of the Copyright and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Similar Rights licensed here. However, if You fail to comply with
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>this Public License, then Your rights under this Public License
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>terminate automatically.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>b. Where Your right to use the Licensed Material has terminated under
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 6(a), it reinstates:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">1.&lt;/span> automatically as of the date the violation is cured, provided
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> it is cured within 30 days of Your discovery of the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> violation; or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#204a87;font-weight:bold">2.&lt;/span> upon express reinstatement by the Licensor.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> For the avoidance of doubt, this Section 6(b) does not affect any
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> right the Licensor may have to seek remedies for Your violations
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> of this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>c. For the avoidance of doubt, the Licensor may also offer the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Licensed Material under separate terms or conditions or stop
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>distributing the Licensed Material at any time; however, doing so
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>will not terminate this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>d. Sections 1, 5, 6, 7, and 8 survive termination of this Public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 7 -- Other Terms and Conditions.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a. The Licensor shall not be bound by any additional or different
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>terms or conditions communicated by You unless expressly agreed.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>b. Any arrangements, understandings, or agreements regarding the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Licensed Material not stated herein are separate from and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>independent of the terms and conditions of this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 8 -- Interpretation.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a. For the avoidance of doubt, this Public License does not, and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>shall not be interpreted to, reduce, limit, restrict, or impose
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>conditions on any use of the Licensed Material that could lawfully
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>be made without permission under this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>b. To the extent possible, if any provision of this Public License is
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>deemed unenforceable, it shall be automatically reformed to the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>minimum extent necessary to make it enforceable. If the provision
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cannot be reformed, it shall be severed from this Public License
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>without affecting the enforceability of the remaining terms and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>conditions.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>c. No term or condition of this Public License will be waived and no
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>failure to comply consented to unless expressly agreed to by the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Licensor.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>d. Nothing in this Public License constitutes or may be interpreted
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>as a limitation upon, or waiver of, any privileges and immunities
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>that apply to the Licensor or You, including from the legal
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>processes of any jurisdiction or authority.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>=======================================================================
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creative Commons is not a party to its public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>licenses. Notwithstanding, Creative Commons may elect to apply one of
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>its public licenses to material it publishes and in those instances
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>will be considered the “Licensor.” The text of the Creative Commons
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>public licenses is dedicated to the public domain under the CC0 Public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Domain Dedication. Except for the limited purpose of indicating that
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>material is shared under a Creative Commons public license or as
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>otherwise permitted by the Creative Commons policies published at
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>creativecommons.org/policies, Creative Commons does not authorize the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>use of the trademark &amp;#34;Creative Commons&amp;#34; or any other trademark or logo
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>of Creative Commons without its prior written consent including,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>without limitation, in connection with any unauthorized modifications
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>to any of its public licenses or any other arrangements,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>understandings, or agreements concerning use of licensed material. For
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>the avoidance of doubt, this paragraph does not form part of the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>public licenses.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creative Commons may be contacted at creativecommons.org.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Copy of BSD-3-Clause:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>Copyright 2021 University POLITEHNICA of Bucharest
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Redistribution and use in source and binary forms, with or without
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>modification, are permitted provided that the following conditions are met:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#204a87;font-weight:bold">1.&lt;/span> Redistributions of source code must retain the above copyright notice, this
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> list of conditions and the following disclaimer.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#204a87;font-weight:bold">2.&lt;/span> Redistributions in binary form must reproduce the above copyright notice,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> this list of conditions and the following disclaimer in the documentation
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> and/or other materials provided with the distribution.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#204a87;font-weight:bold">3.&lt;/span> Neither the name of the copyright holder nor the names of its contributors
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> may be used to endorse or promote products derived from this software
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> without specific prior written permission.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &amp;#34;AS IS&amp;#34; AND
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Web:</title><link>/web/reviewing/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/reviewing/</guid><description>
+&lt;h1 id="sss-reviewer-guidelines">SSS Reviewer Guidelines&lt;/h1>
+&lt;p>These are recommendations for reviewing contributions to SSS repositories.
+Reviewing is important to ensure high quality and consistency of content.
+As a reviewer, we trust you will vet contributions and provide constructive suggestions to update them to fit the SSS guidelines.&lt;/p>
+&lt;h2 id="activities--challenges">Activities / Challenges&lt;/h2>
+&lt;p>Make sure that activities / challenges are of good quality:&lt;/p>
+&lt;ul>
+&lt;li>Difficulty is properly set.&lt;/li>
+&lt;li>The topic of the activity / challenge is appropriate.&lt;/li>
+&lt;li>The provided solution is working.&lt;/li>
+&lt;li>Vulnerability and explanations are easy to understand.&lt;/li>
+&lt;/ul>
+&lt;h2 id="assets">Assets&lt;/h2>
+&lt;p>Check if all of them are used and mentioned in the content.
+If the assets are not original, make sure their license is compatible with &lt;a href="COPYING.md">ours&lt;/a> and that their source is properly cited.
+Verify that their names are appropriate and respect the following rules:&lt;/p>
+&lt;ul>
+&lt;li>Use dash between words (e.g. &lt;code>image-name.png&lt;/code>).&lt;/li>
+&lt;li>Use only lowercase ASCII characters.&lt;/li>
+&lt;/ul>
+&lt;h2 id="content">Content&lt;/h2>
+&lt;p>Make sure that the content is of good quality:&lt;/p>
+&lt;ul>
+&lt;li>It follows the general structure of a &lt;a href="https://github.com/security-summer-school/template-public/tree/master/session-name-1">session&lt;/a>.&lt;/li>
+&lt;li>Assets are displayed well.&lt;/li>
+&lt;li>Each sentence is on a separate line.&lt;/li>
+&lt;li>The content is easy to understand.&lt;/li>
+&lt;li>Wording and general spelling are correct.&lt;/li>
+&lt;li>Proper formatting is used (such as bold, italic, typewriter formats).&lt;/li>
+&lt;/ul>
+&lt;h2 id="working-on-pull-requests">Working on Pull Requests&lt;/h2>
+&lt;p>You will review contributions as pull requests, following the &lt;a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews">PR review guidelines from GitHub&lt;/a>.
+Contributions must follow the &lt;a href="CONTRIBUTING.md">contributing guidelines&lt;/a>.&lt;/p>
+&lt;p>Add your review as comments and request for changes to the PR until everything is ready to be approved.
+Add any comments regarding one or more explicit lines as review comments and only publish them together when submitting your review.
+Do not add each individual suggestion or comment as standalone.
+Before approving the PR, make sure that all GitHub Actions tests ended successfully.
+Once approved, either you or someone with proper access rights can use &lt;code>Rebase and merge&lt;/code> to merge the PR commits and integrate the contribution.&lt;/p></description></item></channel></rss>

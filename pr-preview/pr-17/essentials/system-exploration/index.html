@@ -1,0 +1,340 @@
+<!doctype html><html itemscope itemtype=http://schema.org/WebPage lang=en class=no-js><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=generator content="Hugo 0.101.0"><meta name=robots content="index, follow"><link rel="shortcut icon" href=/favicons/favicon.ico><link rel=apple-touch-icon href=/favicons/apple-touch-icon-180x180.png sizes=180x180><link rel=icon type=image/png href=/favicons/favicon-16x16.png sizes=16x16><link rel=icon type=image/png href=/favicons/favicon-32x32.png sizes=32x32><link rel=icon type=image/png href=/favicons/android-36x36.png sizes=36x36><link rel=icon type=image/png href=/favicons/android-48x48.png sizes=48x48><link rel=icon type=image/png href=/favicons/android-72x72.png sizes=72x72><link rel=icon type=image/png href=/favicons/android-96x96.png sizes=96x96><link rel=icon type=image/png href=/favicons/android-144x144.png sizes=144x144><link rel=icon type=image/png href=/favicons/android-192x192.png sizes=192x192><title>Security Summer School</title><meta name=description content="System Exploration Introduction In the previous session, we introduced the Linux OS family via Kali Linux. With its help, we learned about the terminal and about basic file navigation commands, such as ls, cd, mkdir, rm. We also talked about processes and the ps command.
+In today&amp;rsquo;s session, we&amp;rsquo;ll extend these concepts and learn some new commands, that we&amp;rsquo;ll use in order to further explore our systems. We won&amp;rsquo;t be learning any new Python tricks, but we&amp;rsquo;ll be using it for scripts none"><meta property="og:title" content><meta property="og:description" content="System Exploration Introduction In the previous session, we introduced the Linux OS family via Kali Linux. With its help, we learned about the terminal and about basic file navigation commands, such as ls, cd, mkdir, rm. We also talked about processes and the ps command.
+In today&rsquo;s session, we&rsquo;ll extend these concepts and learn some new commands, that we&rsquo;ll use in order to further explore our systems. We won&rsquo;t be learning any new Python tricks, but we&rsquo;ll be using it for scripts none"><meta property="og:type" content="article"><meta property="og:url" content="/essentials/system-exploration/"><meta property="article:section" content="essentials"><meta property="og:site_name" content="Security Summer School"><meta itemprop=name content><meta itemprop=description content="System Exploration Introduction In the previous session, we introduced the Linux OS family via Kali Linux. With its help, we learned about the terminal and about basic file navigation commands, such as ls, cd, mkdir, rm. We also talked about processes and the ps command.
+In today&rsquo;s session, we&rsquo;ll extend these concepts and learn some new commands, that we&rsquo;ll use in order to further explore our systems. We won&rsquo;t be learning any new Python tricks, but we&rsquo;ll be using it for scripts none"><meta itemprop=wordCount content="3806"><meta itemprop=keywords content><meta name=twitter:card content="summary"><meta name=twitter:title content><meta name=twitter:description content="System Exploration Introduction In the previous session, we introduced the Linux OS family via Kali Linux. With its help, we learned about the terminal and about basic file navigation commands, such as ls, cd, mkdir, rm. We also talked about processes and the ps command.
+In today&rsquo;s session, we&rsquo;ll extend these concepts and learn some new commands, that we&rsquo;ll use in order to further explore our systems. We won&rsquo;t be learning any new Python tricks, but we&rsquo;ll be using it for scripts none"><link rel=preload href=/scss/main.min.5aef8a3f4159801f5dbe642e33f5332212e837eda91d37dcd891fdcd5c32498a.css as=style><link href=/scss/main.min.5aef8a3f4159801f5dbe642e33f5332212e837eda91d37dcd891fdcd5c32498a.css rel=stylesheet integrity><script src=https://code.jquery.com/jquery-3.6.0.min.js integrity=sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK crossorigin=anonymous></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-00000000-0","auto"),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></head><body class=td-page><header><nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar"><a class=navbar-brand href=/><span class=navbar-logo><svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 500" style="enable-background:new 0 0 500 500"><g><path style="fill:#fff" d="M116.8525 421.9722c-5.7041.0-10.3442-4.3127-10.3442-9.6129V88.183c0-5.3002 4.6401-9.6117 10.3442-9.6117H320.858c3.0347.0 9.3959.5498 11.7506 2.6302l.3545.3442 58.905 63.2912c2.3101 2.491 2.9202 8.4928 2.9202 11.3184v256.2039c0 5.3002-4.6407 9.6129-10.3436 9.6129H116.8525z"/><g><g><g><path style="fill:#767676" d="M384.4445 423.2066H116.852c-6.3839.0-11.5786-4.8658-11.5786-10.8474V88.1831c0-5.9804 5.1947-10.8461 11.5786-10.8461h204.0062c.377.0 9.2786.0329 12.568 2.9389l.3947.3833 58.9508 63.337c3.2135 3.4652 3.2514 11.7924 3.2514 12.1593v256.2036C396.0231 418.3408 390.8284 423.2066 384.4445 423.2066zM116.5079 411.9189c.0848.0278.1999.0531.3441.0531h267.5925c.1442.0.2581-.0253.3441-.0531V156.1556c-.0076-.9033-.3593-3.7347-.7034-5.0037l-57.6527-61.9416c-1.4651-.3176-4.4533-.6389-5.5742-.6389H116.852c-.143.0-.2594.024-.3441.0531V411.9189zm267.4533-261.149zM327.0321 89.371v.0013V89.371z"/></g></g></g><g><g><path style="fill:#5b7fc0" d="M189.0874 210.1754l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.025 2.454-11.4897 6.4116-15.4473C177.5953 212.627 183.0601 210.1742 189.0874 210.1754zm7.993 21.8576c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403S197.0816 234.1722 197.0804 232.033z"/><path style="opacity:.3;fill:#fff" d="M189.0898 210.176c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 212.6276 183.0612 210.176 189.0898 210.176zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 236.239 197.0839 234.2399 197.0839 232.0372z"/><g><defs><path id="SVGID_1_" d="M194.7376 237.6875c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.999 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 234.2399 196.1861 236.239 194.7376 237.6875z"/></defs><clipPath id="SVGID_2_"><use xlink:href="#SVGID_1_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_2_);fill:#fff" d="M190.0704 225.0237c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 225.7247 191.9774 225.0237 190.0704 225.0237z"/><path style="opacity:.13;clip-path:url(#SVGID_2_);fill:#020202" d="M190.0704 225.0237c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 225.7247 191.9774 225.0237 190.0704 225.0237z"/></g><g><defs><path id="SVGID_3_" d="M189.0898 210.176c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 212.6276 183.0612 210.176 189.0898 210.176zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 236.239 197.0839 234.2399 197.0839 232.0372z"/></defs><clipPath id="SVGID_4_"><use xlink:href="#SVGID_3_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_4_);fill:#5b7fc0" d="M172.6595 215.6045c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8612 12.0547.0024 21.8636-9.797 21.8613-21.8612.0024-3.8475-1.0151-7.6326-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 209.1953 176.6171 211.647 172.6595 215.6045z"/></g></g><rect x="198.8952" y="225.1043" style="fill:#5b7fc0" width="122.6266" height="13.8671"/></g><g><path style="fill:#d95140" d="M189.0874 155.7611l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.0249 2.454-11.4897 6.4116-15.4473C177.5953 158.2128 183.0601 155.7599 189.0874 155.7611zm7.993 21.8577c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403C196.2508 181.7667 197.0816 179.758 197.0804 177.6188z"/><path style="opacity:.3;fill:#fff" d="M189.0898 155.7617c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 158.2134 183.0612 155.7617 189.0898 155.7617zm7.9941 21.8613c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 181.8248 197.0839 179.8256 197.0839 177.623z"/><g><defs><path id="SVGID_5_" d="M194.7376 183.2733c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.9989 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 179.8256 196.1861 181.8248 194.7376 183.2733z"/></defs><clipPath id="SVGID_6_"><use xlink:href="#SVGID_5_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_6_);fill:#fff" d="M190.0704 170.6095c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 171.3104 191.9774 170.6095 190.0704 170.6095z"/><path style="opacity:.13;clip-path:url(#SVGID_6_);fill:#020202" d="M190.0704 170.6095c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 171.3104 191.9774 170.6095 190.0704 170.6095z"/></g><g><defs><path id="SVGID_7_" d="M189.0898 155.7617c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 158.2134 183.0612 155.7617 189.0898 155.7617zm7.9941 21.8613c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 181.8248 197.0839 179.8256 197.0839 177.623z"/></defs><clipPath id="SVGID_8_"><use xlink:href="#SVGID_7_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_8_);fill:#d95140" d="M172.6595 161.1903c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8613 12.0547.0024 21.8636-9.797 21.8613-21.8613.0024-3.8474-1.0151-7.6326-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 154.7811 176.6171 157.2327 172.6595 161.1903z"/></g><rect x="198.8952" y="170.69" style="fill:#d95140" width="122.6266" height="13.8671"/></g><g><g><path style="fill:#56a55c" d="M189.5379 264.6147l.0012-.0012c7.7751.0012 15.0294 4.1862 18.932 10.9235 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032-5.8394.0-11.3281-2.2733-15.458-6.4032-4.13-4.13-6.4032-9.6186-6.4056-15.4628.0012-6.0249 2.454-11.4897 6.4116-15.4472C178.0458 267.0663 183.5105 264.6135 189.5379 264.6147zm7.993 21.8576c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6538 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403C196.7013 290.6202 197.5321 288.6115 197.5309 286.4723z"/><path style="opacity:.3;fill:#fff" d="M189.5403 264.6153c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8065-21.8612-21.8613.0-6.0285 2.4516-11.492 6.4116-15.452C178.0482 267.0669 183.5117 264.6153 189.5403 264.6153zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.6366 290.6783 197.5344 288.6792 197.5344 286.4765z"/><g><defs><path id="SVGID_9_" d="M195.1881 292.1268c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.9989 7.9942-7.9941 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.5344 288.6792 196.6366 290.6783 195.1881 292.1268z"/></defs><clipPath id="SVGID_10_"><use xlink:href="#SVGID_9_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_10_);fill:#fff" d="M190.5209 279.463c-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7446-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9941 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C194.239 280.164 192.4279 279.463 190.5209 279.463z"/><path style="opacity:.13;clip-path:url(#SVGID_10_);fill:#020202" d="M190.5209 279.463c-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7446-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9941 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C194.239 280.164 192.4279 279.463 190.5209 279.463z"/></g><g><defs><path id="SVGID_11_" d="M189.5403 264.6153c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8065-21.8612-21.8613.0-6.0285 2.4516-11.492 6.4116-15.452C178.0482 267.0669 183.5117 264.6153 189.5403 264.6153zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.6366 290.6783 197.5344 288.6792 197.5344 286.4765z"/></defs><clipPath id="SVGID_12_"><use xlink:href="#SVGID_11_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_12_);fill:#56a55c" d="M173.11 270.0439c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8613 12.0547.0024 21.8636-9.797 21.8613-21.8613.0024-3.8474-1.0151-7.6326-2.9353-10.9462-3.8977-6.7325-11.1497-10.9151-18.926-10.9151C182.5311 263.6346 177.0676 266.0863 173.11 270.0439z"/></g></g><rect x="199.3456" y="279.5436" style="fill:#56a55c" width="122.6266" height="13.8671"/></g><g><g><path style="fill:#f1bc42" d="M189.0874 318.7208l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3305-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.025 2.454-11.4897 6.4116-15.4472C177.5953 321.1724 183.0601 318.7196 189.0874 318.7208zm7.993 21.8576c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403S197.0816 342.7176 197.0804 340.5784z"/><path style="opacity:.3;fill:#fff" d="M189.0898 318.7214c7.7763.0 15.0283 4.1826 18.926 10.915 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8612-12.0547.0024-21.8636-9.8065-21.8612-21.8612.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 321.173 183.0612 318.7214 189.0898 318.7214zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 344.7844 197.0839 342.7853 197.0839 340.5826z"/><g><defs><path id="SVGID_13_" d="M194.7376 346.2329c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.999 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 342.7853 196.1861 344.7844 194.7376 346.2329z"/></defs><clipPath id="SVGID_14_"><use xlink:href="#SVGID_13_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_14_);fill:#fff" d="M190.0704 333.5691c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0834 6.1218 2.8788C193.7885 334.2701 191.9774 333.5691 190.0704 333.5691z"/><path style="opacity:.13;clip-path:url(#SVGID_14_);fill:#020202" d="M190.0704 333.5691c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0834 6.1218 2.8788C193.7885 334.2701 191.9774 333.5691 190.0704 333.5691z"/></g><g><defs><path id="SVGID_15_" d="M189.0898 318.7214c7.7763.0 15.0283 4.1826 18.926 10.915 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8612-12.0547.0024-21.8636-9.8065-21.8612-21.8612.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 321.173 183.0612 318.7214 189.0898 318.7214zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 344.7844 197.0839 342.7853 197.0839 340.5826z"/></defs><clipPath id="SVGID_16_"><use xlink:href="#SVGID_15_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_16_);fill:#f1bc42" d="M172.6595 324.15c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8612 12.0547.0024 21.8636-9.797 21.8613-21.8612.0024-3.8474-1.0151-7.6327-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 317.7407 176.6171 320.1924 172.6595 324.15z"/></g></g><rect x="198.8952" y="333.6497" style="fill:#f1bc42" width="122.6266" height="13.8671"/></g></g></svg></span><span class=font-weight-bold>Security Summer School</span></a><div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar><ul class="navbar-nav mt-2 mt-lg-0"><li class="nav-item mr-4 mb-2 mb-lg-0"><a class=nav-link href=/binary/><span>Binary Exploitation</span></a></li><li class="nav-item mr-4 mb-2 mb-lg-0"><a class="nav-link active" href=/essentials/><span class=active>Security Essentials</span></a></li><li class="nav-item mr-4 mb-2 mb-lg-0"><a class=nav-link href=/web/><span>Web Security</span></a></li><li class="nav-item mr-4 mb-2 mb-lg-0"><a class=nav-link href=/community/><span>Community</span></a></li><li class="nav-item mr-4 mb-2 mb-lg-0"><a class=nav-link href=/docs/><span>Documentation</span></a></li></ul></div><div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off></div></nav></header><div class="container-fluid td-outer"><div class=td-main><div class="row flex-xl-nowrap"><aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none"><div id=td-sidebar-menu class=td-sidebar__inner><form class="td-sidebar__search d-flex align-items-center"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off>
+<button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-section-nav aria-expanded=false aria-label="Toggle section navigation"></button></form><nav class="collapse td-sidebar-nav" id=td-section-nav><ul class="td-sidebar-nav__section pr-md-3 ul-0"><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-essentials-li><a href=/essentials/ title class="align-left pl-0 td-sidebar-link td-sidebar-link__section tree-root" id=m-essentials><span>Security Essentials</span></a><ul class=ul-1><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-essentialswelcome-to-linux-li><a href=/essentials/welcome-to-linux/ title class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-essentialswelcome-to-linux><span>01. Welcome to Linux</span></a></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-essentialssystem-exploration-li><a href=/essentials/system-exploration/ title class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-essentialssystem-exploration><span class=td-sidebar-nav-active-item>02. System Exploration</span></a></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-essentialsexplaining-the-internet-li><a href=/essentials/explaining-the-internet/ title class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-essentialsexplaining-the-internet><span>03. Explaining the Internet</span></a></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-essentialsrediscovering-the-browser-li><a href=/essentials/rediscovering-the-browser/ title class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-essentialsrediscovering-the-browser><span>04. (Re)Discovering the Browser</span></a></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-essentialshacking-the-web-li><a href=/essentials/hacking-the-web/ title class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-essentialshacking-the-web><span>05. Hacking the Web</span></a></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-essentialsdata-representation-li><a href=/essentials/data-representation/ title class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-essentialsdata-representation><span>06. Data Representation</span></a></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-essentialsdata-security-li><a href=/essentials/data-security/ title class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-essentialsdata-security><span>07. Data Security</span></a></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-essentialsapplication-lifetime-li><a href=/essentials/application-lifetime/ title class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-essentialsapplication-lifetime><span>08. Application Lifetime</span></a></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-essentialsbinary-analysis-li><a href=/essentials/binary-analysis/ title class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-essentialsbinary-analysis><span>09. Binary Analysis</span></a></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-essentialsassembly-language-li><a href=/essentials/assembly-language/ title class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-essentialsassembly-language><span>10. Assembly Language</span></a></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-essentialstaming-the-stack-li><a href=/essentials/taming-the-stack/ title class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-essentialstaming-the-stack><span>11. Taming the Stack</span></a></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-essentialscontributing-li><a href=/essentials/contributing/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-essentialscontributing><span></span></a></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-essentialscopying-li><a href=/essentials/copying/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-essentialscopying><span></span></a></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-essentialsreviewing-li><a href=/essentials/reviewing/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-essentialsreviewing><span></span></a></li></ul></li></ul></nav></div></aside><aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none"><div class="td-page-meta ml-2 pb-1 pt-2 mb-0"><a href=https://github.com/security-summer-school/security-summer-school.github.io/tree/main/content/en/essentials/system-exploration/index.md class=td-page-meta--view target=_blank rel=noopener><i class="fa fa-file-alt fa-fw"></i> View page source</a>
+<a href=https://github.com/security-summer-school/security-summer-school.github.io/edit/main/content/en/essentials/system-exploration/index.md class=td-page-meta--edit target=_blank rel=noopener><i class="fa fa-edit fa-fw"></i> Edit this page</a>
+<a href="https://github.com/security-summer-school/security-summer-school.github.io/new/main/content/en/essentials/system-exploration/index.md?filename=change-me.md&value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60getting-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A" class=td-page-meta--child target=_blank rel=noopener><i class="fa fa-edit fa-fw"></i> Create child page</a>
+<a href="https://github.com/security-summer-school/security-summer-school.github.io/issues/new?title=" class=td-page-meta--issue target=_blank rel=noopener><i class="fas fa-tasks fa-fw"></i> Create documentation issue</a>
+<a href=https://github.com/security-summer-school/issues/new class=td-page-meta--project-issue target=_blank rel=noopener><i class="fas fa-tasks fa-fw"></i> Create project issue</a>
+<a id=print href=/essentials/_print/><i class="fa fa-print fa-fw"></i> Print entire section</a></div><div class=td-toc><nav id=TableOfContents><ul><li><a href=#introduction>Introduction</a></li><li><a href=#reminders-and-prerequisites>Reminders and Prerequisites</a></li><li><a href=#continuing-our-exploration>Continuing Our Exploration</a><ul><li><a href=#tree-of-life>Tree of Life</a></li><li><a href=#find-your-way>Find Your Way</a></li><li><a href=#globbing>Globbing</a></li><li><a href=#redirecting-streams>Redirecting Streams</a></li><li><a href=#less-is-more>Less is More</a></li><li><a href=#grep>Grep</a></li></ul></li><li><a href=#inspecting-files>Inspecting Files</a><ul><li><a href=#file><code>file</code></a></li><li><a href=#strings><code>strings</code></a></li></ul></li><li><a href=#summary>Summary</a></li><li><a href=#activities>Activities</a><ul><li><a href=#challenge-surgical-precision>Challenge: Surgical Precision</a></li><li><a href=#challenge-empty-files>Challenge: Empty Files</a></li><li><a href=#challenge-find-us-if-you-can>Challenge: Find Us If You Can</a></li><li><a href=#challenge-not-your-doge>Challenge: Not Your Doge</a></li></ul></li><li><a href=#further-reading>Further Reading</a></li><li><a href=#forensics>Forensics</a><ul><li><a href=#regular-expressions>Regular Expressions</a></li></ul></li></ul></nav></div></aside><main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main><nav aria-label=breadcrumb class=td-breadcrumbs><ol class=breadcrumb><li class=breadcrumb-item><a href=/essentials/>Security Essentials</a></li><li class="breadcrumb-item active" aria-current=page><a href=/essentials/system-exploration/ aria-disabled=true class="btn-link disabled">02. System Exploration</a></li></ol></nav><div class=td-content><h1></h1><header class=article-meta></header><h1 id=system-exploration>System Exploration</h1><h2 id=introduction>Introduction</h2><p>In the <a href=../welcome-to-linux>previous session</a>, we introduced the Linux OS family via Kali Linux.
+With its help, we learned about the terminal and about basic file navigation commands, such as <code>ls</code>, <code>cd</code>, <code>mkdir</code>, <code>rm</code>.
+We also talked about processes and the <code>ps</code> command.</p><p>In today&rsquo;s session, we&rsquo;ll extend these concepts and learn some new commands, that we&rsquo;ll use in order to further <strong>explore</strong> our systems.
+We won&rsquo;t be learning any new Python tricks, but we&rsquo;ll be using it for scripts none</p><h2 id=reminders-and-prerequisites>Reminders and Prerequisites</h2><p>For this session, you need to have a good understanding of last session&rsquo;s Linux concepts:</p><ul><li>using the <code>man</code> pages;</li><li>using <code>Tab</code>;</li><li>navigating the file system;</li><li>creating and deleting new entries in the file system.</li></ul><p>Make sure you have rehearsed and practiced them before the beginning of today&rsquo;s session.</p><h2 id=continuing-our-exploration>Continuing Our Exploration</h2><p>In the challenge <code>Did You Look Everywhere</code> from the previous session, you had to <strong>manually</strong> look for the <code>.flag</code> file in the given hierarchy.
+This, as you probably remember, was slow and frustrating.
+We need some means by which to view <strong>an entire hierarchy</strong> at once, or to look for specific files.</p><p>Good news: such means do exist.</p><h3 id=tree-of-life>Tree of Life</h3><p>The <code>tree</code> command does what its name suggests: it displays a tree representation of a directory hierarchy.</p><pre tabindex=0><code>root@kali:~# tree /lib/cryptsetup/
+/lib/cryptsetup/
+├── askpass
+├── checks
+│   ├── blkid
+│   ├── ext2
+│   ├── swap
+│   ├── un_blkid
+│   └── xfs
+├── cryptdisks-functions
+├── functions
+└── scripts
+    ├── decrypt_derived
+    ├── decrypt_gnupg
+    ├── decrypt_gnupg-sc
+    ├── decrypt_keyctl
+    ├── decrypt_opensc
+    ├── decrypt_ssl
+    └── passdev
+</code></pre><p>We can also specify a <strong>maximum depth</strong> for <code>tree</code>&rsquo;s traversal.
+Look up the parameter in <code>tree</code>&rsquo;s <code>man</code> page.
+Once you&rsquo;ve found it, use it in order to set a maximum depth of 2 for the <code>/opt</code> folder.
+Your output should look like this:</p><pre tabindex=0><code>root@kali:~# tree &lt;add your paramtere here&gt; /opt/
+/opt/
+├── google
+│   └── chrome
+└── Teeth
+    ├── cache
+    ├── etc
+    ├── housekeep
+    ├── README.txt
+    ├── static
+    └── units
+</code></pre><p>Note that if you set the maximum depth to 1, <code>tree</code> essentially becomes a fancier looking <code>ls</code>.</p><h3 id=find-your-way>Find Your Way</h3><p>As far as exploration goes, <code>tree</code> is a pretty strong tool.
+It is capable of instantly displaying an entire file hierarchy.</p><p>But sometimes we have to deal with a large hierarchy in which we know what we&rsquo;re looking for.</p><p>As an example, let&rsquo;s look for the <code>memc.h</code> header file of the Linux kernel.
+It&rsquo;s a small file that defines a tiny part of the communication between the GPU and RAM.
+The header files corresponding to the version of your kernel are located in <code>/usr/src/linux-headers-5.6.0-kali2-common</code>.
+Now go look for <code>memc.h</code>.
+Good luck!
+You should find it by&mldr; <em>tomorrow</em>.</p><p>But don&rsquo;t look for it manually.
+This would be stupid.
+You know what the name of the file is and you know the folder where to <strong>find</strong> it.
+That&rsquo;s a lot of information already.
+There is a Linux command that&rsquo;s useful for looking for files with certain particularities (such as names, size, access rights etc.) in a file hierarchy.
+Which is exactly what we need!
+This command is called <code>find</code>.
+It outputs all files in a directory (and its subdirectories) that match some given properties.
+Look up its syntax in the <code>man</code> page.
+Look for the string &ldquo;EXAMPLES&rdquo;.
+It should lead you to a section at the end of the <code>man</code> page, which gives you a series of detailed examples of the command&rsquo;s usage.</p><p>From them and from the commands general description at the beginning of the <code>man</code> page, we can see that <code>find</code> is generally used like this:</p><pre tabindex=0><code>root@kali:~# find &lt;where to look&gt; &lt;what to look for&gt;
+</code></pre><ul><li><code>&lt;where to look></code> is quite self-explanatory: it&rsquo;s a path in the file system, from where <code>find</code> will start to look for what whe told it.
+This means that <code>find</code> traverse the file system <em>down</em> from the path it&rsquo;s given by looking exhaustively into each of its directories.</li><li><code>&lt;what to look for></code> is where things get more intersting.
+We&rsquo;ve already said that we can look for files that match certain properties, such as names, permissions, sizes, types and so on.
+Each of these properties can be specified as follows:</li></ul><p><code>find</code> can take many more parameters, as described below.</p><h4 id=type><code>type</code></h4><p>This parameter allows us to select either regular files (<code>-type f</code>), or directories (<code>-type d</code>) and so on.
+Here&rsquo;s an example:</p><pre tabindex=0><code>$ find /some/random/path -type d
+</code></pre><p>This command will list all subdirectories in <code>/some/random/path</code>.</p><h4 id=size><code>size</code></h4><p>Filters files by size.
+For example, we can look for all files whose sizes are 100 bytes using this command</p><pre tabindex=0><code>$ find /some/random/path -size 100c
+</code></pre><p>The <code>c</code> at the end specifies that we&rsquo;re using bytes as unit of measurement.
+The size can also be specified in:</p><ul><li><strong>kibibytes</strong> (1024 bytes) using the letter <code>k</code>;</li><li><strong>mebibytes</strong> (1024 kibibytes) using the letter <code>M</code>;</li><li><strong>gibibytes</strong> (1024 mebibytes) using the letter <code>G</code>;</li></ul><p>But looking for files with <strong>exactly</strong> a given size seldom happens.
+It is more often the case that we&rsquo;re looking for files <em>smaller</em> or <em>larger</em> than some value.
+For this reason, we may use the <code>-</code> (smaller) or <code>+</code> signs before the actual size, like this:</p><pre tabindex=0><code>$ find /some/random/path -size +100k  # Find all files with a size larger than 100kB.
+</code></pre><h4 id=name><code>name</code></h4><p>This is the simplest property.
+It&rsquo;s for when you&rsquo;re looking for a file with a certain name.
+For finding the file <code>my_file</code>, it goes like this:</p><pre tabindex=0><code>find /some/random/path -name my_file
+</code></pre><p>This parameter is the one we need for our current task.
+In order to find the file <code>memc.h</code>, we&rsquo;ll run:</p><pre tabindex=0><code>root@kali:~# find /usr/src/linux-headers-5.6.0-kali2-common/ -name memc.h
+/usr/src/linux-headers-5.6.0-kali2-common/arch/arm/include/asm/hardware/memc.h
+root@kali:~# cat /usr/src/linux-headers-5.6.0-kali2-common/arch/arm/include/asm/hardware/memc.h
+/* SPDX-License-Identifier: GPL-2.0-only */
+[...]
+#endif
+</code></pre><h3 id=globbing>Globbing</h3><p>But what if we only knew a portion of our filename?
+Or what if we intentionally wanted to find all files ending in <code>.log</code>, for instance?</p><p>For this, we need to use the concept of <strong>globbing</strong>.
+This mechanism defines a set of special characters that are interpreted differently than regular ASCII text.</p><h4 id=-0-or-more-characters><code>*</code>: 0 or more characters</h4><p>The <code>*</code> character is interpreted as any number of characters of any type.
+Basically, <code>*</code> stands for everything and nothing.
+Take a look at the example below:</p><pre tabindex=0><code>root@kali:~# ls D*
+Desktop:
+
+Documents:
+
+Downloads:
+</code></pre><p>The <code>*</code> makes <code>ls</code>&rsquo;s parameter <strong>match</strong> any file name that starts with <code>D</code>.
+You can use <code>*</code> anywhere in your parameter.
+Moreover, any command that takes a file name as input accepts the globbing syntax.
+Here&rsquo;s another example:</p><pre tabindex=0><code>root@kali:~# find /usr/src/linux-headers-5.6.0-kali2-common -name *group*  # List all linux kernel header files whose names contain the word &#34;group&#34;
+/usr/src/linux-headers-5.6.0-kali2-common/arch/s390/include/asm/ccwgroup.h
+[...]
+/usr/src/linux-headers-5.6.0-kali2-common/include/uapi/linux/cgroupstats.h
+</code></pre><p>The most commonly used globbing examples (apart from <code>*</code>) are listed below.</p><h4 id=-one-or-more-characters><code>+</code>: one or more characters</h4><p>This symbol is very similar to <code>*</code>.
+However, <code>+</code> needs at least one character in order to match the specific string.</p><h4 id=ranges>Ranges</h4><p><code>[]</code> represents a <em>range</em>.
+Let&rsquo;s look at the following range: <code>[a-f]</code>.
+It starts at <code>a</code> and ends with <code>f</code>, inclusively.
+<code>[0-9]</code>, for example, matches any digit.
+Likewise, <code>[A-Z]</code> matches any capital leter, and so on.</p><p>You can combine ranges.
+For instance, <code>[a-zA-Z]</code> matches any letter.</p><h4 id=sets>Sets</h4><p>In order to represent a set of characters to be matched, <code>{}</code> are used.
+<code>{a,0,m,b}</code> matches <em>either</em> <code>a</code>, <code>0</code>, <code>m</code> or <code>b</code>.</p><h4 id=escaping>Escaping</h4><p>What if we want to match the <code>*</code> character itself?
+Or any of the special characters above, such as <code>+</code>, <code>[</code>, <code>]</code>, <code>{</code> and <code>}</code>?
+Obviously, we can match <strong>any</strong> character.
+The special characters can be matched by <strong>escaping</strong> them.</p><p>Escaping is the practice of specifying that a symbol be interpreted as a regular character and not as part of a globbing expression.
+This feature is achieved by placing a <code>\</code> character before any special globbing character that you want to escape.
+Here are a few examples:</p><ul><li><code>\*</code>: matches a literal <code>*</code>;</li><li><code>\[</code>: matches a literal <code>[</code>;</li><li><code>{\+,\}}</code>: matches either a literal <code>+</code>, or a literal <code>}</code>.</li></ul><p>You can <strong>combine</strong> escaped characters and globbing expressions as you please.</p><h3 id=redirecting-streams>Redirecting Streams</h3><p>Any process (remember that Linux commands are processes, too) uses 3 implicit data streams.</p><h4 id=standard-input-stdin>Standard Input (<code>stdin</code>)</h4><p>This is the &ldquo;place&rdquo; from where the process reads its data.
+Many processes read data from the keyboard:</p><ul><li><code>man</code>&rsquo;s <code>stdin</code> is the keyboard because it reads user commands and interprets them in order to navigate the current <code>man</code> page.</li><li><code>bash</code>&rsquo;s <code>stdin</code> is also the keyboard.
+<code>bash</code> reads user input, that is typed into the terminal and then executes those commands.</li></ul><p>The main alternative to getting input from the terminal is using a file.
+Strictly from a teaching standpoint, unless given a file, <code>cat</code> reads its input from the terminal (kinda useless, we know).
+Let&rsquo;s showcase the usage of <code>stdin</code> redirection.
+First, let&rsquo;s use <code>cat</code> without redirection.</p><pre tabindex=0><code>root@kali:~# cat  # Read input from the terminal.
+SSS Rulz!
+SSS Rulz!
+^C
+root@kali:~# # We used Ctrl + C to close the above cat process.
+</code></pre><p>Now let&rsquo;s redirect <code>cat</code>&rsquo;s input to a file.
+We use <code>&lt;</code> in order to redirect <code>stdin</code>.</p><pre tabindex=0><code>root@kali:~# cat &lt; essentials/README.md 
+# Security Summer School: Security Essentials Track
+[...]
+</code></pre><p>Let&rsquo;s look more closely at what happens here, as opposed to running <code>cat essentials/README.md</code>:</p><ul><li><code>cat essentials/README.md</code> makes the <code>cat</code> command itself open the <code>essentials/README.md</code> file and read bytes from it;</li><li><code>cat &lt; essentials/README.md</code> has <strong>the underlying <code>bash</code> process</strong> read the <code>essentials/README.md</code> file and <strong>feed its content</strong> to <code>cat</code>, which is now reading input <strong>from the underlying <code>bash</code> process</strong>.</li></ul><p>The same output is printed, but the mechanism now differs entirely.</p><h4 id=standard-output-stdout>Standard Output (<code>stdout</code>)</h4><p><code>stdout</code> is the complement of <code>stdin</code>.
+A processes output is generally displayed to <code>stdout</code>.
+Generally, this stream is also the terminal.
+We&rsquo;ve already seen this feature when running almost any command so far.</p><pre tabindex=0><code>root@kali:~# ls
+Desktop    essentials           Music     Public         Videos
+Documents  ghidra_9.1.2_PUBLIC  peda      %SystemDrive%
+Downloads  libc-database        Pictures  Templates
+</code></pre><p>We&rsquo;ve seen this output may times in the previous session.
+The names of the directories and files inside the current folder are printed <strong>to <code>stdout</code></strong>, i.e. to the terminal.</p><p>Let&rsquo;s redirect <code>ls</code>&rsquo;s output to a file:</p><pre tabindex=0><code>root@kali:~# ls &gt; ls_output
+</code></pre><p>Notice that now there is <em>seemingly</em> no output.
+In reality, it does exist, but is written by <code>ls</code> to the <code>ls_output</code> file instead of the standard <code>stdout</code> stream (the terminal).</p><pre tabindex=0><code>root@kali:~# cat ls_output  # The same files as before. Their layout changes, though.
+Desktop
+Documents
+Downloads
+essentials
+ghidra_9.1.2_PUBLIC
+libc-database
+Music
+out
+peda
+Pictures
+Public
+%SystemDrive%
+Templates
+Videos
+</code></pre><h4 id=standard-error-stderr>Standard Error (<code>stderr</code>)</h4><p>Sometimes commands fail.
+If you haven&rsquo;t encountered one, you haven&rsquo;t been using Linux for long enough.
+Here&rsquo;s a simple error:</p><pre tabindex=0><code>root@kali:~# ls whatever
+ls: cannot access &#39;whatever&#39;: No such file or directory
+</code></pre><p>The error message (<code>ls: cannot access 'whatever': No such file or directory</code>) is displayed to the terminal, so it would make sense for it to be printed by <code>ls</code> to <code>stdout</code>, right?
+Well&mldr; no.
+It&rsquo;s printed to another stream, called <code>stderr</code>.
+As its name implies, this stream is dedicated to error messages.
+This distinction was made in order for users to be able to separate between useful / legitimate output and sometimes unimportant error messages.</p><p>Redirecting <code>stderr</code> is performed using 2 characters: <code>2></code>.</p><pre tabindex=0><code>root@kali:~# ls whatever 2&gt; ls_error
+root@kali:~# # No error message. The error itself still did happen.
+root@kali:~# cat ls_error  # I told you so...
+ls: cannot access &#39;whatever&#39;: No such file or directory
+</code></pre><h4 id=appending>Appending</h4><p>Let&rsquo;s redirect <code>ls</code>&rsquo;s output multiple times:</p><pre tabindex=0><code>root@kali:~# ls essentials &gt; out
+root@kali:~# cat out
+application-lifetime
+assembly-language
+binary-analysis
+data-representation
+data-security
+explaining-the-internet
+hacking-the-web
+README.md
+rediscovering-the-browser
+system-exploration
+taming-the-stack
+welcome-to-linux
+root@kali:~# ls &gt; out
+root@kali:~# cat out
+Desktop
+Documents
+Downloads
+essentials
+ghidra_9.1.2_PUBLIC
+libc-database
+Music
+out
+peda
+Pictures
+Public
+%SystemDrive%
+Templates
+Videos
+</code></pre><p>As you can see, when the second <code>ls</code> output is written to the <code>out</code> file, the first output is <strong>overwritten</strong>.
+This sucks in case we want to generate large output files, such as logs.</p><p>But fear not!
+Instead, remember last session&rsquo;s Python crash course.
+More specifically, remember <code>open</code>&rsquo;s parameters.
+The second one was <code>mode</code> and one of the modes is <em>append</em>, symbolised by the <code>a</code> character.
+This mode makes any text that&rsquo;s written to that specific file to be added at the end of whatever data was already inside it, without overwriting anything.</p><p>We need something similar to that, which can be achieved by using <code>>></code> for redirecting <code>stdin</code> and <code>2>></code> for redirecting <code>stderr</code>.
+Here&rsquo;s how it works for the previous <code>ls</code> commands:</p><pre tabindex=0><code>root@kali:~# ls essentials &gt; out  # This command also creates the out file. It is irrelevant whether we use &gt; or &gt;&gt;.
+root@kali:~# cat out
+application-lifetime
+assembly-language
+binary-analysis
+data-representation
+data-security
+explaining-the-internet
+hacking-the-web
+README.md
+rediscovering-the-browser
+system-exploration
+taming-the-stack
+welcome-to-linux
+root@kali:~# ls &gt;&gt; out  # This is where the overwriting took place. We&#39;ve now changed command to use &gt;&gt;.
+root@kali:~# cat out
+application-lifetime
+[...]
+Videos
+</code></pre><p>Lovely!</p><h4 id=pipes>Pipes</h4><p>Up to now, we&rsquo;ve looked at how to redirect the basic streams of a process to files.
+But what if we wanted to redirect <strong>one stream of a process into the stream of another process</strong>?
+Of course we can do this, too, by using the <strong>pipe</strong> (<code>|</code>).</p><p>To demonstrate the usage of pipes, we&rsquo;ll introduces the <code>tac</code> command.
+Notice it&rsquo;s <code>cat</code> in reverse.
+This is not arbitrary.
+If <code>cat</code> displays the <strong>lines</strong> in a file <strong>in order</strong>, <code>tac</code> does the same, but <strong>in reverse order</strong>.
+Let&rsquo;s exemplify using the global <code>README.md</code>:</p><pre tabindex=0><code>root@kali:~# tac essentials/README.md
+1. [Taming the Stack](./taming-the-stack)
+1. [Assembly Language](./assembly-language)
+1. [Binary Analysis](./binary-analysis)
+1. [Application Lifetime](./application-lifetime)
+1. [Data Security](./data-security)
+1. [Data Representation](./data-representation)
+1. [Hacking the Web](./hacking-the-web)
+1. [(Re)Discovering the Browser](./rediscovering-the-browser)
+1. [Explaining the Internet](./explaining-the-internet)
+1. [System Exploration](./system-exploration)
+1. [Welcome to Linux](./welcome-to-linux)
+Sessions are:
+
+There, you will find a `README.md` file with the session documentation and, if it&#39;s the case, subfolders with support data for the challenges.
+Each session is located in its specific folder.
+
+Welcome to the Security Essentials Track of the Security Summer School.
+
+# Security Summer School: Security Essentials Track
+</code></pre><p>Now let&rsquo;s actually use a pipe.
+We&rsquo;ll also use a command from before, so we keep things simple.
+Let&rsquo;s find all Linux kernel header files whose names contain the word &ldquo;group&rdquo; and then print them <strong>in reverse order</strong>:</p><pre tabindex=0><code>find /usr/src/linux-headers-5.6.0-kali2-common -name *group* | tac
+</code></pre><p>Notice this output is the one you saw in section <a href=#-0-or-more-characters><code>*</code>: 0 or more characters</a>, but in reverse.</p><h4 id=xargs><code>xargs</code></h4><p>We&rsquo;ve seen how powerful pipes are.
+Remember that pipes redirect the <code>stdout</code> of the first command into the second&rsquo;s <code>stdin</code>.
+But what if we wanted to redirect the same <code>stdout</code> as command line parameters for the second command?</p><p>This is when we would use <code>| xargs</code>.
+Let&rsquo;s assume this hypothetical command:</p><pre tabindex=0><code>$ cmd1 | xargs cmd2
+</code></pre><p>where <code>cmd1</code> and <code>cmd2</code> are hypothetical commands.
+The <code>| xargs</code> keyword makes <strong>every line</strong> from the <code>stdout</code> of <code>cmd1</code> be passed <strong>as a separate parameter</strong> to <code>cmd2</code>.</p><p>A very powerful use case of <code>xargs</code> is <code>find ... | xargs grep ...</code>.
+Such commands allow us to look for strings in all files that match certain criteria <strong>at once</strong>.
+Let&rsquo;s showcase this by inspecting all log files about the <code>systemd</code> process:</p><pre tabindex=0><code># find /var/log -type f -name *log | xargs grep systemd
+</code></pre><h3 id=less-is-more>Less is More</h3><p>Try running the following command:</p><pre tabindex=0><code>root@kali:~# tree -L 2 /
+</code></pre><p>You can see that its output is rather huge.
+For large directory hierarchies, <code>tree</code>&rsquo;s output can be overwhelming.
+The same thing can happen when running <code>find</code> commands.</p><p>We&rsquo;ve already seen how we can trim such outputs down by <code>grep</code>ping them, but sometimes we have no criterion on which to do so.
+In these situations, we have no alternative but to look at the entire output.
+In order to do so in more easily, we can use the <code>less</code> command.</p><p>First of all, <code>less</code> can be used just like you would use <code>cat</code>.
+Run the commands below.
+You can navigate inside <code>less</code> the same way you can navigate inside <code>man</code>.
+<strong>And you definitely remember how to navigate inside <code>man</code>!!!</strong></p><pre tabindex=0><code>root@kali:~# cat /var/log/syslog  # Never ending logs...
+[...]
+root@kali:~# less /var/log/syslog  # Much better.
+</code></pre><p>Inside <code>less</code>, try searching for the string &ldquo;network&rdquo;.</p><p><strong>Remember:</strong> Don&rsquo;t scroll your terminal.
+It doesn&rsquo;t look cool.
+Use <code>less</code>!</p><h3 id=grep>Grep</h3><p><code>find</code> has taught us how to use various criteria in order to filter throigh a file hierarhcy.
+This is definitely useful, but we can do better.
+<code>find</code> is highly capable of filtering output based on the files&rsquo; <strong>metadata</strong>, i.e. &ldquo;surface level&rdquo; information, such as sizes, names and so on.</p><p>It would be really useful if we had a means to filter files <strong>based on their content</strong>.
+And we do!
+This tool is called <code>grep</code>.
+<code>grep</code> is capable of matching strings based on the contents of files, not just on their names.</p><p>Let&rsquo;s look for the &ldquo;stdin&rdquo; string in this README:</p><pre tabindex=0><code>root@kali:~# grep &#34;stdin&#34; essentials/system-exploration/README.md
+#### Standard Input (`stdin`)
+- `man`&#39;s `stdin` is the keyboard because it reads user commands and interprets them in order to navigate the current `man` page.
+- `bash`&#39;s `stdin` is also the keyboard.
+Let&#39;s showcase the usage of `stdin` redirection.
+We use `&lt;` in order to redirect `stdin`.
+`stdout` is the complement of `stdin`.
+We need something similar to that, which can be achieved by using `&gt;&gt;` for redirecting `stdin` and `2&gt;&gt;` for redirecting `stderr`.
+</code></pre><p>As you can see, <code>grep</code> outputs the <strong>lines that contain the given string</strong>.
+This makes <code>grep</code> extremely useful for looking for CTF flags.
+We simply need to <code>grep "SSS"</code>.</p><h4 id=grep-a-file-hierarchy>Grep a File Hierarchy</h4><p>At this point, you may be tempted to believe that we can only <code>grep</code> a single file.
+Nope.
+We can even <code>grep</code> strings in entire file hierarchies, which is extremely powerful.</p><p>Let&rsquo;s <code>grep</code> the <code>task_struct</code> symbol in our kernel&rsquo;s header files.
+This symbol is a C <code>struct</code> that contains all the information associated with any Linux process.</p><pre tabindex=0><code>root@kali:~# grep -R &#34;task_struct&#34; /usr/src/linux-headers-5.6.0-kali2-common | less  # The output is rather large, so we contain it with less.
+</code></pre><p><strong>Remember this distinction:</strong> <code>find</code> looks for file <strong>metadata</strong> (names, permissions, size, type), while <code>grep</code> looks for file <strong>data</strong>.</p><h2 id=inspecting-files>Inspecting Files</h2><p>Now that we can find our way inside a file hierarchy, we need a means by which to inspect those files.
+<code>grep</code> works just fine, provided we&rsquo;re dealing with text files.
+But what if we aren&rsquo;t?</p><p>In this case, we&rsquo;ll need to taka a sneak peak into some <em>binary analysis</em>.
+We&rsquo;ll get back to this subject starting from from Session <a href=../data-representation>Data Representation</a>.</p><h3 id=file><code>file</code></h3><p>First, we want to get some more detailed information about what type of binary file we are dealing with specifically.
+<code>ls</code> already gives us information such as the file&rsquo;s name, size and permissions.
+This is all fine, but this information is common to all files. Whether we&rsquo;re dealing with an image, or with an executable file <code>ls</code> won&rsquo;t tell us.</p><p>But <code>file</code> does.
+<code>file</code> works by reading a file&rsquo;s header (the first few bytes at the beginning of the file, which hold information about its format and type).
+Thus, it is capable of outputting more precise information than <code>ls</code>.
+Let&rsquo;s test it using one of today&rsquo;s challenges, <code>activities/05-challenge_not-your-doge/public/not-doge.pnm</code>.</p><pre tabindex=0><code>root@kali:~/essentials/system-exploration# file activities/05-challenge_not-your-doge/public/not-doge.pnm
+activities/05-challenge_not-your-doge/public/not-doge.pnm: Netpbm image data, size = 500 x 590, rawbits, pixmap
+</code></pre><h3 id=strings><code>strings</code></h3><p>One of the most basic forms of binary analysis is to simply look for any human-readable string present in a binary file.
+For this purpose, we&rsquo;ll use the <code>strings</code> command.</p><h4 id=tutorial-doge>Tutorial: Doge</h4><p>The best way to showcase the <code>strings</code> command is to use it in order to find our first flag for today.
+Head to the <code>activities/doge/public</code> folder and take a look at the image you&rsquo;ve been given.</p><p>Since this section is dedicated to the <code>strings</code> command, we&rsquo;ll run this command on our <code>doge.jpg</code> file:</p><pre tabindex=0><code>root@kali:~/essentials/system-exploration/activities/doge/public# strings doge.jpg
+JFIF
+[...]
+eP!_&#34;
+</code></pre><p>So there are lots of human-readable strings in this image, but very few, if any, actually make any sense.
+In order to filter them out, we&rsquo;ll use what we&rsquo;ve learned today: <code>|</code> + <code>grep</code>.
+We&rsquo;ll try to find the flag itself.
+Maybe we get lucky.</p><pre tabindex=0><code>root@kali:~/essentials/system-exploration/activities/doge/public# strings doge.jpg | grep SSS
+&lt;there should be a flag here&gt;
+</code></pre><p>That&rsquo;s how you use <code>strings</code>: often in combination with some filtering mechanism, such as <code>grep</code>.</p><p>Another way to get the flag is to run the <code>file</code> command:</p><pre tabindex=0><code>root@kali:~/essentials/system-exploration# file activities/doge/public/doge.jpg 
+activities/doge/public/doge.jpg: JPEG image data, JFIF standard 1.01, aspect ratio, density 1x1, segment length 16, comment: &#34;SSS{grep_your_strings}&#34;, progressive, precision 8, 500x500, components 3
+</code></pre><p>The flag is included in the file as a comment.
+Image comments are often used in CTFs in order to hide some more subtle information, such as hints.
+Always remember to check them out.</p><h2 id=summary>Summary</h2><p>Here are a few useful snippets from today&rsquo;s session:</p><ul><li><code>grep -R "some string" /some/path</code>: recursively looks for &ldquo;some string&rdquo; inside all the files in the <code>some/path</code> directory;</li><li><code>find /some/path -name *flag* -type f</code>: recursively searches for regular files in the <code>/some/path</code> directory, whose names include the word <code>flag</code>;</li><li><code>cat large_file | grep SSS</code>: looks for the <code>SSS</code> string in a large file, so you don&rsquo;t have to do this manually;</li><li><code>find some/path &lt;some criteria> | xargs grep SSS</code>: look for the <code>SSS</code> string in each file that matches some specified criteria.</li></ul><h2 id=activities>Activities</h2><h3 id=challenge-surgical-precision>Challenge: Surgical Precision</h3><p>There are many false flags out there.
+Answer the questions and find the <strong>real</strong> flags.
+The quizzes cover subjects discussed today and during the previous session.
+Think of them as a recap.</p><p>The answer to each of the riddles in the files <code>question-*</code> from the <code>activities/surgical-precision/public</code> is the name of one of the given files.
+When you&rsquo;ve found an answer, upload the flag in that file.</p><p>Beware of <a href=https://en.wikipedia.org/wiki/Red_herring>red herrings</a>!</p><h3 id=challenge-empty-files>Challenge: Empty Files</h3><p>So many empty files&mldr;
+Nevertheless, you must find the flag!</p><h3 id=challenge-find-us-if-you-can>Challenge: Find Us If You Can</h3><p>This is a two-stage challenge.
+The first flag is somewhere on the remote system.
+Use the hint it comes with, in order to figure out the second flag as well.</p><h3 id=challenge-not-your-doge>Challenge: Not Your Doge</h3><p>The image is in <code>.pnm</code> format.
+It has a rather simple header, that you can find <a href=https://en.wikipedia.org/wiki/Netpbm#PPM_example>here</a>(<code>.pnm</code>s are almost the same as <code>.ppm</code>s; it&rsquo;s just the data encoding that differs).
+But it&rsquo;s incomplete.
+Find a way to reveal it completely.</p><h2 id=further-reading>Further Reading</h2><h2 id=forensics>Forensics</h2><p>The greater CTF topic of today has been <strong>forensics</strong>.
+It&rsquo;s probably one of the vastest and most diverse topics out there, because it doesn&rsquo;t really fit into many patterns.
+You can read more about forensics <a href=https://trailofbits.github.io/ctf/forensics/>here</a>.</p><h3 id=regular-expressions>Regular Expressions</h3><p>Regular expressions are like globs on steroids.
+They provide a huge step-up in terms of expressiveness.
+As expected, they&rsquo;re also more difficult to understand.</p><p>By default, <code>grep</code> actually matches regular expressions, not just raw strings.
+<code>find</code> can also look fore files matching regular expressions, by using the <code>-regex</code> and <code>-regextype</code> parameters (yes, there are multiple regex syntaxes).</p><p>A good point from which to start learning how to use regular expressions are these resources:</p><ul><li><a href=https://medium.com/factory-mind/regex-tutorial-a-simple-cheatsheet-by-examples-649dc1c3f285>https://medium.com/factory-mind/regex-tutorial-a-simple-cheatsheet-by-examples-649dc1c3f285</a></li><li><a href=https://regexone.com/>https://regexone.com/</a></li></ul><p>For testing your regular expressions before using them, <a href=https://regex101.com/>this website</a> is king.</p><p>Once you&rsquo;ve got the hang of regular expressions, test your skills in the <a href=https://regexcrossword.com/>Regex Crossword</a>.
+Yes, such a thing really does exist and it&rsquo;s as crazy as you might think.
+Give it a try!</p><p>Moreover, most programming languages have libraries for regular expressions.
+Python can do so, too.
+Take a look at its <a href=https://docs.python.org/3/library/re.html>regex module</a>.</p><style>.feedback--answer{display:inline-block}.feedback--answer-no{margin-left:1em}.feedback--response{display:none;margin-top:1em}.feedback--response__visible{display:block}</style><div class=d-print-none><h2 class=feedback--title>Feedback</h2><p class=feedback--question>Was this page helpful?</p><button class="btn btn-primary mb-4 feedback--answer feedback--answer-yes">Yes</button>
+<button class="btn btn-primary mb-4 feedback--answer feedback--answer-no">No</button><p class="feedback--response feedback--response-yes">Glad to hear it! Please <a href=https://github.com/security-summer-school/security-summer-school.github.io/issues/new>tell us how we can improve</a>.</p><p class="feedback--response feedback--response-no">Sorry to hear that. Please <a href=https://github.com/security-summer-school/security-summer-school.github.io/issues/new>tell us how we can improve</a>.</p></div><script>const yesButton=document.querySelector(".feedback--answer-yes"),noButton=document.querySelector(".feedback--answer-no"),yesResponse=document.querySelector(".feedback--response-yes"),noResponse=document.querySelector(".feedback--response-no"),disableButtons=()=>{yesButton.disabled=!0,noButton.disabled=!0},sendFeedback=e=>{if(typeof ga!="function")return;const t={command:"send",hitType:"event",category:"Helpful",action:"click",label:window.location.pathname,value:e};ga(t.command,t.hitType,t.category,t.action,t.label,t.value)};yesButton.addEventListener("click",()=>{yesResponse.classList.add("feedback--response__visible"),disableButtons(),sendFeedback(1)}),noButton.addEventListener("click",()=>{noResponse.classList.add("feedback--response__visible"),disableButtons(),sendFeedback(0)})</script><br></div></main></div></div><footer class="bg-dark py-5 row d-print-none"><div class="container-fluid mx-sm-5"><div class=row><div class="col-6 col-sm-4 text-xs-center order-sm-2"><ul class="list-inline mb-0"><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=Discord aria-label=Discord><a class=text-white target=_blank rel=noopener href=https://bit.ly/DiscordSecuritySummerSchool aria-label=Discord><i class="fab fa-discord"></i></a></li><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=Facebook aria-label=Facebook><a class=text-white target=_blank rel=noopener href=https://www.facebook.com/SSSUPB/ aria-label=Facebook><i class="fab fa-facebook"></i></a></li><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=Youtube aria-label=Youtube><a class=text-white target=_blank rel=noopener href=https://bit.ly/YoutubeSecuritySummerSchool aria-label=Youtube><i class="fab fa-youtube"></i></a></li></ul></div><div class="col-6 col-sm-4 text-right text-xs-center order-sm-3"><ul class="list-inline mb-0"><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=GitHub aria-label=GitHub><a class=text-white target=_blank rel=noopener href=https://github.com/security-summer-school aria-label=GitHub><i class="fab fa-github"></i></a></li></ul></div><div class="col-12 col-sm-4 text-center py-2 order-sm-2"><small class=text-white>&copy; 2022 Open-Source Contributors. All Rights Reserved</small></div></div></div></footer></div><script src=https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js integrity=sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js integrity="sha512-UR25UO94eTnCVwjbXozyeVd6ZqpaAE9naiEUBK/A+QDbfSTQFhPGj5lOR6d8tsgbBk84Ggb5A3EkjsOgPRPcKA==" crossorigin=anonymous></script>
+<script src=/js/tabpane-persist.js></script>
+<script src=/js/main.min.aa9f4c5dae6a98b2c46277f4c56f1673a2b000d1756ce4ffae93784cab25e6d5.js integrity="sha256-qp9MXa5qmLLEYnf0xW8Wc6KwANF1bOT/rpN4TKsl5tU=" crossorigin=anonymous></script></body></html>
