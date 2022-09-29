@@ -1,5 +1,5 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Security Summer School – Contribution guidelines</title><link>/docs/contribution-guidelines/</link><description>Recent content in Contribution guidelines on Security Summer School</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/contribution-guidelines/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Contributor guidelines</title><link>/docs/contribution-guidelines/contributor-guideline/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/contribution-guidelines/contributor-guideline/</guid><description>
-&lt;h2 id="first-steps">First Steps&lt;/h2>
+&lt;h2 id="first-step">First Step&lt;/h2>
 &lt;p>Some good first steps and best practices when using Git are explained here:&lt;/p>
 &lt;ul>
 &lt;li>the Git Immersion tutorial: &lt;a href="https://gitimmersion.com/">https://gitimmersion.com/&lt;/a>&lt;/li>
