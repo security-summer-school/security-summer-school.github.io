@@ -8,7 +8,7 @@ description: >
   Make sure you follow them whenever you make a contribution.
 ---
 
-## First Steps
+## First Step
 
 Some good first steps and best practices when using Git are explained here:
 
