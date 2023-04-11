@@ -3880,7 +3880,7 @@ The company had to make a public announcement asking users to reset their passwo
 Web application frameworks provide common solutions for a wide variety of tasks such as database access, input filtering for security purposes, authentication, session handling and templates for website development.&lt;/p>
 &lt;p>There are several different types of web application frameworks:&lt;/p>
 &lt;ul>
-&lt;li>General purpose website frameworks (Ruby On Rails)&lt;/li>
+&lt;li>General purpose website frameworks (Ruby On Rails, ExpressJS, Django, Flask)&lt;/li>
 &lt;li>Discussion forums, wikis and weblogs (WikiBase/WikiWikiWeb)&lt;/li>
 &lt;li>Organizational portals (JBoss Portal)&lt;/li>
 &lt;li>Content Management Systems (CMS) (Joomla, Drupal, Wordpress)&lt;/li>
@@ -3925,7 +3925,7 @@ Drupal provides a back-end framework for at least 2.3% of all websites worldwide
 According to builtwith.com, 473 of the Quantcast top 10,000 websites use Drupal, and that number jumps up to 4,341 when you look at the top 100,000.&lt;/p>
 &lt;p>Drupal introduced a Form API in Drupal 6 which allowed alteration of the form data during the form rendering process.
 In 2018, Drupal released a patch adding just a single class, &lt;em>RequestSanitizer&lt;/em>, with a &lt;em>stripDangerousValues&lt;/em> method that resets all the items in an input array for keys that start with a hash sign.
-This method sanitizes input data in $_GET, $_POST &amp;amp; $_COOKIES during the very early stages of Drupal’s bootstrap (immediately after loading the site configurations).
+This method sanitizes input data in &lt;code>$_GET&lt;/code>, &lt;code>$_POST&lt;/code> and &lt;code>$_COOKIES&lt;/code> during the very early stages of Drupal’s bootstrap (immediately after loading the site configurations).
 It can be assumed that the reason why the patch was released is to make an existing vulnerability harder to find.&lt;/p>
 &lt;p>The vulnerability was found in the forms.
 The user registration form which requires no authentication and can be accessed anonymously contains multiple input fields and can be exploited.&lt;/p>
