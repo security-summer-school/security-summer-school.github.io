@@ -10104,6 +10104,679 @@ This means we use English for content, support code, commit messages, pull reque
 &lt;li>Also make sure one pull request covers only &lt;strong>one&lt;/strong> topic.&lt;/li>
 &lt;li>How a good commit message should look like: &lt;a href="https://cbea.ms/git-commit/">https://cbea.ms/git-commit/&lt;/a>.&lt;/li>
 &lt;li>The use of &lt;code>-s&lt;/code> / &lt;code>--signoff&lt;/code> when creating a commit is optional, but strongly recommended.&lt;/li>
+&lt;/ul></description></item><item><title>Web:</title><link>/web/securing-communication/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/securing-communication/</guid><description>
+&lt;h1 id="securing-communication">Securing Communication&lt;/h1>
+&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>As part of this session, we look into how HTTP connections can be made secure, to prevent attacks that capture traffic, also called &lt;a href="https://www.thesslstore.com/blog/man-in-the-middle-attack-2/">man-in-the-middle (MitM) attacks&lt;/a>.
+The session is focused on understanding certificates and HTTPS and investigating configurations of existing setups.&lt;/p>
+&lt;h2 id="reminders-and-prerequisites">Reminders and Prerequisites&lt;/h2>
+&lt;p>HTTP (&lt;em>Hypertext Transfer Protocol&lt;/em>) is the main protocol of the web.
+It has several characteristics:&lt;/p>
+&lt;ul>
+&lt;li>it is plain text&lt;/li>
+&lt;li>it doesn&amp;rsquo;t maintain an active connection&lt;/li>
+&lt;li>it&amp;rsquo;s a request-response protocol&lt;/li>
+&lt;li>it provides a series of codes to mark the types of requests and replies&lt;/li>
+&lt;li>HTTP requests consists of paths (routes) that are mapped to resources&lt;/li>
+&lt;/ul>
+&lt;p>The lack of an active connection session is compensated by the use of cookies.
+Similarly, the plain text nature of the protocol means that anyone could read contents in HTTP network packets.
+This is alleviated by the use of HTTPS.
+Nowadays, most connections use HTTPS precisely because of the need for confidentiality.&lt;/p>
+&lt;p>In the previous session, you used web browsers and the &lt;a href="https://developer.mozilla.org/en-US/docs/Learn/Common_questions/What_are_browser_developer_tools">Developer Tools&lt;/a> feature of modern browsers to inspect traffic, update cookies, inspect rendered pages.
+GUI web browsers (such as Firefox, Chrome, Edge, Safari) provide the appealing interface for users to surf the web.
+For quick and dirty tasks such as testing connections, making requests and downloading large files, we use CLI web clients such as &lt;code>curl&lt;/code> and &lt;code>wget&lt;/code>.
+We will be using these in this session as well.&lt;/p>
+&lt;h2 id="confidentiality">Confidentiality&lt;/h2>
+&lt;p>Confidentiality is a security property that prevents captured data from being understood by an attacker.
+If an attacker captures data with confidentiality ensured, the attacker must not be able to extract actual information from it.
+Confidentiality is generally provided with encryption.&lt;/p>
+&lt;p>For example, a classical HTTP connection is plain text and thus non-confidential.
+Let&amp;rsquo;s exemplify this.
+On one terminal, start a &lt;code>tcpdump&lt;/code> capture session for HTTP connections:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ sudo tcpdump -A tcp port 80
+&lt;/code>&lt;/pre>&lt;p>On another terminal, make an HTTP connection using &lt;code>curl&lt;/code>:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ curl http://elf.cs.pub.ro
+&lt;/code>&lt;/pre>&lt;p>As the connection is HTTP, you will see plain text messages as part of the &lt;code>tcpdump&lt;/code> output:&lt;/p>
+&lt;pre tabindex="0">&lt;code>Host: elf.cs.pub.ro
+User-Agent: curl/7.58.0
+Accept: */*
+[...]
+Date: Sun, 03 Jul 2022 15:51:46 GMT
+Server: Apache/2.4.38 (Debian)
+Last-Modified: Mon, 02 Aug 2010 17:58:06 GMT
+ETag: &amp;#34;a8-48cdaf14da780&amp;#34;
+Accept-Ranges: bytes
+Content-Length: 168
+Vary: Accept-Encoding
+Content-Type: text/html
+&amp;lt;html&amp;gt;
+&amp;lt;head&amp;gt;
+&amp;lt;meta name=&amp;#34;google-site-verification&amp;#34; content=&amp;#34;gTsIxyV43HSJraRPl6X1A5jzGFgQ3N__hKAcuL2QsO8&amp;#34; /&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;
+&amp;lt;h1&amp;gt;It works!&amp;lt;/h1&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>However, if we used &lt;code>curl&lt;/code> and an HTTPS connection:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ curl https://elf.cs.pub.ro
+&lt;/code>&lt;/pre>&lt;p>there would be no plain text output on the &lt;code>tcpdump&lt;/code> console, because the connection is using a confidential (encrypted) channel.&lt;/p>
+&lt;p>The same traffic inspection can be done in a more visual manner using Wireshark.&lt;/p>
+&lt;p>As long as traffic is not encrypted, an attacker able to capture packets (either fooling someone to get the data or simply accessing a networking equipment along the way) will read the traffic contents.
+HTTPS uses public key cryptography to ensure the confidentiality of network traffic.&lt;/p>
+&lt;h2 id="public-key-cryptography-certificates">Public Key Cryptography. Certificates&lt;/h2>
+&lt;p>There are mainly two types of encryption: symmetric and public-key encryption.&lt;/p>
+&lt;p>In symmetric encryption, a key is shared among the two ends in the communication.&lt;/p>
+&lt;p>&lt;img src="assets/symmetric-encryption.svg" alt="symmetric encryption">&lt;/p>
+&lt;p>That same key is used for both encrypting and decrypting data.
+AES (&lt;em>Advanced Encryption Standard&lt;/em>) is the standard symmetric encryption algorithm.
+The main benefit of symmetric encryption algorithms is their relative simplicity and speed: they are easy to implement and are fast, with the option of having hardware support.
+The downside is related to the shared key.
+If the key is captured by an attacker or if it is lost by one of the ends, confidentiality is compromised.&lt;/p>
+&lt;p>So, the goal is that each connection should use a temporary shared key.
+After the connection ends, the shared key is discarded.
+A new connection will generate a new key.
+Of course, that shared key must be known only by the two ends.
+For this two happen, key exchange algorithms, such as &lt;a href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange">Diffie Hellman&lt;/a> are used.&lt;/p>
+&lt;p>Diffie-Hellman (often abbreviated as DH) is based on public-key encryption.
+In short we use public-key encryption to set up a temporary shared key for the actual communication.&lt;/p>
+&lt;p>Public-key encryption, as its name implies, relies on a pair of private and public keys that are connected mathematically.
+RSA (&lt;em>Rivest Shamir Adleman&lt;/em> - named after its inventors) is the classical public key cryptographic algorithm.
+The private key is generated as a random set of bytes and the public key is generated from it, via a mathematical algorithm.
+The private key is only available to the owner, whereas the public key is available to everyone.
+Anyone can encrypt a message using the public key, but only the owner can decrypt the message using the private key, as shown below.&lt;/p>
+&lt;p>&lt;img src="assets/public-key-encryption.svg" alt="public-key encryption">&lt;/p>
+&lt;p>Because of this, public-key encryption is considered more secure than symmetric encryption, as it doesn&amp;rsquo;t require the passing of a shared key between parties, an act that may be intercepted.
+At the same time, public-key encryption is much slower than symmetric encryption.
+Because of this, public-key encryption is only used to set up an initial session and enable a key exchange algorithm (such as Diffie-Hellman) to generate a temporary session-specific shared key.&lt;/p>
+&lt;h3 id="identity-management-certificates">Identity Management. Certificates&lt;/h3>
+&lt;p>A public-private key pair is not only used for encryption.
+It&amp;rsquo;s also used for identity management.&lt;/p>
+&lt;p>Identity management means making sure a given entity is who they claim they are.
+In HTTPS that means that if we connect to &lt;code>google.com&lt;/code> we are offered guarantees that the server we connect to is indeed &lt;code>google.com&lt;/code>.
+Otherwise, another server could impersonate the target server and capture all traffic.&lt;/p>
+&lt;p>Identity management relies on signing and verifying messages using public-private keys.
+The private key is used to sign a message.
+The signed message is provided publicly.
+Then, the public key is used to verify the message.
+This is called a &lt;strong>digital signature&lt;/strong>, as shown below:&lt;/p>
+&lt;p>&lt;img src="assets/digital-signature.svg" alt="digital signature">&lt;/p>
+&lt;p>In HTTPS, this means that the web server will sign the message with its private key and web clients will verify the message with the public key.&lt;/p>
+&lt;p>In order for this to work, the public key has to be attached the identity: the name of the server.
+This is done via a &lt;strong>digital certificate&lt;/strong>.
+A certificate is a file that consists of a public key and an identity.
+A certificate itself is also signed to ensure its validity.
+This means that a certificate will also be verified using a public key, found as part of another certificate, as shown below:&lt;/p>
+&lt;p>&lt;img src="assets/digital-certificate.png" alt="digital certificate">&lt;/p>
+&lt;p>This dependency between certificates creates a &lt;strong>public-key infrastructure&lt;/strong> (PKI), on top of which self-signed root certificates are located.
+Self-signed root certificates part of &lt;strong>Certification Authorities&lt;/strong>.
+These are entities that sign other certificates to validate the binding of a public key to an identity.&lt;/p>
+&lt;p>A browser stores root certificates as part of its default installation.
+Each connection to the server will get the server to provide the certificate: identity and public key.
+The browser uses the root certificate and intermediary certificates to verify the certificate.
+After its verification the public key is used to create the actual HTTPS (secure) connection.&lt;/p>
+&lt;h3 id="inspecting-certificates">Inspecting Certificates&lt;/h3>
+&lt;p>To get a better understanding of how certificates work, let&amp;rsquo;s take a look at one.&lt;/p>
+&lt;p>In order to get a certificate to inspect, it is easiest to export a root certificate from a browser.
+In Firefox, we can use the Certificate Manager, as shown in the image below to export a certificate:&lt;/p>
+&lt;p>&lt;img src="assets/firefox-certificate-manager.png" alt="Firefox Certificate Manager">&lt;/p>
+&lt;p>The CA (root) certificate from Verisign is located in &lt;code>assets/VerisignClass1PublicPrimaryCertificationAuthority-G3.crt&lt;/code>.
+The certificate, as most certificates, is exported in PEM (&lt;em>Privacy Enhanced Mail&lt;/em>) format, a Base64 encoding:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ cat assets/VerisignClass1PublicPrimaryCertificationAuthority-G3.crt
+-----BEGIN CERTIFICATE-----
+MIIEGjCCAwICEQCLW3VWhFSFCwDPrzhIzrGkMA0GCSqGSIb3DQEBBQUAMIHKMQsw
+CQYDVQQGEwJVUzEXMBUGA1UEChMOVmVyaVNpZ24sIEluYy4xHzAdBgNVBAsTFlZl
+cmlTaWduIFRydXN0IE5ldHdvcmsxOjA4BgNVBAsTMShjKSAxOTk5IFZlcmlTaWdu
+LCBJbmMuIC0gRm9yIGF1dGhvcml6ZWQgdXNlIG9ubHkxRTBDBgNVBAMTPFZlcmlT
+aWduIENsYXNzIDEgUHVibGljIFByaW1hcnkgQ2VydGlmaWNhdGlvbiBBdXRob3Jp
+dHkgLSBHMzAeFw05OTEwMDEwMDAwMDBaFw0zNjA3MTYyMzU5NTlaMIHKMQswCQYD
+VQQGEwJVUzEXMBUGA1UEChMOVmVyaVNpZ24sIEluYy4xHzAdBgNVBAsTFlZlcmlT
+aWduIFRydXN0IE5ldHdvcmsxOjA4BgNVBAsTMShjKSAxOTk5IFZlcmlTaWduLCBJ
+bmMuIC0gRm9yIGF1dGhvcml6ZWQgdXNlIG9ubHkxRTBDBgNVBAMTPFZlcmlTaWdu
+IENsYXNzIDEgUHVibGljIFByaW1hcnkgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkg
+LSBHMzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAN2E1Lm0+afY8wR4
+nN493GwTFtl63SRRZsDHJlkNrAYIwpTRMx/wgzUfbhvI3qpuFU5UJ+/EbRrsC+MO
+8ESlV8dAWB6jRx9x7GD2bZTIGDnt/kIYVt/kTEkQeE4BdjVjEjbdZrwBBDajVWjV
+ojYJrKshJlQGrT/KFOCsyq0GHZXi+J3x4GD/wn91K0zM2v6HmSHquv4+VNfSWXjb
+PG7PoBMAGrgnoeS+Z5bKoMWznN3JdZ7rMJpfo83ZrngZPyPpXNspva1VyBtUjGP2
+6KbqxzcSXKMpHgLZ2x87tNcPVkeBFQRKr4Mn0cVYiMHd9qqnoxjaaKptEVHhv2Vr
+n5Z20T0CAwEAATANBgkqhkiG9w0BAQUFAAOCAQEAq2aN17O6x5q25lXQBfGfMY1a
+qtmqRiYPce2lrVNWYgFHKkTp/j90CxObufRNG7LRX7K20ohcs5/Ny9Sn2WCVhDr4
+wTcdYcrnsMXlkdpUpqwxga6X3s0IrLjAl4B/bnKk52kTlWUfxJM8/XmPBNQ+T+r3
+ns7NZ3xPZQL/kYVUc8f/NveGLezQXk//EZ9yBta4GvFMDSZl4kSAHsef493oCtrs
+pSCAaWihT37ha88HQfqDjrw43bAuEbFrskLMmrz5SCJ5ShkPshw+IHTZasO+8ih4
+E1Z5T21Q6huwtVexN2ZYI/PcD98Kh8TvhgXVOBRgmaNL3gaWcSzy27YfpO8/7g==
+-----END CERTIFICATE-----
+&lt;/code>&lt;/pre>&lt;p>In its basic format, the certificate is a binary file.
+The PEM format is used to make it printable.
+The PEM format is also used for storing private and public SSH keys, so it may seem familiar.&lt;/p>
+&lt;p>We can inspect the certificate with &lt;code>openssl&lt;/code>:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ openssl x509 -noout -text -in assets/VerisignClass1PublicPrimaryCertificationAuthority-G3.crt
+Certificate:
+Data:
+Version: 1 (0x0)
+Serial Number:
+8b:5b:75:56:84:54:85:0b:00:cf:af:38:48:ce:b1:a4
+Signature Algorithm: sha1WithRSAEncryption
+Issuer: C = US, O = &amp;#34;VeriSign, Inc.&amp;#34;, OU = VeriSign Trust Network, OU = &amp;#34;(c) 1999 VeriSign, Inc. - For authorized use only&amp;#34;, CN = VeriSign Class 1 Public Primary Certification Authority - G3
+Validity
+Not Before: Oct 1 00:00:00 1999 GMT
+Not After : Jul 16 23:59:59 2036 GMT
+Subject: C = US, O = &amp;#34;VeriSign, Inc.&amp;#34;, OU = VeriSign Trust Network, OU = &amp;#34;(c) 1999 VeriSign, Inc. - For authorized use only&amp;#34;, CN = VeriSign Class 1 Public Primary Certification Authority - G3
+Subject Public Key Info:
+Public Key Algorithm: rsaEncryption
+RSA Public-Key: (2048 bit)
+Modulus:
+00:dd:84:d4:b9:b4:f9:a7:d8:f3:04:78:9c:de:3d:
+dc:6c:13:16:d9:7a:dd:24:51:66:c0:c7:26:59:0d:
+ac:06:08:c2:94:d1:33:1f:f0:83:35:1f:6e:1b:c8:
+de:aa:6e:15:4e:54:27:ef:c4:6d:1a:ec:0b:e3:0e:
+f0:44:a5:57:c7:40:58:1e:a3:47:1f:71:ec:60:f6:
+6d:94:c8:18:39:ed:fe:42:18:56:df:e4:4c:49:10:
+78:4e:01:76:35:63:12:36:dd:66:bc:01:04:36:a3:
+55:68:d5:a2:36:09:ac:ab:21:26:54:06:ad:3f:ca:
+14:e0:ac:ca:ad:06:1d:95:e2:f8:9d:f1:e0:60:ff:
+c2:7f:75:2b:4c:cc:da:fe:87:99:21:ea:ba:fe:3e:
+54:d7:d2:59:78:db:3c:6e:cf:a0:13:00:1a:b8:27:
+a1:e4:be:67:96:ca:a0:c5:b3:9c:dd:c9:75:9e:eb:
+30:9a:5f:a3:cd:d9:ae:78:19:3f:23:e9:5c:db:29:
+bd:ad:55:c8:1b:54:8c:63:f6:e8:a6:ea:c7:37:12:
+5c:a3:29:1e:02:d9:db:1f:3b:b4:d7:0f:56:47:81:
+15:04:4a:af:83:27:d1:c5:58:88:c1:dd:f6:aa:a7:
+a3:18:da:68:aa:6d:11:51:e1:bf:65:6b:9f:96:76:
+d1:3d
+Exponent: 65537 (0x10001)
+Signature Algorithm: sha1WithRSAEncryption
+ab:66:8d:d7:b3:ba:c7:9a:b6:e6:55:d0:05:f1:9f:31:8d:5a:
+aa:d9:aa:46:26:0f:71:ed:a5:ad:53:56:62:01:47:2a:44:e9:
+fe:3f:74:0b:13:9b:b9:f4:4d:1b:b2:d1:5f:b2:b6:d2:88:5c:
+b3:9f:cd:cb:d4:a7:d9:60:95:84:3a:f8:c1:37:1d:61:ca:e7:
+b0:c5:e5:91:da:54:a6:ac:31:81:ae:97:de:cd:08:ac:b8:c0:
+97:80:7f:6e:72:a4:e7:69:13:95:65:1f:c4:93:3c:fd:79:8f:
+04:d4:3e:4f:ea:f7:9e:ce:cd:67:7c:4f:65:02:ff:91:85:54:
+73:c7:ff:36:f7:86:2d:ec:d0:5e:4f:ff:11:9f:72:06:d6:b8:
+1a:f1:4c:0d:26:65:e2:44:80:1e:c7:9f:e3:dd:e8:0a:da:ec:
+a5:20:80:69:68:a1:4f:7e:e1:6b:cf:07:41:fa:83:8e:bc:38:
+dd:b0:2e:11:b1:6b:b2:42:cc:9a:bc:f9:48:22:79:4a:19:0f:
+b2:1c:3e:20:74:d9:6a:c3:be:f2:28:78:13:56:79:4f:6d:50:
+ea:1b:b0:b5:57:b1:37:66:58:23:f3:dc:0f:df:0a:87:c4:ef:
+86:05:d5:38:14:60:99:a3:4b:de:06:96:71:2c:f2:db:b6:1f:
+a4:ef:3f:ee
+&lt;/code>&lt;/pre>&lt;p>The options passed to the &lt;code>openssl&lt;/code> command are:&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>x509&lt;/code>: work with X.509 certificates - a standard for certificates&lt;/li>
+&lt;li>&lt;code>-noout&lt;/code>: do not print the PEM output of the certificate&lt;/li>
+&lt;li>&lt;code>-text&lt;/code>: print as text the contents of the certificate&lt;/li>
+&lt;li>&lt;code>-in&lt;/code>: the input certificate file&lt;/li>
+&lt;/ul>
+&lt;p>As shown in the output, a certificate comprises of data and the signature of that data.
+The data is primarily composed of the:&lt;/p>
+&lt;ul>
+&lt;li>identity (the &lt;code>Subject&lt;/code> attribute): &lt;code>C = US, O = &amp;quot;VeriSign, Inc.&amp;quot;, OU = VeriSign Trust Network, OU = &amp;quot;(c) 1999 VeriSign, Inc. - For authorized use only&amp;quot;, CN = VeriSign Class 1 Public Primary Certification Authority - G3&lt;/code>&lt;/li>
+&lt;li>the public key (comprised of a &lt;code>Modulus&lt;/code> and &lt;code>Exponent&lt;/code>)&lt;/li>
+&lt;/ul>
+&lt;p>There are two other important items:&lt;/p>
+&lt;ul>
+&lt;li>the issuer, i.e. the entity that signed the certificate;
+in this case, it&amp;rsquo;s a self signed certificate, so the &lt;code>Issuer&lt;/code> is the same as the &lt;code>Subject&lt;/code>&lt;/li>
+&lt;li>the validity of the certificate, in this case it&amp;rsquo;s &lt;code>July 16, 2036&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>Generally, a certificate is only valid for one year and then it will have to be renewed.
+Renewing means a new public key is generated and, together with the same identity information, a new certificate.&lt;/p>
+&lt;p>The &lt;code>openssl&lt;/code> utility has command-line options to only print parts of the certificate.
+For example, to only print the issuer or the public key, we would use the &lt;code>-issuer&lt;/code> or &lt;code>-pubkey&lt;/code> options:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ openssl x509 -noout -issuer -in assets/VerisignClass1PublicPrimaryCertificationAuthority-G3.crt
+issuer=C = US, O = &amp;#34;VeriSign, Inc.&amp;#34;, OU = VeriSign Trust Network, OU = &amp;#34;(c) 1999 VeriSign, Inc. - For authorized use only&amp;#34;, CN = VeriSign Class 1 Public Primary Certification Authority - G3
+$ openssl x509 -noout -pubkey -in assets/VerisignClass1PublicPrimaryCertificationAuthority-G3.crt
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3YTUubT5p9jzBHic3j3c
+bBMW2XrdJFFmwMcmWQ2sBgjClNEzH/CDNR9uG8jeqm4VTlQn78RtGuwL4w7wRKVX
+x0BYHqNHH3HsYPZtlMgYOe3+QhhW3+RMSRB4TgF2NWMSNt1mvAEENqNVaNWiNgms
+qyEmVAatP8oU4KzKrQYdleL4nfHgYP/Cf3UrTMza/oeZIeq6/j5U19JZeNs8bs+g
+EwAauCeh5L5nlsqgxbOc3cl1nuswml+jzdmueBk/I+lc2ym9rVXIG1SMY/bopurH
+NxJcoykeAtnbHzu01w9WR4EVBEqvgyfRxViIwd32qqejGNpoqm0RUeG/ZWuflnbR
+PQIDAQAB
+-----END PUBLIC KEY-----
+&lt;/code>&lt;/pre>&lt;h3 id="verifying-certificates">Verifying Certificates&lt;/h3>
+&lt;p>As the VeriSign certificate is self-signed, we can use it to verify itself:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ openssl verify -CAfile assets/VerisignClass1PublicPrimaryCertificationAuthority-G3.crt assets/VerisignClass1PublicPrimaryCertificationAuthority-G3.crt
+assets/VerisignClass1PublicPrimaryCertificationAuthority-G3.crt: OK
+&lt;/code>&lt;/pre>&lt;p>The &lt;code>-CAfile&lt;/code> option points to the CA certificate to verify the current one.
+As this is is a self signed certificate, we use itself as CA.&lt;/p>
+&lt;h2 id="https-ssl-and-tls">HTTPS, SSL and TLS&lt;/h2>
+&lt;p>HTTPS is the secure version of HTTP providing identity management, confidentiality and integrity.
+HTTPS relies on at least the HTTP server providing a certificate that validates the identity.
+The client can also do that, as part of &lt;a href="https://comodosslstore.com/blog/what-is-ssl-tls-client-authentication-how-does-it-work.html">client certificate authentication&lt;/a>.&lt;/p>
+&lt;p>After validating the identity of the server, the client-server pair create a secure channel by agreeing on a per-session shared symmetric encryption key.
+This is negotiated via a key-exchange algorithm such as Diffie-Hellman.
+Then, all traffic between client and server will be encrypted.&lt;/p>
+&lt;p>This entire process is facilitated by the use of SSL (&lt;em>Secure Sockets Layer&lt;/em>) or TLS (&lt;em>Transport Layer Security&lt;/em>).
+We say that HTTPS is HTTP plus SSL / TLS support.
+Note that this is the case with other secure protocol variants such as SMTPS, IMAPS, LDAPS.&lt;/p>
+&lt;p>SSL / TLS usually refer to the same thing.
+TLS is a newer version of the protocol.
+Version are SSL1.0, SSL2.0, SSL3.0, TLS1.0, TLS1.1, TLS1.2, TLS1.3.
+Each newer version comes with fixes and extra security guarantees.
+Nowadays (2022) all SSL versions and TLS1.0 are considered insecure.
+This is due both to internal design issues and to weak cryptographic algorithms or the allowing cryptographic keys of insufficient size.&lt;/p>
+&lt;p>A summary of attacks on SSL / TLS is summarized as part of &lt;a href="https://tools.ietf.org/html/rfc7457">RFC 7457&lt;/a>.
+Additional information can be found &lt;a href="https://www.acunetix.com/blog/articles/tls-vulnerabilities-attacks-final-part/">here&lt;/a> and &lt;a href="https://www.cloudinsidr.com/content/known-attack-vectors-against-tls-implementation-vulnerabilities/">here&lt;/a>.
+Well known SSL / TLS attacks are:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://weakdh.org/logjam.html">Logjam&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://backronym.fail/">BACKRONYM&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://drownattack.com/">DROWN&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>A typical target of the attacker is downgrading the connection from HTTPS to HTTP.
+Or downgrading the SSL / TLS protocol version to a less secure variant.
+Read more on protocol downgrade &lt;a href="https://www.venafi.com/blog/preventing-downgrade-attacks">here&lt;/a>.&lt;/p>
+&lt;h3 id="capturing-inspecting-and-verifying-https-certificates">Capturing, Inspecting and Verifying HTTPS Certificates&lt;/h3>
+&lt;p>If you want to extract and inspect the certificate of an HTTPS server we would use the command below:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ openssl s_client -showcerts -connect www.google.com:443 -servername www.google.com &amp;lt; /dev/null
+CONNECTED(00000005)
+depth=2 C = US, O = Google Trust Services LLC, CN = GTS Root R1
+verify return:1
+depth=1 C = US, O = Google Trust Services LLC, CN = GTS CA 1C3
+verify return:1
+depth=0 CN = www.google.com
+verify return:1
+---
+Certificate chain
+0 s:CN = www.google.com
+i:C = US, O = Google Trust Services LLC, CN = GTS CA 1C3
+-----BEGIN CERTIFICATE-----
+MIIEiTCCA3GgAwIBAgIRAJ8HSxF0Xxb8EiN1+lh5k/AwDQYJKoZIhvcNAQELBQAw
+RjELMAkGA1UEBhMCVVMxIjAgBgNVBAoTGUdvb2dsZSBUcnVzdCBTZXJ2aWNlcyBM
+TEMxEzARBgNVBAMTCkdUUyBDQSAxQzMwHhcNMjIwNjA2MDk0MDAwWhcNMjIwODI5
+MDkzOTU5WjAZMRcwFQYDVQQDEw53d3cuZ29vZ2xlLmNvbTBZMBMGByqGSM49AgEG
+CCqGSM49AwEHA0IABD8O7cXWSPQhh/GihqJi+gdtpS0vAt2GeDRHBaVeB8x5dDtx
+3us2TGW2WJGfC7VeSVHCX1uDXkjAIOTauMUjCu2jggJoMIICZDAOBgNVHQ8BAf8E
+BAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDAYDVR0TAQH/BAIwADAdBgNVHQ4E
+FgQUWVwHKuk+m9ZD0/h/+Jsgactucp8wHwYDVR0jBBgwFoAUinR/r4XN7pXNPZzQ
+4kYU83E1HScwagYIKwYBBQUHAQEEXjBcMCcGCCsGAQUFBzABhhtodHRwOi8vb2Nz
+cC5wa2kuZ29vZy9ndHMxYzMwMQYIKwYBBQUHMAKGJWh0dHA6Ly9wa2kuZ29vZy9y
+ZXBvL2NlcnRzL2d0czFjMy5kZXIwGQYDVR0RBBIwEIIOd3d3Lmdvb2dsZS5jb20w
+IQYDVR0gBBowGDAIBgZngQwBAgEwDAYKKwYBBAHWeQIFAzA8BgNVHR8ENTAzMDGg
+L6AthitodHRwOi8vY3Jscy5wa2kuZ29vZy9ndHMxYzMvUU92SjBOMXNUMkEuY3Js
+MIIBBQYKKwYBBAHWeQIEAgSB9gSB8wDxAHYAUaOw9f0BeZxWbbg3eI8MpHrMGyfL
+956IQpoN/tSLBeUAAAGBOJmjFwAABAMARzBFAiEA7Pub0IWm5kMWJrfJGLqP4lZU
+71J6No/RLMwsvXWzVfACICJMzt/AFBsNQ1t970tVRnhmgsgz2s6deykihInBRfZR
+AHcARqVV63X6kSAwtaKJafTzfREsQXS+/Um4havy/HD+bUcAAAGBOJmjPwAABAMA
+SDBGAiEA92vym4NTX/SmjhAx7ICLE4KXpQFsWfhvRf1m5B6qby8CIQCVyyWh2t22
+UhaaKSS+nIypJ9jWtOO4wG1gVkty8c/XETANBgkqhkiG9w0BAQsFAAOCAQEAI8fX
+MKLNXXoMJk6WTJvV1ORE6kYVtyZm0wM64yV9V1zmksWDgOx9xHmoAUTQYeSq6rhI
+tTxgb9EmDF8gVrOXwY31WpWjJyJQAfQcn3LhPUzJnr8yqyiwfVD1FG5gKQTTlblr
+g9sZ+zfETFPXTFJeGT5yBxcT8xQDQNERblVkaQ1H5f2XYuXAJJ4vlNCu7AFil1tp
+U4bau/EfQPx5Jd1bLxJwbeF9FbuQvcMeow+4ElcpC5BSkzsRk7lUbZfj7NWZas5t
+3yp0UncNl+Pib3p0ooLDJ3HQvlQuL4AAg2nYkL+UKusZ9d/22RmbiyGkqr+3L/3+
+PKvAVy9/DNPwW3YUbQ==
+-----END CERTIFICATE-----
+1 s:C = US, O = Google Trust Services LLC, CN = GTS CA 1C3
+i:C = US, O = Google Trust Services LLC, CN = GTS Root R1
+-----BEGIN CERTIFICATE-----
+MIIFljCCA36gAwIBAgINAgO8U1lrNMcY9QFQZjANBgkqhkiG9w0BAQsFADBHMQsw
+CQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExMQzEU
+MBIGA1UEAxMLR1RTIFJvb3QgUjEwHhcNMjAwODEzMDAwMDQyWhcNMjcwOTMwMDAw
+MDQyWjBGMQswCQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZp
+Y2VzIExMQzETMBEGA1UEAxMKR1RTIENBIDFDMzCCASIwDQYJKoZIhvcNAQEBBQAD
+ggEPADCCAQoCggEBAPWI3+dijB43+DdCkH9sh9D7ZYIl/ejLa6T/belaI+KZ9hzp
+kgOZE3wJCor6QtZeViSqejOEH9Hpabu5dOxXTGZok3c3VVP+ORBNtzS7XyV3NzsX
+lOo85Z3VvMO0Q+sup0fvsEQRY9i0QYXdQTBIkxu/t/bgRQIh4JZCF8/ZK2VWNAcm
+BA2o/X3KLu/qSHw3TT8An4Pf73WELnlXXPxXbhqW//yMmqaZviXZf5YsBvcRKgKA
+gOtjGDxQSYflispfGStZloEAoPtR28p3CwvJlk/vcEnHXG0g/Zm0tOLKLnf9LdwL
+tmsTDIwZKxeWmLnwi/agJ7u2441Rj72ux5uxiZ0CAwEAAaOCAYAwggF8MA4GA1Ud
+DwEB/wQEAwIBhjAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwEgYDVR0T
+AQH/BAgwBgEB/wIBADAdBgNVHQ4EFgQUinR/r4XN7pXNPZzQ4kYU83E1HScwHwYD
+VR0jBBgwFoAU5K8rJnEaK0gnhS9SZizv8IkTcT4waAYIKwYBBQUHAQEEXDBaMCYG
+CCsGAQUFBzABhhpodHRwOi8vb2NzcC5wa2kuZ29vZy9ndHNyMTAwBggrBgEFBQcw
+AoYkaHR0cDovL3BraS5nb29nL3JlcG8vY2VydHMvZ3RzcjEuZGVyMDQGA1UdHwQt
+MCswKaAnoCWGI2h0dHA6Ly9jcmwucGtpLmdvb2cvZ3RzcjEvZ3RzcjEuY3JsMFcG
+A1UdIARQME4wOAYKKwYBBAHWeQIFAzAqMCgGCCsGAQUFBwIBFhxodHRwczovL3Br
+aS5nb29nL3JlcG9zaXRvcnkvMAgGBmeBDAECATAIBgZngQwBAgIwDQYJKoZIhvcN
+AQELBQADggIBAIl9rCBcDDy+mqhXlRu0rvqrpXJxtDaV/d9AEQNMwkYUuxQkq/BQ
+cSLbrcRuf8/xam/IgxvYzolfh2yHuKkMo5uhYpSTld9brmYZCwKWnvy15xBpPnrL
+RklfRuFBsdeYTWU0AIAaP0+fbH9JAIFTQaSSIYKCGvGjRFsqUBITTcFTNvNCCK9U
++o53UxtkOCcXCb1YyRt8OS1b887U7ZfbFAO/CVMkH8IMBHmYJvJh8VNS/UKMG2Yr
+PxWhu//2m+OBmgEGcYk1KCTd4b3rGS3hSMs9WYNRtHTGnXzGsYZbr8w0xNPM1IER
+lQCh9BIiAfq0g3GvjLeMcySsN1PCAJA/Ef5c7TaUEDu9Ka7ixzpiO2xj2YC/WXGs
+Yye5TBeg2vZzFb8q3o/zpWwygTMD0IZRcZk0upONXbVRWPeyk+gB9lm+cZv9TSjO
+z23HFtz30dZGm6fKa+l3D/2gthsjgx0QGtkJAITgRNOidSOzNIb2ILCkXhAd4FJG
+AJ2xDx8hcFH1mt0G/FX0Kw4zd8NLQsLxdxP8c4CU6x+7Nz/OAipmsHMdMqUybDKw
+juDEI/9bfU1lcKwrmz3O2+BtjjKAvpafkmO8l7tdufThcV4q5O8DIrGKZTqPwJNl
+1IXNDw9bg1kWRxYtnCQ6yICmJhSFm/Y3m6xv+cXDBlHz4n/FsRC6UfTd
+-----END CERTIFICATE-----
+2 s:C = US, O = Google Trust Services LLC, CN = GTS Root R1
+i:C = BE, O = GlobalSign nv-sa, OU = Root CA, CN = GlobalSign Root CA
+-----BEGIN CERTIFICATE-----
+MIIFYjCCBEqgAwIBAgIQd70NbNs2+RrqIQ/E8FjTDTANBgkqhkiG9w0BAQsFADBX
+MQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTEQMA4GA1UE
+CxMHUm9vdCBDQTEbMBkGA1UEAxMSR2xvYmFsU2lnbiBSb290IENBMB4XDTIwMDYx
+OTAwMDA0MloXDTI4MDEyODAwMDA0MlowRzELMAkGA1UEBhMCVVMxIjAgBgNVBAoT
+GUdvb2dsZSBUcnVzdCBTZXJ2aWNlcyBMTEMxFDASBgNVBAMTC0dUUyBSb290IFIx
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAthECix7joXebO9y/lD63
+ladAPKH9gvl9MgaCcfb2jH/76Nu8ai6Xl6OMS/kr9rH5zoQdsfnFl97vufKj6bwS
+iV6nqlKr+CMny6SxnGPb15l+8Ape62im9MZaRw1NEDPjTrETo8gYbEvs/AmQ351k
+KSUjB6G00j0uYODP0gmHu81I8E3CwnqIiru6z1kZ1q+PsAewnjHxgsHA3y6mbWwZ
+DrXYfiYaRQM9sHmklCitD38m5agI/pboPGiUU+6DOogrFZYJsuB6jC511pzrp1Zk
+j5ZPaK49l8KEj8C8QMALXL32h7M1bKwYUH+E4EzNktMg6TO8UpmvMrUpsyUqtEj5
+cuHKZPfmghCN6J3Cioj6OGaK/GP5Afl4/Xtcd/p2h/rs37EOeZVXtL0m79YB0esW
+CruOC7XFxYpVq9Os6pFLKcwZpDIlTirxZUTQAs6qzkm06p98g7BAe+dDq6dso499
+iYH6TKX/1Y7DzkvgtdizjkXPdsDtQCv9Uw+wp9U7DbGKogPeMa3Md+pvez7W35Ei
+Eua++tgy/BBjFFFy3l3WFpO9KWgz7zpm7AeKJt8T11dleCfeXkkUAKIAf5qoIbap
+sZWwpbkNFhHax2xIPEDgfg1azVY80ZcFuctL7TlLnMQ/0lUTbiSw1nH69MG6zO0b
+9f6BQdgAmD06yK56mDcYBZUCAwEAAaOCATgwggE0MA4GA1UdDwEB/wQEAwIBhjAP
+BgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBTkrysmcRorSCeFL1JmLO/wiRNxPjAf
+BgNVHSMEGDAWgBRge2YaRQ2XyolQL30EzTSo//z9SzBgBggrBgEFBQcBAQRUMFIw
+JQYIKwYBBQUHMAGGGWh0dHA6Ly9vY3NwLnBraS5nb29nL2dzcjEwKQYIKwYBBQUH
+MAKGHWh0dHA6Ly9wa2kuZ29vZy9nc3IxL2dzcjEuY3J0MDIGA1UdHwQrMCkwJ6Al
+oCOGIWh0dHA6Ly9jcmwucGtpLmdvb2cvZ3NyMS9nc3IxLmNybDA7BgNVHSAENDAy
+MAgGBmeBDAECATAIBgZngQwBAgIwDQYLKwYBBAHWeQIFAwIwDQYLKwYBBAHWeQIF
+AwMwDQYJKoZIhvcNAQELBQADggEBADSkHrEoo9C0dhemMXoh6dFSPsjbdBZBiLg9
+NR3t5P+T4Vxfq7vqfM/b5A3Ri1fyJm9bvhdGaJQ3b2t6yMAYN/olUazsaL+yyEn9
+WprKASOshIArAoyZl+tJaox118fessmXn1hIVw41oeQa1v1vg4Fv74zPl6/AhSrw
+9U5pCZEt4Wi4wStz6dTZ/CLANx8LZh1J7QJVj2fhMtfTJr9w4z30Z209fOU0iOMy
++qduBmpvvYuR7hZL6Dupszfnw0Skfths18dG9ZKb59UhvmaSGZRVbNQpsg3BZlvi
+d0lIKO2d1xozclOzgjXPYovJJIultzkMu34qQb9Sz/yilrbCgj8=
+-----END CERTIFICATE-----
+---
+Server certificate
+subject=CN = www.google.com
+issuer=C = US, O = Google Trust Services LLC, CN = GTS CA 1C3
+---
+No client certificate CA names sent
+Peer signing digest: SHA256
+Peer signature type: ECDSA
+Server Temp Key: X25519, 253 bits
+---
+SSL handshake has read 4295 bytes and written 396 bytes
+Verification: OK
+---
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Server public key is 256 bit
+Secure Renegotiation IS NOT supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+Early data was not sent
+Verify return code: 0 (ok)
+---
+DONE
+&lt;/code>&lt;/pre>&lt;p>The command is pretty verbose.
+We can make it print just the certificates by using:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ openssl s_client -showcerts -connect www.google.com:443 -servername www.google.com &amp;lt; /dev/null 2&amp;gt; /dev/null | sed -ne &amp;#39;/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p&amp;#39;
+-----BEGIN CERTIFICATE-----
+MIIEiTCCA3GgAwIBAgIRAJ8HSxF0Xxb8EiN1+lh5k/AwDQYJKoZIhvcNAQELBQAw
+RjELMAkGA1UEBhMCVVMxIjAgBgNVBAoTGUdvb2dsZSBUcnVzdCBTZXJ2aWNlcyBM
+TEMxEzARBgNVBAMTCkdUUyBDQSAxQzMwHhcNMjIwNjA2MDk0MDAwWhcNMjIwODI5
+MDkzOTU5WjAZMRcwFQYDVQQDEw53d3cuZ29vZ2xlLmNvbTBZMBMGByqGSM49AgEG
+CCqGSM49AwEHA0IABD8O7cXWSPQhh/GihqJi+gdtpS0vAt2GeDRHBaVeB8x5dDtx
+3us2TGW2WJGfC7VeSVHCX1uDXkjAIOTauMUjCu2jggJoMIICZDAOBgNVHQ8BAf8E
+BAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDAYDVR0TAQH/BAIwADAdBgNVHQ4E
+FgQUWVwHKuk+m9ZD0/h/+Jsgactucp8wHwYDVR0jBBgwFoAUinR/r4XN7pXNPZzQ
+4kYU83E1HScwagYIKwYBBQUHAQEEXjBcMCcGCCsGAQUFBzABhhtodHRwOi8vb2Nz
+cC5wa2kuZ29vZy9ndHMxYzMwMQYIKwYBBQUHMAKGJWh0dHA6Ly9wa2kuZ29vZy9y
+ZXBvL2NlcnRzL2d0czFjMy5kZXIwGQYDVR0RBBIwEIIOd3d3Lmdvb2dsZS5jb20w
+IQYDVR0gBBowGDAIBgZngQwBAgEwDAYKKwYBBAHWeQIFAzA8BgNVHR8ENTAzMDGg
+L6AthitodHRwOi8vY3Jscy5wa2kuZ29vZy9ndHMxYzMvUU92SjBOMXNUMkEuY3Js
+MIIBBQYKKwYBBAHWeQIEAgSB9gSB8wDxAHYAUaOw9f0BeZxWbbg3eI8MpHrMGyfL
+956IQpoN/tSLBeUAAAGBOJmjFwAABAMARzBFAiEA7Pub0IWm5kMWJrfJGLqP4lZU
+71J6No/RLMwsvXWzVfACICJMzt/AFBsNQ1t970tVRnhmgsgz2s6deykihInBRfZR
+AHcARqVV63X6kSAwtaKJafTzfREsQXS+/Um4havy/HD+bUcAAAGBOJmjPwAABAMA
+SDBGAiEA92vym4NTX/SmjhAx7ICLE4KXpQFsWfhvRf1m5B6qby8CIQCVyyWh2t22
+UhaaKSS+nIypJ9jWtOO4wG1gVkty8c/XETANBgkqhkiG9w0BAQsFAAOCAQEAI8fX
+MKLNXXoMJk6WTJvV1ORE6kYVtyZm0wM64yV9V1zmksWDgOx9xHmoAUTQYeSq6rhI
+tTxgb9EmDF8gVrOXwY31WpWjJyJQAfQcn3LhPUzJnr8yqyiwfVD1FG5gKQTTlblr
+g9sZ+zfETFPXTFJeGT5yBxcT8xQDQNERblVkaQ1H5f2XYuXAJJ4vlNCu7AFil1tp
+U4bau/EfQPx5Jd1bLxJwbeF9FbuQvcMeow+4ElcpC5BSkzsRk7lUbZfj7NWZas5t
+3yp0UncNl+Pib3p0ooLDJ3HQvlQuL4AAg2nYkL+UKusZ9d/22RmbiyGkqr+3L/3+
+PKvAVy9/DNPwW3YUbQ==
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+MIIFljCCA36gAwIBAgINAgO8U1lrNMcY9QFQZjANBgkqhkiG9w0BAQsFADBHMQsw
+CQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExMQzEU
+MBIGA1UEAxMLR1RTIFJvb3QgUjEwHhcNMjAwODEzMDAwMDQyWhcNMjcwOTMwMDAw
+MDQyWjBGMQswCQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZp
+Y2VzIExMQzETMBEGA1UEAxMKR1RTIENBIDFDMzCCASIwDQYJKoZIhvcNAQEBBQAD
+ggEPADCCAQoCggEBAPWI3+dijB43+DdCkH9sh9D7ZYIl/ejLa6T/belaI+KZ9hzp
+kgOZE3wJCor6QtZeViSqejOEH9Hpabu5dOxXTGZok3c3VVP+ORBNtzS7XyV3NzsX
+lOo85Z3VvMO0Q+sup0fvsEQRY9i0QYXdQTBIkxu/t/bgRQIh4JZCF8/ZK2VWNAcm
+BA2o/X3KLu/qSHw3TT8An4Pf73WELnlXXPxXbhqW//yMmqaZviXZf5YsBvcRKgKA
+gOtjGDxQSYflispfGStZloEAoPtR28p3CwvJlk/vcEnHXG0g/Zm0tOLKLnf9LdwL
+tmsTDIwZKxeWmLnwi/agJ7u2441Rj72ux5uxiZ0CAwEAAaOCAYAwggF8MA4GA1Ud
+DwEB/wQEAwIBhjAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwEgYDVR0T
+AQH/BAgwBgEB/wIBADAdBgNVHQ4EFgQUinR/r4XN7pXNPZzQ4kYU83E1HScwHwYD
+VR0jBBgwFoAU5K8rJnEaK0gnhS9SZizv8IkTcT4waAYIKwYBBQUHAQEEXDBaMCYG
+CCsGAQUFBzABhhpodHRwOi8vb2NzcC5wa2kuZ29vZy9ndHNyMTAwBggrBgEFBQcw
+AoYkaHR0cDovL3BraS5nb29nL3JlcG8vY2VydHMvZ3RzcjEuZGVyMDQGA1UdHwQt
+MCswKaAnoCWGI2h0dHA6Ly9jcmwucGtpLmdvb2cvZ3RzcjEvZ3RzcjEuY3JsMFcG
+A1UdIARQME4wOAYKKwYBBAHWeQIFAzAqMCgGCCsGAQUFBwIBFhxodHRwczovL3Br
+aS5nb29nL3JlcG9zaXRvcnkvMAgGBmeBDAECATAIBgZngQwBAgIwDQYJKoZIhvcN
+AQELBQADggIBAIl9rCBcDDy+mqhXlRu0rvqrpXJxtDaV/d9AEQNMwkYUuxQkq/BQ
+cSLbrcRuf8/xam/IgxvYzolfh2yHuKkMo5uhYpSTld9brmYZCwKWnvy15xBpPnrL
+RklfRuFBsdeYTWU0AIAaP0+fbH9JAIFTQaSSIYKCGvGjRFsqUBITTcFTNvNCCK9U
++o53UxtkOCcXCb1YyRt8OS1b887U7ZfbFAO/CVMkH8IMBHmYJvJh8VNS/UKMG2Yr
+PxWhu//2m+OBmgEGcYk1KCTd4b3rGS3hSMs9WYNRtHTGnXzGsYZbr8w0xNPM1IER
+lQCh9BIiAfq0g3GvjLeMcySsN1PCAJA/Ef5c7TaUEDu9Ka7ixzpiO2xj2YC/WXGs
+Yye5TBeg2vZzFb8q3o/zpWwygTMD0IZRcZk0upONXbVRWPeyk+gB9lm+cZv9TSjO
+z23HFtz30dZGm6fKa+l3D/2gthsjgx0QGtkJAITgRNOidSOzNIb2ILCkXhAd4FJG
+AJ2xDx8hcFH1mt0G/FX0Kw4zd8NLQsLxdxP8c4CU6x+7Nz/OAipmsHMdMqUybDKw
+juDEI/9bfU1lcKwrmz3O2+BtjjKAvpafkmO8l7tdufThcV4q5O8DIrGKZTqPwJNl
+1IXNDw9bg1kWRxYtnCQ6yICmJhSFm/Y3m6xv+cXDBlHz4n/FsRC6UfTd
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+MIIFYjCCBEqgAwIBAgIQd70NbNs2+RrqIQ/E8FjTDTANBgkqhkiG9w0BAQsFADBX
+MQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTEQMA4GA1UE
+CxMHUm9vdCBDQTEbMBkGA1UEAxMSR2xvYmFsU2lnbiBSb290IENBMB4XDTIwMDYx
+OTAwMDA0MloXDTI4MDEyODAwMDA0MlowRzELMAkGA1UEBhMCVVMxIjAgBgNVBAoT
+GUdvb2dsZSBUcnVzdCBTZXJ2aWNlcyBMTEMxFDASBgNVBAMTC0dUUyBSb290IFIx
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAthECix7joXebO9y/lD63
+ladAPKH9gvl9MgaCcfb2jH/76Nu8ai6Xl6OMS/kr9rH5zoQdsfnFl97vufKj6bwS
+iV6nqlKr+CMny6SxnGPb15l+8Ape62im9MZaRw1NEDPjTrETo8gYbEvs/AmQ351k
+KSUjB6G00j0uYODP0gmHu81I8E3CwnqIiru6z1kZ1q+PsAewnjHxgsHA3y6mbWwZ
+DrXYfiYaRQM9sHmklCitD38m5agI/pboPGiUU+6DOogrFZYJsuB6jC511pzrp1Zk
+j5ZPaK49l8KEj8C8QMALXL32h7M1bKwYUH+E4EzNktMg6TO8UpmvMrUpsyUqtEj5
+cuHKZPfmghCN6J3Cioj6OGaK/GP5Afl4/Xtcd/p2h/rs37EOeZVXtL0m79YB0esW
+CruOC7XFxYpVq9Os6pFLKcwZpDIlTirxZUTQAs6qzkm06p98g7BAe+dDq6dso499
+iYH6TKX/1Y7DzkvgtdizjkXPdsDtQCv9Uw+wp9U7DbGKogPeMa3Md+pvez7W35Ei
+Eua++tgy/BBjFFFy3l3WFpO9KWgz7zpm7AeKJt8T11dleCfeXkkUAKIAf5qoIbap
+sZWwpbkNFhHax2xIPEDgfg1azVY80ZcFuctL7TlLnMQ/0lUTbiSw1nH69MG6zO0b
+9f6BQdgAmD06yK56mDcYBZUCAwEAAaOCATgwggE0MA4GA1UdDwEB/wQEAwIBhjAP
+BgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBTkrysmcRorSCeFL1JmLO/wiRNxPjAf
+BgNVHSMEGDAWgBRge2YaRQ2XyolQL30EzTSo//z9SzBgBggrBgEFBQcBAQRUMFIw
+JQYIKwYBBQUHMAGGGWh0dHA6Ly9vY3NwLnBraS5nb29nL2dzcjEwKQYIKwYBBQUH
+MAKGHWh0dHA6Ly9wa2kuZ29vZy9nc3IxL2dzcjEuY3J0MDIGA1UdHwQrMCkwJ6Al
+oCOGIWh0dHA6Ly9jcmwucGtpLmdvb2cvZ3NyMS9nc3IxLmNybDA7BgNVHSAENDAy
+MAgGBmeBDAECATAIBgZngQwBAgIwDQYLKwYBBAHWeQIFAwIwDQYLKwYBBAHWeQIF
+AwMwDQYJKoZIhvcNAQELBQADggEBADSkHrEoo9C0dhemMXoh6dFSPsjbdBZBiLg9
+NR3t5P+T4Vxfq7vqfM/b5A3Ri1fyJm9bvhdGaJQ3b2t6yMAYN/olUazsaL+yyEn9
+WprKASOshIArAoyZl+tJaox118fessmXn1hIVw41oeQa1v1vg4Fv74zPl6/AhSrw
+9U5pCZEt4Wi4wStz6dTZ/CLANx8LZh1J7QJVj2fhMtfTJr9w4z30Z209fOU0iOMy
++qduBmpvvYuR7hZL6Dupszfnw0Skfths18dG9ZKb59UhvmaSGZRVbNQpsg3BZlvi
+d0lIKO2d1xozclOzgjXPYovJJIultzkMu34qQb9Sz/yilrbCgj8=
+-----END CERTIFICATE-----
+&lt;/code>&lt;/pre>&lt;p>There are three certificates.
+This is because the server is using a certificate chain.
+A &lt;strong>certificate chain&lt;/strong> is when the CA signs and intermediate certificate which will then sign the actual certificate.
+Or multiple intermediate certificates.
+This is used to decentralize the certificate signing process, creating the hierarchical public key infrastructure with self signed root CAs at the top.&lt;/p>
+&lt;p>We store the three certificates from Google in the &lt;code>assets/&lt;/code> folder.
+We inspect the subject and issuer of each:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ openssl x509 -noout -subject -issuer -in assets/google.crt
+subject=CN = www.google.com
+issuer=C = US, O = Google Trust Services LLC, CN = GTS CA 1C3
+$ openssl x509 -noout -subject -issuer -in assets/google_interm2.crt
+subject=C = US, O = Google Trust Services LLC, CN = GTS CA 1C3
+issuer=C = US, O = Google Trust Services LLC, CN = GTS Root R1
+$ openssl x509 -noout -subject -issuer -in assets/google_interm1.crt
+subject=C = US, O = Google Trust Services LLC, CN = GTS Root R1
+issuer=C = BE, O = GlobalSign nv-sa, OU = Root CA, CN = GlobalSign Root CA
+&lt;/code>&lt;/pre>&lt;p>The server certificate is for &lt;code>www.google.com&lt;/code> and is issued and signed by &lt;code>C = US, O = Google Trust Services LLC, CN = GTS CA 1C3&lt;/code>, who in turn is signed by &lt;code>C = US, O = Google Trust Services LLC, CN = GTS Root R1&lt;/code>, who in turn is signed by the GlobalSign Root CA.
+We extracted the GlobalSign Root CA from Firefox and placed it in the &lt;code>assets/&lt;/code> folder as well:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ openssl x509 -noout -subject -issuer -in assets/GlobalSignRootCA.crt
+subject=C = BE, O = GlobalSign nv-sa, OU = Root CA, CN = GlobalSign Root CA
+issuer=C = BE, O = GlobalSign nv-sa, OU = Root CA, CN = GlobalSign Root CA
+&lt;/code>&lt;/pre>&lt;p>To verify the entire security chain we use:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ cat google.crt google_interm2.crt google_interm1.crt &amp;gt; google_chain.crt
+$ openssl verify -CAfile google_interm2.crt google_chain.crt
+google_chain.crt: OK
+&lt;/code>&lt;/pre>&lt;p>The first command creates the &lt;code>google_chain.crt&lt;/code> file with the chain of certificates, the most specific certificate first.
+The we use &lt;code>openssl verify&lt;/code> to successfully verify the certificate chain.&lt;/p>
+&lt;h3 id="validation-and-assessment-of-remote-certificates">Validation and Assessment of Remote Certificates&lt;/h3>
+&lt;p>Mostly for testing purposes, we want to know whether a given HTTPS server setup is valid and whether it is secure (i.e. it uses strong TLS parameters).
+For this we can use the &lt;a href="https://www.ssllabs.com/ssltest/">SSLTest Web App&lt;/a> or the &lt;a href="https://testssl.sh/">&lt;code>testssl.sh&lt;/code> CLI tool&lt;/a>.&lt;/p>
+&lt;p>&lt;strong>SSLTest&lt;/strong>&lt;/p>
+&lt;p>Using &lt;a href="https://www.ssllabs.com/ssltest/">SSLTest&lt;/a> is quite easy.
+Enter the URL of the target web server and then wait for the results.
+Results come in a grade summary, that&amp;rsquo;s an average of several criteria, and a detailed analysis of the HTTPS security features.&lt;/p>
+&lt;p>Generally, it is advised to aim for a higher score.
+Note that a higher score may mean using certain security features that some browsers don&amp;rsquo;t support.
+So there needs to be a trade-off between security and browser support.&lt;/p>
+&lt;p>&lt;strong>testssl.sh&lt;/strong>&lt;/p>
+&lt;p>Installing &lt;code>testssl.sh&lt;/code> is as simple as cloning &lt;a href="https://github.com/drwetter/testssl.sh">the repository&lt;/a> and changing to a stable branch:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ git clone https://github.com/drwetter/testssl.sh
+[...]
+$ cd testssl.sh/
+$ git checkout -b v3.0.7 v3.0.7
+&lt;/code>&lt;/pre>&lt;p>Now just pass an URL to the &lt;code>testssl.sh&lt;/code> script:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ ./testssl.sh security.cs.pub.ro
+&lt;/code>&lt;/pre>&lt;p>If that doesn&amp;rsquo;t work, you can use Docker as detailed in &lt;a href="https://github.com/drwetter/testssl.sh">the repository&lt;/a>.&lt;/p>
+&lt;p>The output is similar to the one from SSLTest.
+The benefit of using &lt;code>testssl.sh&lt;/code> is it allows automation and it doesn&amp;rsquo;t require a GUI browser to do the test.&lt;/p>
+&lt;h2 id="summary-of-commands">Summary of Commands&lt;/h2>
+&lt;p>See below a summary of commands useful for working with HTTPS and digital certificates.&lt;/p>
+&lt;p>Capture HTTP packets and print their contents (ash human-readable ASCII characters):&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ sudo tcpdump -A tcp port 80
+&lt;/code>&lt;/pre>&lt;p>Get remote web page:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ wget http://www.google.com
+$ wget https://www.google.com
+$ curl http://www.google.com
+$ curl https://www.google.com
+&lt;/code>&lt;/pre>&lt;p>Inspect certificate file:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ openssl x509 -noout -text -in certificate.crt
+$ openssl x509 -noout -subject -issuer -in certificate.crt
+&lt;/code>&lt;/pre>&lt;p>Verify certificate:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ openssl verify -CAfile CA.crt certificate.crt
+&lt;/code>&lt;/pre>&lt;p>Extract certificate(s) from remote end:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ openssl s_client -showcerts -connect www.google.com:443 -servername www.google.com &amp;lt; /dev/null 2&amp;gt; /dev/null | sed -ne &amp;#39;/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p&amp;#39;
+&lt;/code>&lt;/pre>&lt;p>Assess remote HTTPS and certificate security:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ ./testssl.sh security.cs.pub.ro
+&lt;/code>&lt;/pre>&lt;h2 id="challenges">Challenges&lt;/h2>
+&lt;h3 id="01-investigate-ssltls-enabled-websites">01. Investigate SSL/TLS-enabled Websites&lt;/h3>
+&lt;p>Investigate the SSL/TLS configuration strength for different websites.
+Use:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.ssllabs.com/ssltest/">SSL Server Test from SSL Labs&lt;/a> in a web browser&lt;/li>
+&lt;li>&lt;a href="https://testssl.sh/">testssl.sh&lt;/a> in the command line&lt;/li>
+&lt;/ul>
+&lt;p>Investigate the following websites:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://curs.upb.ro/">https://curs.upb.ro/&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://ing.ro/">https://ing.ro/&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://senat.ro/">https://senat.ro/&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://republica.ro/">https://republica.ro/&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.emag.ro/">https://www.emag.ro/&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>Look for the following:&lt;/p>
+&lt;ul>
+&lt;li>the overall grade&lt;/li>
+&lt;li>reasons for not getting the maximum grade&lt;/li>
+&lt;li>certificate expiration date&lt;/li>
+&lt;li>certification authority (CA)&lt;/li>
+&lt;li>SSL/TLS version supported&lt;/li>
+&lt;/ul>
+&lt;p>Fill the information above in a Google spreadsheet, a copy of &lt;a href="https://docs.google.com/spreadsheets/d/1ufpcQcwSL3LEziqg5tjBK-e7B2xVq0N5xiRcq9yeRHY/edit?usp=sharing">this one&lt;/a>.&lt;/p>
+&lt;h3 id="02-investigate-remote-ssltls-certificates">02. Investigate Remote SSL/TLS Certificates&lt;/h3>
+&lt;p>Download, inspect and verify remote certificates.
+Use &lt;code>openssl s_client&lt;/code> to download a certificate.
+Use &lt;code>openssl x509&lt;/code> to investigate the downloaded certificate.
+Use the Certificate Manager-like interface in you browser to extract the corresponding root certificates.
+Use &lt;code>openssl verify&lt;/code> to verify a certificate;
+use the extracted root certificate.&lt;/p>
+&lt;p>Investigate the following websites:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://slack.com/">https://slack.com/&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.pornhub.com/">https://www.pornhub.com/&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.emag.ro/">https://www.emag.ro/&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h3 id="03-investigate-remote-ssltls-certificates-with-sni">03. Investigate Remote SSL/TLS Certificates with SNI&lt;/h3>
+&lt;p>Download, inspect and verify remote certificates.&lt;/p>
+&lt;p>Investigate the following websites:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://koala.cs.pub.ro">https://koala.cs.pub.ro&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://security.cs.pub.ro">https://security.cs.pub.ro&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://wiki.cs.pub.ro">https://wiki.cs.pub.ro&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>These websites are colocated on the same IP address:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ host security.cs.pub.ro
+security.cs.pub.ro has address 141.85.227.114
+security.cs.pub.ro mail is handled by 5 security.cs.pub.ro.
+$ host koala.cs.pub.ro
+koala.cs.pub.ro has address 141.85.227.114
+$ host wiki.cs.pub.ro
+wiki.cs.pub.ro is an alias for koala.cs.pub.ro.
+koala.cs.pub.ro has address 141.85.227.114
+&lt;/code>&lt;/pre>&lt;p>So be sure to use &lt;a href="https://major.io/2012/02/07/using-openssls-s_client-command-with-web-servers-using-server-name-indication-sni/">SNI support&lt;/a> (&lt;em>Server Name Indication&lt;/em>) for the &lt;code>openssl s_client&lt;/code> command to download the correct certificate.
+This means using the &lt;code>-servername&lt;/code> option.&lt;/p>
+&lt;h3 id="04-inspect-me-pem">04. Inspect Me PEM&lt;/h3>
+&lt;p>Get the flag from the certificate: &lt;a href="https://sss-web.cyberedu.ro/challenge/25d5c870-fc5a-11ec-bf6f-33097481169b">https://sss-web.cyberedu.ro/challenge/25d5c870-fc5a-11ec-bf6f-33097481169b&lt;/a>&lt;/p>
+&lt;h3 id="05-inspect-me-der">05. Inspect Me DER&lt;/h3>
+&lt;p>Get the flag from the certificate: &lt;a href="https://sss-web.cyberedu.ro/challenge/82120dc0-fc5a-11ec-8907-a767cfc56b45">https://sss-web.cyberedu.ro/challenge/82120dc0-fc5a-11ec-8907-a767cfc56b45&lt;/a>&lt;/p>
+&lt;h3 id="06-the-chosen-one">06. The Chosen One&lt;/h3>
+&lt;p>Find the correct certificate and get the flag from it: &lt;a href="https://sss-web.cyberedu.ro/challenge/38b30e80-fc68-11ec-9c1f-6177b11a278c">https://sss-web.cyberedu.ro/challenge/38b30e80-fc68-11ec-9c1f-6177b11a278c&lt;/a>&lt;/p>
+&lt;h3 id="07-proper-naming">07. Proper Naming&lt;/h3>
+&lt;p>Get the flag from http://141.85.224.117:3280
+Submit the flag to: &lt;a href="https://sss-web.cyberedu.ro/challenge/32215080-fc7b-11ec-940b-ad7b1c8e700c">https://sss-web.cyberedu.ro/challenge/32215080-fc7b-11ec-940b-ad7b1c8e700c&lt;/a>&lt;/p>
+&lt;h3 id="08-inside">08. Inside&lt;/h3>
+&lt;p>Get the flag from http://141.85.224.117:3380
+Submit the flag to: &lt;a href="https://sss-web.cyberedu.ro/challenge/298a4d30-fc85-11ec-9624-c3b4658b387a">https://sss-web.cyberedu.ro/challenge/298a4d30-fc85-11ec-9624-c3b4658b387a&lt;/a>&lt;/p>
+&lt;h3 id="09-only-for-members">09. Only for Members&lt;/h3>
+&lt;p>Connect via HTTPS to a https://141.85.224.117:31443.
+Use client certificate authentication to retrieve the flag.&lt;/p>
+&lt;p>The client certificate needs to be signed by the same certification authority as that of the server.
+See the files and scripts in the &lt;code>securing-communication/assets/ca/&lt;/code> folder in the repository.&lt;/p>
+&lt;p>Submit flag to: &lt;a href="https://sss-web.cyberedu.ro/challenge/c8d977d0-fc9c-11ec-80d9-0de38261593f">https://sss-web.cyberedu.ro/challenge/c8d977d0-fc9c-11ec-80d9-0de38261593f&lt;/a>&lt;/p>
+&lt;h3 id="extra-tutorial-inspect-https-traffic">Extra: Tutorial: Inspect HTTPS Traffic&lt;/h3>
+&lt;p>In this tutorial challenge, we capture and aim to decrypt HTTPS traffic.
+We use Wireshark to capture traffic.&lt;/p>
+&lt;p>To decrypt traffic, we need to have access to the private key of the server.
+Copy the contents of the private key from the Nginx server set up above, from the &lt;code>/etc/letsencrypt/live/&amp;lt;hostname&amp;gt;/privkey.pem&lt;/code> into a local file.&lt;/p>
+&lt;p>Start Wireshark (as &lt;code>root&lt;/code>).
+Load the private key in Wireshark using instructions &lt;a href="https://accedian.com/blog/how-to-decrypt-an-https-exchange-with-wireshark/">here&lt;/a>.&lt;/p>
+&lt;p>Start packet capture in Wireshark and filter packets to / from the IP address of the server.
+Use a string such as &lt;code>ip.addr = &amp;lt;server_IP_address&amp;gt;&lt;/code> in the filter line in Wireshark.&lt;/p>
+&lt;p>Use &lt;code>curl&lt;/code> to request the index page from the server:&lt;/p>
+&lt;pre tabindex="0">&lt;code>curl https://&amp;lt;hostname&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Packet capture in Wireshark will not show decrypted content, similar to the image below.&lt;/p>
+&lt;p>&lt;img src="https-capture-decrypt/wireshark-no-decrypt.png" alt="HTTPS not decrypted">&lt;/p>
+&lt;p>This is because, by default, the connection uses SSL / TLS ciphers with &lt;a href="https://en.wikipedia.org/wiki/Forward_secrecy">PFS&lt;/a> (&lt;em>Perfect Forward Secrecy&lt;/em>) usually enabled with DHE (&lt;em>Diffie-Hellman Exchange&lt;/em>).
+Don&amp;rsquo;t bother with the acronyms and their significance, we use them to let you know the terms and maybe look for additional information later on.&lt;/p>
+&lt;p>However, we can request &lt;code>curl&lt;/code> to not use PFS, by choosing a simpler cipher.
+This simple cipher will use the private key that we are in possession of (and that we loaded into Wireshark) to encrypt traffic.
+This is also explained &lt;a href="https://accedian.com/blog/how-to-decrypt-an-https-exchange-with-wireshark/">here&lt;/a>.&lt;/p>
+&lt;p>Use &lt;code>curl&lt;/code> to request the index page from the server with a simpler cipher that does not use DHE:&lt;/p>
+&lt;pre tabindex="0">&lt;code>curl --ciphers AES256-SHA https://&amp;lt;hostname&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Now, the packet capture shows actual decrypted HTTP content, similar to the image below.&lt;/p>
+&lt;p>&lt;img src="https-capture-decrypt/wireshark-decrypt.png" alt="HTTPS decrypted">&lt;/p>
+&lt;p>You can use &lt;code>Right click&lt;/code> -&amp;gt; &lt;code>Follow&lt;/code> -&amp;gt; &lt;code>HTTP stream&lt;/code> to extract the HTTP traffic only.&lt;/p>
+&lt;p>In summary, with access to the private key, if the cipher used in the HTTPS connection (HTTP + SSL / TLS) doesn&amp;rsquo;t use DHE, we can decrypt the traffic.
+Of course, this requires access to the private key.
+In an actual attack this is another part of the attack vector where some server-side vulnerability allows the extraction of the private key.&lt;/p>
+&lt;h2 id="resources-and-tools">Resources and Tools&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://www.tcpdump.org/">tcpdump&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.wireshark.org/">Wireshark&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.openssl.org/">openssl&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs">OpenSSL Essentials&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.sslshopper.com/article-most-common-openssl-commands.html">The Most Common OpenSSL Commands&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://geekflare.com/openssl-commands-certificates/">OpenSSL Examples&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://jamielinux.com/docs/openssl-certificate-authority/index.html">OpenSSL Certificate Authority&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://testssl.sh/">testssl.sh&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.ssllabs.com/ssltest/">SSL Server Test from SSL Labs&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="further-reading">Further Reading&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://geekflare.com/ssl-test-certificate/">https://geekflare.com/ssl-test-certificate/&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.feistyduck.com/library/openssl-cookbook/">https://www.feistyduck.com/library/openssl-cookbook/&lt;/a>&lt;/li>
 &lt;/ul></description></item><item><title>Docs: Reviewer guidelines</title><link>/docs/contribution-guidelines/reviewer-guideline/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/contribution-guidelines/reviewer-guideline/</guid><description>
 &lt;h2 id="activities--challenges">Activities / Challenges&lt;/h2>
 &lt;p>Make sure that activities / challenges are of good quality:&lt;/p>
