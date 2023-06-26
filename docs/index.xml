@@ -7889,7 +7889,7 @@ We strongly encourage you to use &lt;code>Bless&lt;/code>&lt;/p>
 &lt;p>You could use &lt;code>ltrace&lt;/code> and &lt;code>strace&lt;/code> to find the flag. But try to make it give you the flag by simply altering the environment, do not attach to the executable.&lt;/p>
 &lt;/blockquote>
 &lt;h3 id="11-challenge---detective">11. Challenge - Detective&lt;/h3>
-&lt;p>This challenge runs remotely at &lt;code>141.85.224.157:31337&lt;/code>. You can use &lt;code>netcat&lt;/code> to connect to it.&lt;/p>
+&lt;p>This challenge runs remotely at &lt;code>141.85.224.104:31337&lt;/code>. You can use &lt;code>netcat&lt;/code> to connect to it.&lt;/p>
 &lt;p>Investigate the &lt;a href="./activities/11-challenge-detective/src">detective&lt;/a> binary. See what it does and work to get the flag.&lt;/p>
 &lt;p>You can start from the &lt;a href="./activities/11-challenge-detective/sol/exploit_template.py">sol/exploit_template.py&lt;/a> solution template script.&lt;/p>
 &lt;blockquote>
