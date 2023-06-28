@@ -13,70 +13,74 @@ Even so, challenge activity folders store the reference solution for you to take
 Tutorial activities feature a <code>README.md</code> file in the solution folder, with a detailing of the solution.</li></ul><h2 id=contributing>Contributing</h2><p>Contributions are welcome.
 See the <a href=CONTRIBUTING.md>contribution guide</a> on how you could report or fix issues and on how you can improve the content.</p><p>Reviewers are requested to follow the <a href=REVIEWING.md>reviewing guide</a>.</p><p>For in-depth discussions, please join the <a href=https://discord.gg/qx3RmNEVkB>SSS Discord community</a>.</p></div></div><div class=td-content style=page-break-before:always><h1 id=pg-387e29e3fd16b4d75fe0d05b6f7734d0>1 -</h1><h1 id=welcome-to-linux>Welcome to Linux</h1><h2 id=introduction>Introduction</h2><p>In this session, we will familiarise ourselves with our working environment.
 We will learn how to set up a Kali Linux virtual machine and how to use its capabilities.
-We will also introduce the programming language that we&rsquo;ll use throughout all sessions: Python.</p><h2 id=prerequisites>Prerequisites</h2><ul><li>Fluency in the English language</li><li>Basic programming knowledge (you are able to develop and run basic programs using integers, strings, arrays)</li><li>The ability to use and search the Internet</li><li>Curiosity, thirst for knowledge</li><li>Interest in cybersecurity</li></ul><h2 id=what-is-linux>What is Linux?</h2><p>Well, <a href=https://en.wikipedia.org/wiki/Linux>Linux</a> is family of operating systems (OS&rsquo;s).
+We will also introduce the programming language that we&rsquo;ll use throughout all sessions: Python.</p><h2 id=prerequisites>Prerequisites</h2><ul><li><p>Fluency in the English language</p></li><li><p>Basic programming knowledge (you are able to develop and run basic programs using integers, strings, arrays)</p></li><li><p>The ability to use and search the internet</p></li><li><p>Curiosity, thirst for knowledge</p></li><li><p>Interest in cybersecurity</p></li></ul><h2 id=what-is-linux>What is Linux?</h2><p>Well, <a href=https://en.wikipedia.org/wiki/Linux>Linux</a> is family of operating systems (OS&rsquo;s).
 One such OS is <a href=https://en.wikipedia.org/wiki/Kali_Linux>Kali Linux</a>, which is specially designed for security enthusiasts.
 This means that Kali comes with a few hundred preinstalled apps that are useful for anywone working in or learning about security.
-We&rsquo;ll be using some of these apps throughout this track.</p><h2 id=setting-up-your-kali-virtual-machine>Setting up Your Kali Virtual Machine</h2><ol><li>Start downloading the <a href=https://security.cs.pub.ro/summer-school/wiki/_media/session/infrastructure/sss-kali-amd64.ova.torrent>Kali VM Image</a> torrent.</li><li>Download the VirtualBox installer for your system from <a href=https://www.virtualbox.org/wiki/Downloads>here</a>.</li><li>Install VirtualBox using the installer you downloaded at step 2.</li><li>Start VirtualBox.</li><li>When the download started at step 1 finishes, press the <strong>Import</strong> button.</li><li>Select the downloaded <code>.ova</code> file (the VM image) in the newly opened window.</li><li>Click <strong>Import</strong>.
+We&rsquo;ll be using some of these apps throughout this track.</p><h2 id=setting-up-your-kali-virtual-machine>Setting up Your Kali Virtual Machine</h2><ol><li><p>Start downloading the <a href=https://security.cs.pub.ro/summer-school/wiki/_media/session/infrastructure/sss-kali-amd64.ova.torrent>Kali VM Image</a> torrent.</p></li><li><p>Download the VirtualBox installer for your system from <a href=https://www.virtualbox.org/wiki/Downloads>here</a>.</p></li><li><p>Install VirtualBox using the installer you downloaded at step 2.</p></li><li><p>Start VirtualBox.</p></li><li><p>When the download started at step 1 finishes, press the <strong>Import</strong> button.</p></li><li><p>Select the downloaded <code>.ova</code> file (the VM image) in the newly opened window.</p></li><li><p>Click <strong>Import</strong>.
 You&rsquo;ll be able to change the VM&rsquo;s resources later.
-After the import finishes, the VM should appear to the left of the VirtualBox window</li><li>Click the VM and then click <strong>Start</strong>.</li><li>Use the username <code>root</code> and the password <code>toor</code> to log in.</li></ol><h2 id=working-with-linux>Working with Linux</h2><h3 id=i-command-thee>I Command Thee</h3><p>The most important shortcut when using a Linux operating system is <code>Ctrl + Alt + t</code>.
+After the import finishes, the VM should appear to the left of the VirtualBox window</p></li><li><p>Click the VM and then click <strong>Start</strong>.</p></li><li><p>Use the username <code>root</code> and the password <code>toor</code> to log in.</p></li></ol><h2 id=working-with-linux>Working with Linux</h2><h3 id=i-command-thee>I Command Thee</h3><p>The most important shortcut when using a Linux operating system is <code>Ctrl + Alt + t</code>.
 Try it now!
 The dark box that has appeared is called a <strong>terminal</strong>.
 A terminal is a means by which we can tell the operating system what to do for us.
 In other words, we use the terminal in order to give <strong>commands</strong> to the operating system using a text interface, without the use of a mouse or fancy graphics.
-Hence the terminal&rsquo;s alternative name: the <strong>Command Line Interface (CLI)</strong>.
-What you&rsquo;ve been using until now, namely navigating the desktop environment by clicking on shortcuts, files and links is called the <strong>Graphical User Interface (GUI)</strong>.</p><p>Here are a few useful key shortcuts for navigating the terminal more easily:</p><ul><li>open another terminal window: <code>Shift + Alt + t</code>;</li><li>navigate between open terminal windows: <code>Alt + N</code>, where <code>N</code> is the index of the tab you want to switch to <strong>(starting from 1)</strong>;</li><li>close the current window: <code>Ctrl + d</code>;</li><li>copy text from the terminal: <code>Ctrl + Shift + c</code>;</li><li>paste text to the terminal: <code>Ctrl + Shift + v</code>.</li></ul><p>It&rsquo;s kind of like a web browser, if you think about it, but with different key combinations.
+Hence the terminal&rsquo;s alternative name: the <strong>Command-Line Interface (CLI)</strong>.
+What you&rsquo;ve been using until now, namely navigating the desktop environment by clicking on shortcuts, files and links is called the <strong>Graphical User Interface (GUI)</strong>.</p><p>Here are a few useful key shortcuts for navigating the terminal more easily:</p><ul><li><p>open another terminal window: <code>Shift + Alt + t</code>;</p></li><li><p>navigate between open terminal windows: <code>Alt + N</code>, where <code>N</code> is the index of the tab you want to switch to <strong>(starting from 1)</strong>;</p></li><li><p>close the current window: <code>Ctrl + d</code>;</p></li><li><p>copy text from the terminal: <code>Ctrl + Shift + c</code>;</p></li><li><p>paste text to the terminal: <code>Ctrl + Shift + v</code>.</p></li></ul><p>It&rsquo;s kind of like a web browser, if you think about it, but with different key combinations.
 Don&rsquo;t worry about memorising them now, though.
 You&rsquo;ll get plenty of time to practice them in today&rsquo;s activities and in the sessions to come.
-For more terminal shortcuts, see the section <a href=#more-terminal-shortcuts>More Terminal Shortcuts</a> below.</p><h4 id=the-prompt>The Prompt</h4><p>Note that the line begins with <code>root@kali:~#</code>.
+For more terminal shortcuts, see the section <a href=#more-terminal-tricks>More Terminal Tricks</a> below.</p><h4 id=the-prompt>The Prompt</h4><p>Note that the line begins with <code>root@kali:~#</code>.
 This is what is called a <strong>prompt</strong>.
-It&rsquo;s like a sign that the current terminal is waiting for commands to execute.</p><p>The format of the prompt is the following:</p><pre tabindex=0><code>user@host_name: current_working_directory #
-</code></pre><p>Now let&rsquo;s look at each of these components one by one.</p><ul><li><code>user</code> is the name of the current user.
+It&rsquo;s like a sign that the current terminal is waiting for commands to execute.</p><p>The format of the prompt is the following:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>user@host_name: current_working_directory #
+</span></span></span></code></pre></div><p>Now let&rsquo;s look at each of these components one by one.</p><ul><li><code>user</code> is the name of the current user.
 In our case, it says <code>root</code>.
 We&rsquo;ll see what this means in its dedicated <a href=#the-root-user>section</a> below.
-We chan check that the user truly is <code>root</code> using the command <code>whoami</code>:</li></ul><pre tabindex=0><code>root@kali:~# whoami
-root
-</code></pre><ul><li><code>host_name</code> is the name of the current system.
-Once again, we can check if <code>kali</code> truly is our hostname by running the command <code>hostname</code></li></ul><pre tabindex=0><code>root@kali:~# hostname
-kali
-</code></pre><ul><li><code>#</code> is a sign that tells us that the prompt is over and that you can start typing commands.
-It can also be <code>$</code> or <code>></code>.</li><li><code>current_working_directory</code> is the <strong>path</strong> in the file system where we are currently located.
+We chan check that the user truly is <code>root</code> using the command <code>whoami</code>:</li></ul><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# whoami
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>root
+</span></span></span></code></pre></div><ul><li><code>host_name</code> is the name of the current system.
+Once again, we can check if <code>kali</code> truly is our hostname by running the command <code>hostname</code></li></ul><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# hostname
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>kali
+</span></span></span></code></pre></div><ul><li><p><code>#</code> is a sign that tells us that the prompt is over and that you can start typing commands.
+It can also be <code>$</code> or <code>></code>.</p></li><li><p><code>current_working_directory</code> is the <strong>path</strong> in the file system where we are currently located.
 If this sounds confusing, don&rsquo;t worry.
-We&rsquo;ll explain the file hierarchy right now.</li></ul><h4 id=the-file-system>The File System</h4><p>One of the most important things when we&rsquo;re using the CLI and after hacking a remote system is to know where we are in its file hierarchy.
+We&rsquo;ll explain the file hierarchy right now.</p></li></ul><h4 id=the-file-system>The File System</h4><p>One of the most important things when we&rsquo;re using the CLI and after hacking a remote system is to know where we are in its file hierarchy.
 This hierarchy is more commonly known as the <strong>file system</strong>.
 The path separator in Linux is <code>/</code>, unlike Windows, where it&rsquo;s <code>\</code>.
 At the same time, <code>/</code> is the root of the file system.</p><p>The file hierarchy looks like this:</p><p><img src=./assets/sample_file_hierarchy.svg alt="Sample File Hierarchy"></p><p>Going back to the <code>current_working_directory</code> in the prompt, the terminal can also be seen as a file walker.
-This means that at each moment it is &ldquo;placed&rdquo; in a certain directory, i.e. at some point in the file hierarcy.
-We can see that the prompt shows <code>~</code>. This stands for <strong>the home directory of the current user</strong>.
+This means that at each moment it is &ldquo;placed&rdquo; in a certain directory, i.e. at some point in the file hierarchy.
+We can see that the prompt shows <code>~</code>.
+This stands for <strong>the home directory of the current user</strong>.
 Our current user is <code>root</code> and its home directory is <code>/root</code>.
-Let&rsquo;s check this by running the command <code>pwd</code> (print working directory):</p><pre tabindex=0><code>root@kali:~# pwd
-/root
-</code></pre><h4 id=traversing-the-file-system>Traversing the File System</h4><p>Great!
+Let&rsquo;s check this by running the command <code>pwd</code> (print working directory):</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# pwd
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>/root
+</span></span></span></code></pre></div><h4 id=traversing-the-file-system>Traversing the File System</h4><p>Great!
 So now we know <strong>where</strong> we are in the file system.
 Let&rsquo;s see what&rsquo;s here in <code>/root</code>.
-For this, we use <code>ls</code>, that simply lists the contents of the current directory:</p><pre tabindex=0><code>root@kali:~# ls
-Desktop    ghidra_9.1.2_PUBLIC  peda      %SystemDrive%
-Documents  libc-database        Pictures  Templates
-Downloads  Music                Public    Videos
-</code></pre><p>That&rsquo;s quite a bit of stuff, but there&rsquo;s no need to look into each of these now.
+For this, we use <code>ls</code>, that simply lists the contents of the current directory:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# ls
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>Desktop    ghidra_9.1.2_PUBLIC  peda      %SystemDrive%
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>Documents  libc-database        Pictures  Templates
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>Downloads  Music                Public    Videos
+</span></span></span></code></pre></div><p>That&rsquo;s quite a bit of stuff, but there&rsquo;s no need to look into each of these now.
 Let&rsquo;s focus on navigating the file system for now.</p><p>Almost every linux command, such as <code>ls</code>, can take various parameters that alter its behaviour.
 <code>ls</code> for instance can list any given directory, not just the current directory.
-This reqiures the use of the path to list as a parameter:</p><pre tabindex=0><code>root@kali:~# ls /  # list the contents of the / (root) directory
-0     dev   initrd.img      lib32   lost+found  proc  sbin  tmp  vmlinuz
-bin   etc   initrd.img.old  lib64   media       root  srv   usr  vmlinuz.old
-boot  home  lib             libx32  opt         run   sys   var
-root@kali:~# ls /media  # list the contents of the /media directory
-cdrom  cdrom0
-</code></pre><p>Notice the second <code>#</code> symbol in each command.
+This reqiures the use of the path to list as a parameter:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# ls /  # list the contents of the / (root) directory
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>0     dev   initrd.img      lib32   lost+found  proc  sbin  tmp  vmlinuz
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>bin   etc   initrd.img.old  lib64   media       root  srv   usr  vmlinuz.old
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>boot  home  lib             libx32  opt         run   sys   var
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# ls /media  # list the contents of the /media directory
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>cdrom  cdrom0
+</span></span></span></code></pre></div><p>Notice the second <code>#</code> symbol in each command.
 This one is different from the one in the prompt.
 It marks the beginning of a comment, just like <code>//</code> does in C.</p><p>So we can now see what a given directory contains, but we&rsquo;re still stuck in <code>/root</code>.
-Let&rsquo;s change our current directory. For this, we use <code>cd</code>:</p><pre tabindex=0><code>root@kali:~# ls libc-database/  # list the contents of libc-database
-add  common  db  dump  find  get  identify  README.md  tmp
-root@kali:~# cd libc-database/  # move to libc-database
-root@kali:~/libc-database# ls  # list the contetns of the current directory (now libc-database)
-add  common  db  dump  find  get  identify  README.md  tmp
-root@kali:~/libc-database# pwd  # check that we really are in libc-database
-/root/libc-database
-</code></pre><p>Notice the prompt change to <code>~/libc-database</code> after <code>cd</code> because the current directory changes.</p><p>Stop!
+Let&rsquo;s change our current directory. For this, we use <code>cd</code>:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# ls libc-database/  # list the contents of libc-database
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>add  common  db  dump  find  get  identify  README.md  tmp
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~# cd libc-database/  # move to libc-database
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~/libc-database# ls  # list the contetns of the current directory (now libc-database)
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>add  common  db  dump  find  get  identify  README.md  tmp
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~/libc-database# pwd  # check that we really are in libc-database
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>/root/libc-database
+</span></span></span></code></pre></div><p>Notice the prompt change to <code>~/libc-database</code> after <code>cd</code> because the current directory changes.</p><p>Stop!
 <strong><code>Tab</code> Time!</strong>
 Almost every CLI is capable of autocompletion and that of Linux is no different.
 Type <code>cd l</code> and then press <code>Tab</code>.
@@ -89,76 +93,91 @@ Now the terminal sees there is only one option, <code>Desktop/</code> and autofi
 It&rsquo;s one of the most powerful tools at our disposal, so remember to abuse it as much as possible.
 <strong>Keep in mind: there is no such thing as pressing <code>Tab</code> too many times</strong>.</p><p>Now back to our directories.
 So we&rsquo;re in <code>libc-database</code>, but how do we get back to <code>/root</code>?
-Similarly to a browser, the parent of any directory can be accessed using <code>..</code> like so:</p><pre tabindex=0><code>root@kali:~/libc-database# ls ..
-Desktop    ghidra_9.1.2_PUBLIC  peda      %SystemDrive%
-Documents  libc-database        Pictures  Templates
-Downloads  Music                Public    Videos
-root@kali:~/libc-database# cd ..
-root@kali:~# ls
-Desktop    ghidra_9.1.2_PUBLIC  peda      %SystemDrive%
-Documents  libc-database        Pictures  Templates
-Downloads  Music                Public    Videos
-root@kali:~# pwd
-/root
-</code></pre><p>Makes sense? Alright. So now we can move anywhere.
-We can chain paths using the separator (<code>/</code>), even adding <code>..</code>, like so:</p><pre tabindex=0><code>root@kali:~/libc-database# cd ../..  # we are in /root/libc-database
-root@kali:/# ls  # now we are 2 levels up, in /
-0     dev   initrd.img      lib32   lost+found  proc  sbin  tmp  vmlinuz
-bin   etc   initrd.img.old  lib64   media       root  srv   usr  vmlinuz.old
-boot  home  lib             libx32  opt         run   sys   var
-</code></pre><h4 id=be-a-man>Be a Man!</h4><p>Almost every Linux command comes with extensive documentation.
+Similarly to a browser, the parent of any directory can be accessed using <code>..</code> like so:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~/libc-database# ls ..
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>Desktop    ghidra_9.1.2_PUBLIC  peda      %SystemDrive%
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>Documents  libc-database        Pictures  Templates
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>Downloads  Music                Public    Videos
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~/libc-database# cd ..
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~# ls
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>Desktop    ghidra_9.1.2_PUBLIC  peda      %SystemDrive%
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>Documents  libc-database        Pictures  Templates
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>Downloads  Music                Public    Videos
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~# pwd
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>/root
+</span></span></span></code></pre></div><p>Makes sense?
+Alright.
+So now we can move anywhere.
+We can chain paths using the separator (<code>/</code>), even adding <code>..</code>, like so:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~/libc-database# cd ../..  # we are in /root/libc-database
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:/# ls  # now we are 2 levels up, in /
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>0     dev   initrd.img      lib32   lost+found  proc  sbin  tmp  vmlinuz
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>bin   etc   initrd.img.old  lib64   media       root  srv   usr  vmlinuz.old
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>boot  home  lib             libx32  opt         run   sys   var
+</span></span></span></code></pre></div><h4 id=be-a-man>Be a Man</h4><p>Almost every Linux command comes with extensive documentation.
 This documentation can be read using <code>man &lt;command></code>.
-Let&rsquo;s try reading the manual page for the <code>ls</code> command:</p><pre tabindex=0><code>root@kali:~# man ls
-</code></pre><ul><li>Use <code>↑</code> and <code>↓</code> to scroll up and down.</li><li>Use <code>Space</code> to scroll one whole page down.</li><li>Use <code>/&lt;string></code> to search for any string.
+Let&rsquo;s try reading the manual page for the <code>ls</code> command:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# man ls
+</span></span></span></code></pre></div><ul><li><p>Use <code>↑</code> and <code>↓</code> to scroll up and down.</p></li><li><p>Use <code>Space</code> to scroll one whole page down.</p></li><li><p>Use <code>/&lt;string></code> to search for any string.
 Try searching for the string &ldquo;recursive&rdquo;.
-Use <code>n</code> to navigate to the next occurrence of your string and <code>Shfit + n</code> to navigate to the previous one.</li><li>Use <code>q</code> to quit the manual</li></ul><p><strong>Task 1:</strong> Use the parameter you&rsquo;ve just found to recurisively list the contents of the <code>/root/libc-database</code> directory, using both relative and absolute paths.</p><p><strong>Task 2:</strong> Use the man page for <code>ls</code> again to learn how to view the contents of a directory in the form of a <strong>long listing</strong>.
+Use <code>n</code> to navigate to the next occurrence of your string and <code>Shfit + n</code> to navigate to the previous one.</p></li><li><p>Use <code>q</code> to quit the manual</p></li></ul><p><strong>Task 1:</strong> Use the parameter you&rsquo;ve just found to recursively list the contents of the <code>/root/libc-database</code> directory, using both relative and absolute paths.</p><p><strong>Task 2:</strong> Use the man page for <code>ls</code> again to learn how to view the contents of a directory in the form of a <strong>long listing</strong>.
 This parameter will show you more details regarding a file, such as its type, size, owner, access rights, the date when it was last modified etc.
 Test it on the file <code>/root/libc-database/README.md</code></p><p><strong>Task 3:</strong> Use the man page for <code>ls</code> to find out what parameter to pass to <code>ls</code> to list <strong>all</strong> entries in a directory.
 This option will also show you the <strong>hidden</strong> files in that directory.
 These files start with <code>.</code>.
 Test it on the <code>~</code> directory.
-Notice our friend <code>..</code> is also present.</p><h4 id=ill-make-my-own-hierarchy>I&rsquo;ll Make My Own Hierarchy!</h4><p>In order to create directories we use the <code>mkdir</code> command:</p><pre tabindex=0><code>root@kali:~# mkdir demo
-root@kali:~# ls
-demo     Documents  ghidra_9.1.2_PUBLIC  Music  Pictures  %SystemDrive%  Videos
-Desktop  Downloads  libc-database        peda   Public    Templates
-root@kali:~# cd demo
-root@kali:~/demo# 
-</code></pre><p>Now let&rsquo;s create a file in our new directory.
+Notice our friend <code>..</code> is also present.</p><h4 id=ill-make-my-own-hierarchy>I&rsquo;ll Make My Own Hierarchy</h4><p>In order to create directories we use the <code>mkdir</code> command:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# mkdir demo
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~# ls
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>demo     Documents  ghidra_9.1.2_PUBLIC  Music  Pictures  %SystemDrive%  Videos
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>Desktop  Downloads  libc-database        peda   Public    Templates
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~# cd demo
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~/demo# 
+</span></span></span></code></pre></div><p>Now let&rsquo;s create a file in our new directory.
 For this, we use the <code>touch</code> command.
-It creates an <strong>empty</strong> file.</p><pre tabindex=0><code>root@kali:~/demo# touch demo-file
-root@kali:~/demo# ls
-demo-file
-root@kali:~/demo# cat demo-file  # The file is empty, so nothing is printed.
-root@kali:~/demo# touch demo-file2  # Just because we can.
-root@kali:~/demo# ls
-demo-file  demo-file2
-</code></pre><p>In order to remove a file, we use the <code>rm</code> command.</p><pre tabindex=0><code>root@kali:~/demo# rm demo-file2
-root@kali:~/demo# ls
-demo-file
-</code></pre><p>Now let&rsquo;s try to remove our directory the same way.</p><pre tabindex=0><code>root@kali:~# rm demo
-rm: cannot remove &#39;demo&#39;: Is a directory
-</code></pre><p>Deleting a directory requires that an extra parameter be passed to <code>rm</code>.
+It creates an <strong>empty</strong> file.</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~/demo# touch demo-file
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~/demo# ls
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>demo-file
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~/demo# cat demo-file  # The file is empty, so nothing is printed.
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~/demo# touch demo-file2  # Just because we can.
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~/demo# ls
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>demo-file  demo-file2
+</span></span></span></code></pre></div><p>In order to remove a file, we use the <code>rm</code> command.</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~/demo# rm demo-file2
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~/demo# ls
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>demo-file
+</span></span></span></code></pre></div><p>Now let&rsquo;s try to remove our directory the same way.</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# rm demo
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>rm: cannot remove &#39;demo&#39;: Is a directory
+</span></span></span></code></pre></div><p>Deleting a directory requires that an extra parameter be passed to <code>rm</code>.
 Find it in <code>rm</code>&rsquo;s <code>man</code> page.
 Look for the string &ldquo;recursively&rdquo;.
-Yup, it&rsquo;s <code>-r</code> (or <code>-R</code>, or <code>--recursive</code>; all three work).</p><pre tabindex=0><code>root@kali:~# rm -r demo/
-root@kali:~# ls
-Desktop    ghidra_9.1.2_PUBLIC  peda      %SystemDrive%
-Documents  libc-database        Pictures  Templates
-Downloads  Music                Public    Videos
-</code></pre><p>All clean!</p><h4 id=absolute-or-relative>Absolute or Relative?</h4><p>There are two ways of expressing a file path: relative and absolute.
-<strong>Relative</strong> paths are called so because they refer to the current directoy.</p><pre tabindex=0><code>root@kali:~# cd libc-database/
-</code></pre><p>This command uses a <strong>relative</strong> path, as <code>libc-database</code> only exists in <code>/root</code> (<code>~</code>).
+Yup, it&rsquo;s <code>-r</code> (or <code>-R</code>, or <code>--recursive</code>; all three work).</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# rm -r demo/
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic></span><span style=color:#a40000>
+</span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-style:italic>root@kali:~# ls
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>Desktop    ghidra_9.1.2_PUBLIC  peda      %SystemDrive%
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>Documents  libc-database        Pictures  Templates
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>Downloads  Music                Public    Videos
+</span></span></span></code></pre></div><p>All clean!</p><h4 id=absolute-or-relative>Absolute or Relative?</h4><p>There are two ways of expressing a file path: relative and absolute.
+<strong>Relative</strong> paths are called so because they refer to the current directoy.</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# cd libc-database/
+</span></span></span></code></pre></div><p>This command uses a <strong>relative</strong> path, as <code>libc-database</code> only exists in <code>/root</code> (<code>~</code>).
 If we were to run it from <code>/bin</code> for instance, it wouldn&rsquo;t work because there is no <code>libc-datbase</code> directory in <code>/bin</code>.</p><p><strong>Absolute</strong> paths however can be used from anywhere in the filesystem.
-They contain the full path to the file, starting from the root of the file system (<code>/</code>):</p><pre tabindex=0><code>root@kali:/lib/x86_64-linux-gnu/security# cd /root/libc-database/
-root@kali:~/libc-database# pwd
-/root/libc-database
-</code></pre><p>In the snippet above, we were able to navigate to <code>/root/libc-database</code> from somewhere completely different in the hierarchy.</p><p>Let&rsquo;s get some practice:</p><ul><li>Navigate to <code>/usr/lib/dpkg/methods/apt/</code>, but don&rsquo;t just copy and paste this path.
-Use <code>Tab</code> and you&rsquo;ll barely have to type anything.</li><li>Now get back to <code>root</code>&rsquo;s home using the home directory shortcut.</li><li>Navigate to <code>~/ghidra_9.1.2_PUBLIC/docs/images</code> using its absolute path.</li><li>Now move 2 levels up the hierarchy without retyping the path.
-Use <code>..</code>.</li></ul><h4 id=inspecting-file-contents>Inspecting File Contents</h4><p>Up to this point, we&rsquo;ve learned how to traverse the file system.
+They contain the full path to the file, starting from the root of the file system (<code>/</code>):</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:/lib/x86_64-linux-gnu/security# cd /root/libc-database/
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~/libc-database# pwd
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>/root/libc-database
+</span></span></span></code></pre></div><p>In the snippet above, we were able to navigate to <code>/root/libc-database</code> from somewhere completely different in the hierarchy.</p><p>Let&rsquo;s get some practice:</p><ul><li><p>Navigate to <code>/usr/lib/dpkg/methods/apt/</code>, but don&rsquo;t just copy and paste this path.
+Use <code>Tab</code> and you&rsquo;ll barely have to type anything.</p></li><li><p>Now get back to <code>root</code>&rsquo;s home using the home directory shortcut.</p></li><li><p>Navigate to <code>~/ghidra_9.1.2_PUBLIC/docs/images</code> using its absolute path.</p></li><li><p>Now move 2 levels up the hierarchy without retyping the path.
+Use <code>..</code>.</p></li></ul><h4 id=inspecting-file-contents>Inspecting File Contents</h4><p>Up to this point, we&rsquo;ve learned how to traverse the file system.
 Now we need to be able to <em>inspect</em> the files themselves.
-The simplest ways to view the contents of a file in the terminal is the <code>cat</code> command:</p><pre tabindex=0><code>root@kali:~# cat /etc/hostname 
-kali
-</code></pre><p>As you&rsquo;ve probably guessed, <code>/etc/hostname</code> is the file where the machine&rsquo;s host name is stored.</p><p>Feel free to consult <code>cat</code>&rsquo;s man page for further details about the command.
+The simplest ways to view the contents of a file in the terminal is the <code>cat</code> command:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# cat /etc/hostname 
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>kali
+</span></span></span></code></pre></div><p>As you&rsquo;ve probably guessed, <code>/etc/hostname</code> is the file where the machine&rsquo;s hostname is stored.</p><p>Feel free to consult <code>cat</code>&rsquo;s man page for further details about the command.
 We&rsquo;ll introduce more advanced means of outputting the contents of a file in the session dedicated to <a href=../data-representation>Data Representation</a>.
 Stay tuned!</p><h3 id=the-root-user>The Root User</h3><p>As we said previously, the prompt may indicate the current user, in our case <code>root</code>.
 But what exactly is this user?
@@ -174,43 +193,44 @@ By clicking the Firefox icon, the <strong>program</strong> starts to run.
 Any running program is called a <strong>process</strong>.</p><p>Let&rsquo;s test this by learning a new command.
 With Firefox closed, run the command <code>ps</code>.
 Use <code>man</code> to learn what it does.
-If you use it as-is in the terminal, it displays two running processes: <code>bash</code> and <code>ps</code> itself:</p><pre tabindex=0><code>root@kali:~# ps
-    PID TTY          TIME CMD
-   1929 pts/0    00:00:00 bash
-   3304 pts/0    00:00:00 ps
-</code></pre><ul><li><code>bash</code> stands for <em>Bourne-Again Shell</em> and is the command interpreter used by the terminal.
-In other words, it&rsquo;s what reads your input and executes the commands you type.</li><li>You already know what <code>ps</code> is.
-But why is it here? You see, in order for <code>ps</code> to start scanning for what processes are running, it needs to be running itself, which means it&rsquo;s inevitable that it finds itself while scanning.</li></ul><p>Now open Firefox from the side bar and run <code>ps</code> again:</p><pre tabindex=0><code>root@kali:~# ps
-    PID TTY          TIME CMD
-   1929 pts/0    00:00:00 bash
-   3304 pts/0    00:00:00 ps
-</code></pre><p>Where is Firefox?
+If you use it as-is in the terminal, it displays two running processes: <code>bash</code> and <code>ps</code> itself:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# ps
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>    PID TTY          TIME CMD
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>   1929 pts/0    00:00:00 bash
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>   3304 pts/0    00:00:00 ps
+</span></span></span></code></pre></div><ul><li><p><code>bash</code> stands for <em>Bourne-Again Shell</em> and is the command interpreter used by the terminal.
+In other words, it&rsquo;s what reads your input and executes the commands you type.</p></li><li><p>You already know what <code>ps</code> is.
+But why is it here?
+You see, in order for <code>ps</code> to start scanning for what processes are running, it needs to be running itself, which means it&rsquo;s inevitable that it finds itself while scanning.</p></li></ul><p>Now open Firefox from the side bar and run <code>ps</code> again:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# ps
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>    PID TTY          TIME CMD
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>   1929 pts/0    00:00:00 bash
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>   3304 pts/0    00:00:00 ps
+</span></span></span></code></pre></div><p>Where is Firefox?
 Well, when run without parameters, <code>ps</code> displays the processes that are running <strong>inside the current terminal</strong>, i.e. that have been started from this terminal.
 Firefox was started from the GUI, so it has nothing to do with our terminal.
 Use <code>man</code> to learn how to list the <strong>full</strong> output of <strong>all</strong> processes in the system.</p><p>Hopefully you haven&rsquo;t cheated and did find the <code>-A</code> (or <code>-e</code>) and <code>-f</code> options yourself.
-Now the output is rather huge, but we only care about the final lines:</p><pre tabindex=0><code>root@kali:~# ps -A -f
-[...]
-root        3367    1612 50 15:54 ?        00:00:01 /usr/lib/firefox-esr/firefox-esr
-root        3444    3367 20 15:54 ?        00:00:00 /usr/lib/firefox-esr/firefox-esr -contentproc -childID 1 -isForBrowser -prefsLen 1 -prefMapSize 183434 -parentBuildID 20200527211442 -greomni /usr/lib/firefox-esr/omni.ja -appomni /usr/l
-root        3498    3367 14 15:54 ?        00:00:00 /usr/lib/firefox-esr/firefox-esr -contentproc -childID 2 -isForBrowser -prefsLen 5670 -prefMapSize 183434 -parentBuildID 20200527211442 -greomni /usr/lib/firefox-esr/omni.ja -appomni /us
-root        3549    3367 35 15:54 ?        00:00:00 /usr/lib/firefox-esr/firefox-esr -contentproc -childID 3 -isForBrowser -prefsLen 6402 -prefMapSize 183434 -parentBuildID 20200527211442 -greomni /usr/lib/firefox-esr/omni.ja -appomni /us
-root        3590    3367 10 15:54 ?        00:00:00 /usr/lib/firefox-esr/firefox-esr -contentproc -childID 4 -isForBrowser -prefsLen 6402 -prefMapSize 183434 -parentBuildID 20200527211442 -greomni /usr/lib/firefox-esr/omni.ja -appomni /us
-root        3623    1929  0 15:54 pts/0    00:00:00 ps -A -f
-</code></pre><p>Great success!
+Now the output is rather huge, but we only care about the final lines:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~# ps -A -f
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>[...]
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>root        3367    1612 50 15:54 ?        00:00:01 /usr/lib/firefox-esr/firefox-esr
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>root        3444    3367 20 15:54 ?        00:00:00 /usr/lib/firefox-esr/firefox-esr -contentproc -childID 1 -isForBrowser -prefsLen 1 -prefMapSize 183434 -parentBuildID 20200527211442 -greomni /usr/lib/firefox-esr/omni.ja -appomni /usr/l
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>root        3498    3367 14 15:54 ?        00:00:00 /usr/lib/firefox-esr/firefox-esr -contentproc -childID 2 -isForBrowser -prefsLen 5670 -prefMapSize 183434 -parentBuildID 20200527211442 -greomni /usr/lib/firefox-esr/omni.ja -appomni /us
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>root        3549    3367 35 15:54 ?        00:00:00 /usr/lib/firefox-esr/firefox-esr -contentproc -childID 3 -isForBrowser -prefsLen 6402 -prefMapSize 183434 -parentBuildID 20200527211442 -greomni /usr/lib/firefox-esr/omni.ja -appomni /us
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>root        3590    3367 10 15:54 ?        00:00:00 /usr/lib/firefox-esr/firefox-esr -contentproc -childID 4 -isForBrowser -prefsLen 6402 -prefMapSize 183434 -parentBuildID 20200527211442 -greomni /usr/lib/firefox-esr/omni.ja -appomni /us
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>root        3623    1929  0 15:54 pts/0    00:00:00 ps -A -f
+</span></span></span></code></pre></div><p>Great success!
 We have seen Firefox move from being a simple program to being a running process.
 In addition, we&rsquo;ve learned a new command that is useful for inspecting what processes might be running on a system.
-Once you hack into a remote system, you can use <code>ps</code> to inspect what potentially exploitable processes are there.</p><h3 id=scripts>Scripts</h3><p>It is often convenient to group together a set of instrucitons so that you don&rsquo;t have to type them separately each time you want to make use of their combined functionality.
+Once you hack into a remote system, you can use <code>ps</code> to inspect what potentially exploitable processes are there.</p><h3 id=scripts>Scripts</h3><p>It is often convenient to group together a set of instructions so that you don&rsquo;t have to type them separately each time you want to make use of their combined functionality.
 For this purpose, you can use Bash scripts.
 They are text files that simply contain Bash commands.
-Bash is also a programming lanugage that comes with <code>if</code> statements, <code>for</code> loops, functions and more, but we won&rsquo;t be needing those right now.</p><p>Bash scripts typically bear the extension <code>.sh</code>, but this is by no means mandatory.
+Bash is also a programming language that comes with <code>if</code> statements, <code>for</code> loops, functions and more, but we won&rsquo;t be needing those right now.</p><p>Bash scripts typically bear the extension <code>.sh</code>, but this is by no means mandatory.
 Take some time to take a look at and run the Bash script in <code>activities/demo-bash/demo.sh</code>.
-You can run it like so:</p><pre tabindex=0><code>root@kali:~/essentials/welcome-to-linux/activities/demo-bash# sh demo.sh
-</code></pre><h2 id=enter-python>Enter Python</h2><h3 id=the-basics>The Basics</h3><p>Python is a programming language designed with simplicty in mind.
+You can run it like so:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~/essentials/welcome-to-linux/activities/demo-bash# sh demo.sh
+</span></span></span></code></pre></div><h2 id=enter-python>Enter Python</h2><h3 id=the-basics>The Basics</h3><p>Python is a programming language designed with simplicty in mind.
 It&rsquo;s meant to be simple and fast to read, understand and write.
-This is evident even from the language&rsquo;s syntax.</p><p>To get accustomed to Python, take a look at the code in the <code>activities/demo-python</code> dierctory.
+This is evident even from the language&rsquo;s syntax.</p><p>To get accustomed to Python, take a look at the code in the <code>activities/demo-python</code> directory.
 Feel free to fiddle with any of the code snippets.
-Add your own, try things out and experiment!</p><p>In order to run a Python script, just type the name of the script preceeded by <code>python3</code>:</p><pre tabindex=0><code>root@kali:~/essentials/welcome-to-linux/activities/demo-python# python3 variables.py
-</code></pre><h4 id=variables>Variables</h4><p>Let&rsquo;s start with <a href=./activities/demo-python/variables.py>variables.py</a>.
+Add your own, try things out and experiment!</p><p>In order to run a Python script, just type the name of the script preceded by <code>python3</code>:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>root@kali:~/essentials/welcome-to-linux/activities/demo-python# python3 variables.py
+</span></span></span></code></pre></div><h4 id=variables>Variables</h4><p>Let&rsquo;s start with <a href=./activities/demo-python/variables.py>variables.py</a>.
 This file explains how variables such as integers, floats and strings work in Python.
 It also introduces the <code>print</code> function.
 Inspect and run the code.
@@ -243,7 +263,7 @@ They follow the same syntax as before:</p><div class=highlight><pre tabindex=0 s
 </span></span><span style=display:flex><span><span style=color:#000>foo</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;whatever&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#0000cf;font-weight:700>2</span><span style=color:#000;font-weight:700>)</span>
 </span></span></code></pre></div><p>By now, you already know what to do.
 The demo for Python functions is in <code>activities/demo-python/functions.py</code>.
-Go to town on it!</p><h3 id=data-structures>Data Structures</h3><p>Python comes equipped with builtin data structures, such as lists and dictionaries.</p><h4 id=lists>Lists</h4><p>Lists are indexed arrays that can store any type of data.
+Go to town on it!</p><h3 id=data-structures>Data Structures</h3><p>Python comes equipped with built-in data structures, such as lists and dictionaries.</p><h4 id=lists>Lists</h4><p>Lists are indexed arrays that can store any type of data.
 You can create a list by specifying its elements enclosed in <code>[]</code>:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#000>lst</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>[</span><span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;some string&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>True</span><span style=color:#000;font-weight:700>,</span> <span style=color:#0000cf;font-weight:700>2.9</span><span style=color:#000;font-weight:700>]</span>
 </span></span></code></pre></div><p>Accessing the lists elements is similar to C: <code>lst[0]</code>, <code>lst[1]</code> and so on.
 Yes, lists in Python are indexed from 0.</p><p>Now go ahead and get some practice with lists by using the <code>activities/demo-python/lists.py</code> script.</p><h4 id=dictionaries>Dictionaries</h4><p>Conceptually, dictionaries are mappings between a set of <strong>keys</strong> and a set of <strong>values</strong>.
@@ -271,25 +291,23 @@ For this reason, one letter in a byte array is exactly one byte in size, whereas
 As a result, the main reason they exist is to process data, regardless of encoding.
 Network packet data, binary file contents, images are all to be processed as bytes, not as strings.</p><p>You can create a byte array just like you would create a regular string <strong>and adding a <code>b</code> in front</strong>, like this:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#000>my_bytes</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>b</span><span style=color:#4e9a06>&#39;SSS Rulz, but in bytes!&#39;</span>
 </span></span></code></pre></div><p>As always, the demo <code>activities/demo-python/strings_bytes.py</code> provides a more in-depth presentation of byte array and string operations.
-Go take a look.</p><h2 id=summary>Summary</h2><h3 id=linux>Linux</h3><p>A quick rundown of the most important Linux commands from today&rsquo;s session is:</p><ul><li><code>ls</code>: list the current directory;</li><li><code>cd &lt;direcory></code>: move to the specified directory;</li><li><code>mkdir</code> creates a new directory;</li><li><code>touch</code> creates a new file;</li><li><code>rm</code> deletes files and directories;</li><li><code>whoami</code>: prints the current user;</li><li><code>pwd</code>: prints the absolute path to the current directory;</li><li><code>cat</code>: output the contents of a file;</li><li><code>Tab</code>: your best friend in the whole world;</li><li><code>man &lt;command></code>: the source of infinite wisdom.</li></ul><h3 id=python>Python</h3><p>Some concepts to remember about Python are:</p><ul><li>There is no need for a <code>main</code> function or for types;</li><li>Indentation is everything</li><li>Basic arithmetic is almost the same as in C/C++;</li><li><code>if</code>s, <code>for</code>s, <code>while</code>s and function declarations all end in a colon (<code>:</code>);</li><li>There&rsquo;s a difference between bytes and strings and they are <strong>not</strong> interchangeable.</li></ul><h2 id=activities>Activities</h2><p>Security Summer School most activities take the shape of <strong>CTF challenges</strong>.
-CTF stands for &ldquo;Capture The Flag&rdquo; and is a type of challenge where you are given access to an environment (a set of files, a website, a remote system etc.), which you have to use in order to obtain and submit a special string called <strong>flag</strong>.
-We use the <a href=https://sss-essentials.cyberedu.ro/>CyberEdu platform</a> for submitting flags.
-Each challenge name uses the format <code>Essentials: Session Name: Challenge Name</code>.
-Do the challenges for today&rsquo;s session: <code>Welcome to Linux</code>.
-For the Security Summer School, all flags follow this pattern:</p><pre tabindex=0><code>SSS{some_random_ASCII_characters}
-</code></pre><h3 id=tutorial-in-your-face>Tutorial: In Your Face</h3><p>The flag is literally in your face.</p><p>Connect to the specified virtual machine and use <code>ls</code> to explore your surroundings:</p><pre tabindex=0><code>ctf@tutorial:~$ ls
-flag
-</code></pre><p>Now just use <code>cat</code> to extract the content of the <code>flag</code> file.</p><h3 id=challenge-did-you-look-everywhere>Challenge: Did You Look Everywhere?</h3><p>We assure you the flag is somewhere in the <code>/home/ctf</code> directory.</p><h3 id=challenge-whats-running>Challenge: What&rsquo;s Running?</h3><p>Did you know flags can <strong>run</strong>?</p><h3 id=challenge-quick-mafs>Challenge: Quick Mafs</h3><p>The flag&rsquo;s format is the classic <code>SSS{...}</code>, where <code>...</code> represent a string obtained by concatenating the <strong>first 10 numbers</strong> oobtained by performing the computations below.</p><p>Let each number be <code>n[i]</code>, where <code>i</code> is its index.
+Go take a look.</p><h2 id=summary>Summary</h2><h3 id=linux>Linux</h3><p>A quick rundown of the most important Linux commands from today&rsquo;s session is:</p><ul><li><p><code>ls</code>: list the current directory;</p></li><li><p><code>cd &lt;direcory></code>: move to the specified directory;</p></li><li><p><code>mkdir</code> creates a new directory;</p></li><li><p><code>touch</code> creates a new file;</p></li><li><p><code>rm</code> deletes files and directories;</p></li><li><p><code>whoami</code>: prints the current user;</p></li><li><p><code>pwd</code>: prints the absolute path to the current directory;</p></li><li><p><code>cat</code>: output the contents of a file;</p></li><li><p><code>Tab</code>: your best friend in the whole world;</p></li><li><p><code>man &lt;command></code>: the source of infinite wisdom.</p></li></ul><h3 id=python>Python</h3><p>Some concepts to remember about Python are:</p><ul><li><p>There is no need for a <code>main</code> function or for types;</p></li><li><p>Indentation is everything</p></li><li><p>Basic arithmetic is almost the same as in C/C++;</p></li><li><p><code>if</code>s, <code>for</code>s, <code>while</code>s and function declarations all end in a colon (<code>:</code>);</p></li><li><p>There&rsquo;s a difference between bytes and strings and they are <strong>not</strong> interchangeable.</p></li></ul><h2 id=activities>Activities</h2><p>Security Summer School most activities take the shape of <strong>CTF challenges</strong>.
+CTF stands for &ldquo;Capture The Flag&rdquo; and is a type of challenge where you are given access to an environment (a set of files, a site, a remote system etc.), which you have to use in order to obtain and submit a special string called <strong>flag</strong>.
+Now complete the challenges for today&rsquo;s session.
+All flags follow this pattern:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text><span style=display:flex><span>SSS{some_random_ASCII_characters}
+</span></span></code></pre></div><h3 id=tutorial-in-your-face>Tutorial: In Your Face</h3><p>The flag is literally in your face.</p><p>Connect to the specified virtual machine and use <code>ls</code> to explore your surroundings:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:#000;font-style:italic>ctf@tutorial:~$ ls
+</span></span></span><span style=display:flex><span><span style=color:#000;font-style:italic>flag
+</span></span></span></code></pre></div><p>Now just use <code>cat</code> to extract the content of the <code>flag</code> file.</p><h3 id=challenge-did-you-look-everywhere>Challenge: Did You Look Everywhere?</h3><p>We assure you the flag is somewhere in the <code>/home/ctf</code> directory.</p><h3 id=challenge-whats-running>Challenge: What&rsquo;s Running?</h3><p>Did you know flags can <strong>run</strong>?</p><h3 id=challenge-quick-mafs>Challenge: Quick Mafs</h3><p>The flag&rsquo;s format is the classic <code>SSS{...}</code>, where <code>...</code> represent a string obtained by concatenating the <strong>first 10 numbers</strong> oobtained by performing the computations below.</p><p>Let each number be <code>n[i]</code>, where <code>i</code> is its index.
 <code>n[0] = 1337</code>.
 This is your first number.
-The next numbers are defined by the formula below, where <code>^</code> signifies exponentiation.</p><pre tabindex=0><code>n[i] = (n[i - 1]^3 * 67 + 31) % 2000, for all i &gt; 0
-</code></pre><p>And, please, don&rsquo;t compute the numbers manually.
+The next numbers are defined by the formula below, where <code>^</code> signifies exponentiation.</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text><span style=display:flex><span>n[i] = (n[i - 1]^3 * 67 + 31) % 2000, for all i &gt; 0
+</span></span></code></pre></div><p>And, please, don&rsquo;t compute the numbers manually.
 You&rsquo;ve just learned a cool new programming language that you can use!</p><h3 id=challenge-jumbled>Challenge: Jumbled</h3><p>The flag you&rsquo;re given in <code>activities/jumbled/public/flag</code> does contain the actual flag, but not quite.
 Use your Python skills to reconstruct it.
-You&rsquo;ll also need some trial and error here.</p><h2 id=further-reading>Further Reading</h2><h3 id=more-terminal-tricks>More Terminal Tricks</h3><ul><li>Use <code>↑</code> and <code>↓</code> to navigate between your previous commands.</li><li>Use <code>Ctrl + r</code> to search for a previously issued command.</li><li>Use <code>Ctrl + A</code> to navigate to the beginning of the line.</li><li>Use <code>Ctrl + E</code> to navigate to the end of the line.</li><li>Use <code>Alt + B</code> to navigate one word to the left of the cursor.</li><li>Use <code>Alt + F</code> to navigate one word to the right of the cursor.</li><li>Use <code>Alt + Backspace</code> to delete one word to the left of the cursor.</li><li>Use <code>Ctrl + Delete</code> to delete one word to the right of the cursor.</li><li>Use <code>Ctrl + D</code> to close the current terminal.</li></ul><h3 id=altering-the-prompt>Altering the Prompt</h3><p>You can modify your prompt while keeping the same user and host name, by using the <code>PS1</code> <strong>environment variable</strong>.
+You&rsquo;ll also need some trial and error here.</p><h2 id=further-reading>Further Reading</h2><h3 id=more-terminal-tricks>More Terminal Tricks</h3><ul><li><p>Use <code>↑</code> and <code>↓</code> to navigate between your previous commands.</p></li><li><p>Use <code>Ctrl + r</code> to search for a previously issued command.</p></li><li><p>Use <code>Ctrl + A</code> to navigate to the beginning of the line.</p></li><li><p>Use <code>Ctrl + E</code> to navigate to the end of the line.</p></li><li><p>Use <code>Alt + B</code> to navigate one word to the left of the cursor.</p></li><li><p>Use <code>Alt + F</code> to navigate one word to the right of the cursor.</p></li><li><p>Use <code>Alt + Backspace</code> to delete one word to the left of the cursor.</p></li><li><p>Use <code>Ctrl + Delete</code> to delete one word to the right of the cursor.</p></li><li><p>Use <code>Ctrl + D</code> to close the current terminal.</p></li></ul><h3 id=altering-the-prompt>Altering the Prompt</h3><p>You can modify your prompt while keeping the same user and hostname, by using the <code>PS1</code> <strong>environment variable</strong>.
 Check out how you can do this <a href=https://www.redhat.com/sysadmin/command-prompt-tell-me>here</a>.</p><h3 id=alternatives-to-bash>Alternatives to Bash</h3><p>There are quite a few alternatives to Bash, such as <a href=https://ohmyz.sh/>zsh</a> and <a href=http://manpages.ubuntu.com/manpages/trusty/man1/dash.1.html>DASH</a>.
 Feel free to experiment with them in your free time.</p><h3 id=hardcore-python>Hardcore Python</h3><p>Python is well-known for being able to produce short code.
-A part of this feature owes to its <a href="https://www.datacamp.com/community/tutorials/python-list-comprehension?utm_source=adwords_ppc&utm_campaignid=1455363063&utm_adgroupid=65083631748&utm_device=c&utm_keyword=&utm_matchtype=b&utm_network=g&utm_adpostion=&utm_creative=278443377095&utm_targetid=aud-392016246653:dsa-486527602543&utm_loc_interest_ms=&utm_loc_physical_ms=1011795&gclid=CjwKCAjw64eJBhAGEiwABr9o2NXKuiirYa09rYT-hLIh7th5Exg3vj9YPnpAT7EszhE539X_9guv1RoCvhIQAvD_BwE">list comprehensions</a> and its <a href=https://www.geeksforgeeks.org/python-string-join-method/><code>join</code> function</a>.</p><p>If you want to learn even more, take a look at Python&rsquo;s <a href=https://docs.python.org/3/howto/functional.html#built-in-functions>builtin list operations</a>:
+A part of this feature owes to its <a href="https://www.datacamp.com/community/tutorials/python-list-comprehension?utm_source=adwords_ppc&utm_campaignid=1455363063&utm_adgroupid=65083631748&utm_device=c&utm_keyword=&utm_matchtype=b&utm_network=g&utm_adpostion=&utm_creative=278443377095&utm_targetid=aud-392016246653:dsa-486527602543&utm_loc_interest_ms=&utm_loc_physical_ms=1011795&gclid=CjwKCAjw64eJBhAGEiwABr9o2NXKuiirYa09rYT-hLIh7th5Exg3vj9YPnpAT7EszhE539X_9guv1RoCvhIQAvD_BwE">list comprehensions</a> and its <a href=https://www.geeksforgeeks.org/python-string-join-method/><code>join</code> function</a>.</p><p>If you want to learn even more, take a look at Python&rsquo;s <a href=https://docs.python.org/3/howto/functional.html#built-in-functions>built-in list operations</a>:
 Learning about <a href=https://towardsdatascience.com/lambda-functions-with-practical-examples-in-python-45934f3653a8>lambda functions</a> will surely ease your use of the above functions.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-6152e6f31929674859ceb67b1eb01e32>2 -</h1><h1 id=system-exploration>System Exploration</h1><h2 id=introduction>Introduction</h2><p>In the <a href=../welcome-to-linux>previous session</a>, we introduced the Linux OS family via Kali Linux.
 With its help, we learned about the terminal and about basic file navigation commands, such as <code>ls</code>, <code>cd</code>, <code>mkdir</code>, <code>rm</code>.
 We also talked about processes and the <code>ps</code> command.</p><p>In today&rsquo;s session, we&rsquo;ll extend these concepts and learn some new commands, that we&rsquo;ll use in order to further <strong>explore</strong> our systems.
