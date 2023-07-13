@@ -9551,7 +9551,7 @@ exit_shellcode.bin: data
 &lt;pre tabindex="0">&lt;code>$ wc --bytes exit_shellcode.bin
 12 exit_shellcode.bin
 &lt;/code>&lt;/pre>&lt;h2 id="02-tutorial-inspecting-machine-code">02. Tutorial: inspecting machine code&lt;/h2>
-&lt;p>We would also like to be able to do the reverse of this: given a file that contains a raw string of machine bode bytes, translate it back into readable assembly. This is useful to check that our assembly process was correct, as well as for analyzing files that we did not create.&lt;/p>
+&lt;p>We would also like to be able to do the reverse of this: given a file that contains a raw string of machine code bytes, translate it back into readable assembly. This is useful to check that our assembly process was correct, as well as for analyzing files that we did not create.&lt;/p>
 &lt;p>In &lt;a href="../exploration-tools">the first session&lt;/a>, we learned to disassemble using &lt;code>objdump&lt;/code>. By default, &lt;code>objdump&lt;/code> expects a proper &lt;code>ELF&lt;/code> executable and complains about our raw file:&lt;/p>
 &lt;pre tabindex="0">&lt;code>$ objdump -d -M intel exit_shellcode.bin
 objdump: exit_shellcode.bin: file format not recognized
@@ -9570,14 +9570,14 @@ c: b8 3c 00 00 00 mov eax,0x3c
 &lt;li>&lt;code>-m i386:86-64&lt;/code>: the machine code inside the binary file is i386 (x86), 64 bits (usually, &lt;code>objdump&lt;/code> gets this information from the ELF header).&lt;/li>
 &lt;li>&lt;code>-M intel&lt;/code>: display ASM using Intel assembly syntax, as opposed to AT&amp;amp;T assembly syntax.&lt;/li>
 &lt;/ul>
-&lt;p>We can also use a tool like &lt;code>xxd&lt;/code> or &lt;code>hexdump&lt;/code> to inspect the byte values in the file, without dissasembling:&lt;/p>
+&lt;p>We can also use a tool like &lt;code>xxd&lt;/code> or &lt;code>hexdump&lt;/code> to inspect the byte values in the file, without disassembling:&lt;/p>
 &lt;pre tabindex="0">&lt;code>$ xxd exit_shellcode.bin
 00000000: 48c7 c0ff ffff ffbf 2a00 0000 b83c 0000 H.......*....&amp;lt;..
 00000010: 000f 05 ...
 &lt;/code>&lt;/pre>&lt;h2 id="03-tutorial-feeding-machine-code-to-a-program">03. Tutorial: feeding machine code to a program&lt;/h2>
 &lt;p>Now that we know how to obtain a bytestring of machine code from an assembly program, it&amp;rsquo;s time to move on to the next step: injection. The simplest way is to redirect the &lt;code>stdin&lt;/code> of the target program to the file containing our raw machine code.&lt;/p>
 &lt;pre tabindex="0">&lt;code>$ ./vuln &amp;lt; exit_shellcode.bin
-&lt;/code>&lt;/pre>&lt;p>However, we might want to freely edit the payload directly on the command line (for example, if the program reads some other stuff). The way to do this is to use another tool, like the shell itself, to transform hexdecimal notation into binary data:&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>However, we might want to freely edit the payload directly on the command line (for example, if the program reads some other stuff). The way to do this is to use another tool, like the shell itself, to transform hexadecimal notation into binary data:&lt;/p>
 &lt;pre tabindex="0">&lt;code>$ printf &amp;#39;\x4b\x80\x04\x08&amp;#39;
 K�
 &lt;/code>&lt;/pre>&lt;p>Again, we can use a tool like &lt;code>xxd&lt;/code> for the reverse operation, to verify that the binary data comes out as intended:&lt;/p>
