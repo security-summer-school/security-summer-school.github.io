@@ -4120,34 +4120,371 @@ The WPScan CLI tool uses a database of WordPress vulnerabilities - from WordPres
 &lt;li>&lt;a href="https://sss-web.cyberedu.ro/challenge/2026cea0-0617-11ed-8d3f-19288a331f73">The Accountant&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://github.com/vavkamil/dvwp">Damn Vulnerable WordPress&lt;/a>&lt;/li>
 &lt;/ul></description></item><item><title>Essentials:</title><link>/essentials/application-lifetime/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/application-lifetime/</guid><description>
-&lt;h1 id="application-lifetime">Application Lifetime&lt;/h1>
 &lt;h2 id="table-of-contents">Table of Contents&lt;/h2>
-&lt;p>Use &lt;a href="https://github.com/ekalinin/github-markdown-toc">gh-md-toc&lt;/a>.&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="#prerequisites">Prerequisites&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#reminders">Reminders&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#introduction">Introduction&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#from-code-to-application">From Code to Application&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#compiling">Compiling&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#linking">Linking&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#static-libraries">Static Libraries&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#static-linking">Static Linking&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#dynamic-libraries">Dynamic Libraries&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#demo-see-dynamic-libraries-used-by-an-executable">Demo: See dynamic libraries used by an executable&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#dynamic-linking">Dynamic Linking&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#loading">Loading&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#processes">Processes&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#process-address-space">Process Address Space&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#mprotect">mprotect&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#file-descriptors">File Descriptors&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#open-openat-close">open, openat, close&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#read-write">read, write&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#creating-a-process">Creating a Process&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#fork">Fork&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#exec">Exec&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>[Summary]&lt;/li>
+&lt;li>[Activities]
+&lt;ul>
+&lt;li>&lt;a href="#tutorial-static-linking">Tutorial: Static Linking&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#tutorial-dynamic-linking">Tutorial: Dynamic Linking&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#tutorial-our-own-puts">Tutorial: Our own &lt;code>puts&lt;/code>&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#challenge-secretive-binary">Challenge: Secretive Binary&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#tutorial-take-ro-out-of-rodata">Tutorial: Take RO out of RODATA&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#tutorial-file-basics">Tutorial: File Basics&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#tutorial-fork-me">Tutorial: Fork Me&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#challenge-blackbox">Challenge: Blackbox&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#challenge-open-my-files">Challenge: Open My Files&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#challenge-reveal-my-data">Challenge: Reveal My Data&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#challenge-if-you-want-something-done-well-do-it-yourself">Challenge: If You Want Something Done Well, Do It Yourself&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#challenge-hidden">Challenge: Hidden&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#challenge-hidden-2">Challenge: Hidden 2&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#further-reading">Further Reading&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="prerequisites">Prerequisites&lt;/h2>
+&lt;ul>
+&lt;li>familiarity with C&lt;/li>
+&lt;li>familiarity with Bash&lt;/li>
+&lt;li>familiarity with base64 (challenges only)&lt;/li>
+&lt;/ul>
+&lt;h2 id="reminders">Reminders&lt;/h2>
+&lt;ul>
+&lt;li>a base64-encoded string usually ends with one or multiple &amp;lsquo;=&amp;rsquo; characters&lt;/li>
+&lt;li>you can find information about a file using the &lt;code>file&lt;/code> command&lt;/li>
+&lt;/ul>
 &lt;h2 id="introduction">Introduction&lt;/h2>
-&lt;p>Objectives and rationale for the current session.&lt;/p>
-&lt;h2 id="reminders-and-prerequisites">Reminders and Prerequisites&lt;/h2>
+&lt;p>This session is the first that will look into binary applications, more commonly knows as executables.
+We will discuss many things, like:&lt;/p>
 &lt;ul>
-&lt;li>Information required for this section&lt;/li>
-&lt;li>Commands / snippets that should be known, useful to copy-paste throughout the practical session&lt;/li>
+&lt;li>getting from code to application - compiling, linking and loading&lt;/li>
+&lt;li>what is a process&lt;/li>
+&lt;li>the memory address space of a process&lt;/li>
+&lt;li>how to start a process&lt;/li>
 &lt;/ul>
-&lt;h2 id="content-sections">Content Sections:&lt;/h2>
+&lt;h2 id="from-code-to-application">From Code to Application&lt;/h2>
+&lt;p>Every application is written in some form of code.
+That code can be compiled or interpreted, in order to do what the developer wants it to do.
+When the code is interpreted, another application reads the contents of the source-code, and acts based on those contents.
+Interpreted code isn&amp;rsquo;t the focus of the session, but can be interesting for those that want to delve into web security - the browser can be seen as an interpreter for JavaScript code.
+Bash and Python are other examples of interpreted languages.&lt;/p>
+&lt;p>In this session we will focus mainly on compiled code.
+For compiled code to become a working application, 3 steps are needed: &lt;strong>compling&lt;/strong>, &lt;strong>linking&lt;/strong> and &lt;strong>loading&lt;/strong>.
+Some languages, like C and C++, require an additional step before compiling, &lt;strong>preprocessing&lt;/strong>.&lt;/p>
+&lt;p>&lt;img src="assets/from_code_to_process.svg" alt="From Code to Process">&lt;/p>
+&lt;p>The diagram above represents the process through which some source code becomes a running application.
+The steps are detailed below.&lt;/p>
+&lt;h3 id="compiling">Compiling&lt;/h3>
+&lt;p>Compiling is the step in which a piece of code becomes binary data, readable by the CPU, also called &lt;strong>machine code&lt;/strong>.
+This step is performed by the compiler.
+The best-known compiler for C is &lt;strong>GNU C Compiler (GCC)&lt;/strong>.
+While technically it is not correct to say that we get to a binary file by compiling (assembly would like to say hello), we will leave it like this for now.&lt;/p>
+&lt;p>&lt;img src="assets/compiling.svg" alt="Compiling step">&lt;/p>
+&lt;p>To compile a &lt;code>.c&lt;/code> source code, the &lt;code>-c&lt;/code> flag is used.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>gcc -c main.c
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The result is a binary object file.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ file main.o
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>main.o: ELF 64-bit LSB relocatable, x86-64, version &lt;span style="color:#0000cf;font-weight:bold">1&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">(&lt;/span>SYSV&lt;span style="color:#ce5c00;font-weight:bold">)&lt;/span>, not stripped
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="linking">Linking&lt;/h3>
+&lt;p>Compiling is not enough to have a working application, because we lack the libraries, which do most of the important actions of an application, like I/O, memory allocation and so on.
+Those libraries can be standard libraries (&lt;code>libc&lt;/code>), OS-specific libraries - the ones for system calls, or libraries written by developers and 3rd parties.
+The libraries are added to the binary object file (the ones from before) in the &lt;strong>linking&lt;/strong> step.
+This step is done by the linker.
+The result of the linking step is an executable file.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ gcc main.o -o main
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ file main
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>main: ELF 64-bit LSB pie executable, x86-64, version &lt;span style="color:#0000cf;font-weight:bold">1&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">(&lt;/span>SYSV&lt;span style="color:#ce5c00;font-weight:bold">)&lt;/span>, dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID&lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>sha1&lt;span style="color:#ce5c00;font-weight:bold">]=&lt;/span>411948bd3ae969eed74eb99f8aa88a61a7f9eca1, &lt;span style="color:#204a87;font-weight:bold">for&lt;/span> GNU/Linux 3.2.0, not stripped
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The format of the executable file depends on the operating system that runs it.
+This file can then be executed.&lt;/p>
+&lt;p>The linking step can use 2 types of libraries: static and dynamic.
+The linking process itself can be of 2 types, static and dynamic.
+Now that confusion has been created, let&amp;rsquo;s explain each one of these.&lt;/p>
+&lt;h4 id="static-libraries">Static Libraries&lt;/h4>
+&lt;p>A static library is a library whose entire content is copied, as-is, in the executable.
+A static library is created using the &lt;code>ar&lt;/code> command, and has the &lt;code>.a&lt;/code> extension.&lt;/p>
+&lt;h4 id="static-linking">Static Linking&lt;/h4>
+&lt;p>Static linking is the process in which &lt;strong>static libraries&lt;/strong> are added to the final executable.
+This is done in a straightforward manner: copy everything from the libraries to the executable.
+This leads to big executables, that generally run faster and can run on other systems even if the libraries are not installed.
+However, the statically-linked executables aren&amp;rsquo;t more portable - maybe the library uses something not present on the system.&lt;/p>
+&lt;p>&lt;img src="assets/static_linking.svg" alt="Static Linking Overview">&lt;/p>
+&lt;h4 id="dynamic-libraries">Dynamic Libraries&lt;/h4>
+&lt;p>Dynamic libraries aren&amp;rsquo;t copied in the exectable, like their static counterparts.
+Instead, they are loaded into memory when needed, and each executable that uses them has a way to access the exported functions and variables (collectively called symbols) from those libraries.
+The exact process is detailed in the first session of the binary track, &lt;a href="https://security-summer-school.github.io/binary/executables-and-processes/">Executables and Processes&lt;/a>.
+For now, the only thing you must remember is that all executables use the same dynamic library.&lt;/p>
+&lt;p>One defining trait of the dynamic libraries is that they must be compiled as PIC (&lt;em>Position Independent Code&lt;/em>) objects.
+More about PIC in the &lt;a href="#further-reading">Further Reading&lt;/a> section.&lt;/p>
+&lt;h5 id="demo-see-dynamic-libraries-used-by-an-executable">Demo: See dynamic libraries used by an executable&lt;/h5>
+&lt;p>To see the dynamic libraries used by an executable, on Linux, we can use the &lt;code>ldd&lt;/code> command.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ ldd /bin/bash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> linux-vdso.so.1 &lt;span style="color:#ce5c00;font-weight:bold">(&lt;/span>0x00007fff72ba3000&lt;span style="color:#ce5c00;font-weight:bold">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> libtinfo.so.6 &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&amp;gt; /lib/x86_64-linux-gnu/libtinfo.so.6 &lt;span style="color:#ce5c00;font-weight:bold">(&lt;/span>0x00007ff287fb0000&lt;span style="color:#ce5c00;font-weight:bold">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> libc.so.6 &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&amp;gt; /lib/x86_64-linux-gnu/libc.so.6 &lt;span style="color:#ce5c00;font-weight:bold">(&lt;/span>0x00007ff287d88000&lt;span style="color:#ce5c00;font-weight:bold">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> /lib64/ld-linux-x86-64.so.2 &lt;span style="color:#ce5c00;font-weight:bold">(&lt;/span>0x00007ff288161000&lt;span style="color:#ce5c00;font-weight:bold">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The first and the last libraries, &lt;code>linux-vdso&lt;/code> and &lt;code>/lib64/ld-linux-x86-64&lt;/code> are common for all executables.
+If you want to find out more about them, you can find them in the &lt;a href="#further-reading">Further Reading&lt;/a> section.
+The other 2 libraries are specific to our executable &lt;code>/bin/bash&lt;/code>.
+The output has the following format:
+&lt;code>&amp;lt;libname&amp;gt;.so.&amp;lt;version&amp;gt; =&amp;gt; &amp;lt;path_to_lib&amp;gt; (address where it is loaded)&lt;/code>.
+From this output, we can see that &lt;code>/bin/bash&lt;/code> uses the &lt;code>libc&lt;/code> and &lt;code>libtinfo&lt;/code> dynamic libraries.&lt;/p>
+&lt;p>Another way of seeing what dynamic libraries are used is using the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>readelf -d /bin/bash &lt;span style="color:#000;font-weight:bold">|&lt;/span> grep NEEDED
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="dynamic-linking">Dynamic Linking&lt;/h4>
+&lt;p>Dynamic linking is the process during which a dynamic library is &amp;ldquo;connected&amp;rdquo; to the executable.
+It is the default type of linking.
+The resulting executable is smaller in size, but not as easy to port on another system.
+In order for it to run on another system, the required dynamic libraries must be installed first.
+It is also open to some kinds of attacks.
+One of them is the &lt;strong>return-to-libc&lt;/strong> attack, usually via ROP attacks, which are discussed &lt;a href="https://security-summer-school.github.io/binary/return-oriented-programming">in the binary track of SSS&lt;/a>.&lt;/p>
+&lt;p>&lt;img src="assets/dynamic_linking.svg" alt="Dynamic Linking Overview">&lt;/p>
+&lt;p>The stubs placed in the executable are resolved at runtime, during the &lt;strong>loading&lt;/strong> step.&lt;/p>
+&lt;h3 id="loading">Loading&lt;/h3>
+&lt;p>Loading is the process in which the program is launched.
+During this process, the program code is placed in the OS memory, the dynamic libraries are found and placed into memory, then the control is passed to the application.
+A loaded executable is represented in the OS as a &lt;strong>process&lt;/strong>.&lt;/p>
+&lt;p>&lt;img src="assets/loading.svg" alt="Loading Overview">&lt;/p>
+&lt;h2 id="processes">Processes&lt;/h2>
+&lt;p>A process can be seen as an abstraction of the system&amp;rsquo;s resources, built for each launched application.
+It is important to know that one executable can be launched multiple times, at the same time, resulting in different processes.
+Each process has access to the main resources of a system: &lt;strong>CPU&lt;/strong>, &lt;strong>memory&lt;/strong>, and &lt;strong>I/O devices&lt;/strong>, through abstractions.
+Those abstractions are there to isolate different processes in a system.&lt;/p>
+&lt;p>&lt;img src="assets/process_layout.svg" alt="Process Overview">&lt;/p>
+&lt;p>To see what processes are running, the &lt;code>ps&lt;/code> command can be used.&lt;/p>
+&lt;p>A simple &lt;code>$ ps&lt;/code> command whill show only the child processes of the current terminal, and the terminal itself.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ ps
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> PID TTY TIME CMD
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#0000cf;font-weight:bold">9116&lt;/span> pts/0 00:00:00 bash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#0000cf;font-weight:bold">51170&lt;/span> pts/0 00:00:00 ps
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>By default, the PID, and the command used to launch the process are listed.
+The TTY and TIME parameters will be ignored, as they aren&amp;rsquo;t relevant.&lt;/p>
+&lt;p>To display all processes on a system, &lt;code>$ ps -e&lt;/code> can be used.&lt;/p>
+&lt;h3 id="process-address-space">Process Address Space&lt;/h3>
+&lt;p>From a process point-of-view, the entire memory of a system is available, and almost any portion of it can be used.
+Behind the scenes, the OS maps the process memory to physical memory, and ensures that two unrelated processes can&amp;rsquo;t see eachother&amp;rsquo;s virtual memory.
+The process memory is split into sections, which can contain one or more pages.&lt;/p>
+&lt;p>A memory page is a division of the virtual memory of a process, that has its own permissions.
+Each page can have one or more of the following permissions: &lt;strong>read (R)&lt;/strong>, &lt;strong>write (W)&lt;/strong>, &lt;strong>execute (X)&lt;/strong>.&lt;/p>
+&lt;p>Multiple pages that have the same permissions, and are placed one after the other in the process memory, represent a &lt;strong>section&lt;/strong>.
+The main sections of a process address space are:&lt;/p>
 &lt;ul>
-&lt;li>Content split in sections, according to session specifics&lt;/li>
-&lt;li>Demos will be part of the session presentation and will be referenced (snippets, images, links) in the content&lt;/li>
+&lt;li>&lt;strong>TEXT&lt;/strong> - &lt;strong>R-X&lt;/strong> - the compiled code of the program, in binary form&lt;/li>
+&lt;li>&lt;strong>STACK&lt;/strong> - &lt;strong>RW-&lt;/strong> - the stack of the application, used for storing local variables and calling functions;
+more about it in the &lt;a href="../taming-the-stack/index.md">last session&lt;/a>&lt;/li>
+&lt;li>&lt;strong>HEAP&lt;/strong> - &lt;strong>RW-&lt;/strong> - the section where dynamic memory allocations are stored - &lt;code>malloc()&lt;/code> and friends&lt;/li>
+&lt;li>&lt;strong>DATA&lt;/strong> - &lt;strong>RW-&lt;/strong> - the global initialized variables&lt;/li>
+&lt;li>&lt;strong>RODATA&lt;/strong> - &lt;strong>R&amp;ndash;&lt;/strong> - the read-only global initialized variables&lt;/li>
+&lt;li>&lt;strong>BSS&lt;/strong> - &lt;strong>RW-&lt;/strong> - the uninitialized global variables;
+this section is somewhat special - it doesn&amp;rsquo;t occupy space in the executable and is filled at runtime;
+the other sections occupy space in the executable.&lt;/li>
+&lt;li>some spicy sections: &lt;strong>GOT&lt;/strong>, &lt;strong>PLT&lt;/strong>;
+you can read about them in the &lt;a href="#further-reading">Further Reading&lt;/a> section.&lt;/li>
 &lt;/ul>
+&lt;p>&lt;img src="assets/memory_layout.svg" alt="Process Address Space Layout">&lt;/p>
+&lt;p>To explore the sections of an executable, &lt;code>objdump&lt;/code> can be used.
+To see the contents of the &lt;strong>DATA&lt;/strong> section, run &lt;code>$ objdump -s -j .data &amp;lt;executable&amp;gt;&lt;/code>&lt;/p>
+&lt;p>Now, some security stuff: all sections must follow the NX princpile - if a section is writable, it can&amp;rsquo;t be executable.
+Why?
+You don&amp;rsquo;t want your application to be able to execute code that wasn&amp;rsquo;t written by you, but was injected by someone else.&lt;/p>
+&lt;p>This can be exploited, if the principle isn&amp;rsquo;t respected, by an attack method called &lt;strong>shellcode&lt;/strong>.
+Shellcodes represent a big part of the &lt;a href="https://security-summer-school.github.io/binary/shellcodes/">SSS Binary track&lt;/a>.&lt;/p>
+&lt;p>The process address space isn&amp;rsquo;t fixed during the execution of a program; it can be changed by the program itself, using &lt;code>mmap()&lt;/code> to create new entries, and &lt;code>mprotect()&lt;/code> to change the permissions.&lt;/p>
+&lt;h4 id="mprotect">mprotect&lt;/h4>
+&lt;p>&lt;code>mprotect()&lt;/code> is used to change the permissions of a memory zone.
+Using &lt;code>mprotect()&lt;/code>, an application can change, for example, a page belonging to the &lt;code>rodata&lt;/code> section to be writeable.&lt;/p>
+&lt;h3 id="file-descriptors">File Descriptors&lt;/h3>
+&lt;p>I/O access is usually done through files.
+Each process keeps track of the files it has opened using file descriptors.
+Opening, closing, modifiying a file in any way can be done only by the OS.
+In order for the application to interact with files, it needs to use system calls: &lt;code>open()&lt;/code>, &lt;code>close()&lt;/code>, &lt;code>read()&lt;/code>, &lt;code>write()&lt;/code> and many others.&lt;/p>
+&lt;p>&lt;img src="assets/file_descriptors.svg" alt="File descriptors">&lt;/p>
+&lt;h4 id="open-openat-close">open, openat, close&lt;/h4>
+&lt;p>Before any operation can be performed on a file, it must be opened, using &lt;code>open()&lt;/code>.
+An open file can be closed, and the file descriptor freed for other uses, using &lt;code>close()&lt;/code>.&lt;/p>
+&lt;h4 id="read-write">read, write&lt;/h4>
+&lt;p>&lt;code>read()&lt;/code> and &lt;code>write()&lt;/code> are the main ways in which a file can be modified.
+Each call of &lt;code>write()&lt;/code> modifies the file on the storage environment.
+However, there are ways to modify a file, but have those modifications visible only to the current process.&lt;/p>
+&lt;h2 id="creating-a-process">Creating a Process&lt;/h2>
+&lt;p>Now let&amp;rsquo;s discuss what happens when an application is started.
+Let&amp;rsquo;s consider the case when we are in a terminal (bash) and we launch an executable file.
+That executable becomes a process, which is a child of the current bash process.
+This is because the bash process launches the exectable, using the &lt;code>fork()&lt;/code> and &lt;code>exec()&lt;/code> system calls.
+Basically, what happens is that the bash process duplicates itself, then loads the code of our executable into the duplicate process.&lt;/p>
+&lt;h3 id="fork">Fork&lt;/h3>
+&lt;p>The duplication is done by the &lt;code>fork()&lt;/code> call.
+The memory of the child process is the same as that of the parent, until it&amp;rsquo;s modified, as are the open file descriptors.
+After the &lt;code>fork()&lt;/code> call, the parent must wait for the child process to finish.
+Otherwise, it remains active, until it is cleaned-up by the OS.&lt;/p>
+&lt;p>&lt;img src="assets/fork.svg" alt="Fork Overview">&lt;/p>
+&lt;h3 id="exec">Exec&lt;/h3>
+&lt;p>&lt;code>exec()&lt;/code> and its variants are used to change the executable run by the process, or the &lt;strong>image&lt;/strong>, as it is called in this context.
+&lt;code>exec()&lt;/code> can be used toghether with fork, as done by the terminal, or without it.
+One use that you may encounter in the security world is using &lt;code>exec()&lt;/code> to make a process spawn a terminal, after you have gained control of the process.&lt;/p>
+&lt;p>&lt;img src="assets/exec.svg" alt="Exec Overview">&lt;/p>
 &lt;h2 id="summary">Summary&lt;/h2>
 &lt;ul>
-&lt;li>Sumamrizing session concepts&lt;/li>
-&lt;li>Summarizing commands / snippets that are useful for tutorials, challenges (easy reference, copy-paste)&lt;/li>
+&lt;li>an application is the result of compiling and linking some source code&lt;/li>
+&lt;li>linking can be static or dynamic&lt;/li>
+&lt;li>linking (usually) involves the use of libraries&lt;/li>
+&lt;li>libraries can be static or dynamic&lt;/li>
+&lt;li>a process is the result of running an executable file&lt;/li>
+&lt;li>the memory of a process is split into different sections&lt;/li>
+&lt;li>the permissions of a memory zone can be changed using &lt;code>mprotect()&lt;/code>&lt;/li>
+&lt;li>operations on files are performed using a &lt;code>file descriptor&lt;/code>&lt;/li>
+&lt;li>a new process can be created using &lt;code>fork()&lt;/code>&lt;/li>
+&lt;li>the application that a process is running can be changed using &lt;code>exec()&lt;/code>&lt;/li>
 &lt;/ul>
 &lt;h2 id="activities">Activities&lt;/h2>
-&lt;p>Tasks for the students to solve. They may be of two types:&lt;/p>
+&lt;h3 id="tutorial-static-linking">Tutorial: Static Linking&lt;/h3>
+&lt;p>We want to statically link a simple application using &lt;strong>libc&lt;/strong> and our own &lt;strong>libhello&lt;/strong>.
+Rules to compile the necessary pieces are already in the Makefile:&lt;/p>
 &lt;ul>
-&lt;li>&lt;strong>Tutorials&lt;/strong> - simpler tasks accompanied by more detailed, walkthrough-like explanations&lt;/li>
-&lt;li>&lt;strong>Challenges&lt;/strong> - the good stuff&lt;/li>
+&lt;li>a rule to create the &lt;code>main.o&lt;/code> object file - the code of our application&lt;/li>
+&lt;li>two rules to create the static library &lt;strong>libhello&lt;/strong>&lt;/li>
 &lt;/ul>
+&lt;p>The last step is to add the rule for the executable, &lt;code>static-linked&lt;/code>.
+The required command is&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>gcc -static main.o -L. -lhello -o static-linked
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Let&amp;rsquo;s break it down:&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>-static&lt;/code> tells gcc to perform a static linking&lt;/li>
+&lt;li>&lt;code>-L.&lt;/code> indicates that a custom path, &lt;code>.&lt;/code>, the current directory, should be considered when looking for the required libraries - libhello in the current directory&lt;/li>
+&lt;li>&lt;code>-lhello&lt;/code> indicates that the executable should contain &lt;code>libhello.aconsider the case when we are in a terminal (bash) and we launch an executable file.consider the case when we are in a terminal (bash) and we launch an executable file.&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>After the command is added in the Makefile, a simple &lt;code>make&lt;/code> will create our executable.
+We can see that it is statically-linked, by issuing the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>file static-linked
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>We should get the following output:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>static-linked: ELF 64-bit LSB executable, x86-64, version &lt;span style="color:#0000cf;font-weight:bold">1&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">(&lt;/span>GNU/Linux&lt;span style="color:#ce5c00;font-weight:bold">)&lt;/span>, statically linked, BuildID&lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>sha1&lt;span style="color:#ce5c00;font-weight:bold">]=&lt;/span>5d2d83de2e46b94bc06a170d17c7f2fc0d29166c, &lt;span style="color:#204a87;font-weight:bold">for&lt;/span> GNU/Linux 3.2.0, not stripped
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="tutorial-dynamic-linking">Tutorial: Dynamic Linking&lt;/h3>
+&lt;p>We want to dynamically link a simple application using &lt;strong>libc&lt;/strong> and our own &lt;strong>libhello&lt;/strong>.
+We have a modified Makefile, from the previous tutorial.
+We now create a dynamic library, &lt;code>libhello.so&lt;/code>.&lt;/p>
+&lt;p>We need to add the rule for the executable, &lt;code>dynamic-linked&lt;/code>.
+The required command is&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>gcc main.o -L. -lhello -o dynamic-linked
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>It is almost the same as the previous one, with one difference: we don&amp;rsquo;t need to tell gcc to dynamically-link.&lt;/p>
+&lt;p>We can see that our executable is dynamically-linked, by issuing the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>file dynamic-linked
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>We should get the following output:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>dynamic-linked: ELF 64-bit LSB pie executable, x86-64, version &lt;span style="color:#0000cf;font-weight:bold">1&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">(&lt;/span>SYSV&lt;span style="color:#ce5c00;font-weight:bold">)&lt;/span>, dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID&lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>sha1&lt;span style="color:#ce5c00;font-weight:bold">]=&lt;/span>1f1850ade7c7c04d27507f2f0a6b47819e11a0be, &lt;span style="color:#204a87;font-weight:bold">for&lt;/span> GNU/Linux 3.2.0, not stripped
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Before the executable can be run, we need to add the current directory to the &lt;code>LD_LIBRARY_PATH&lt;/code> variable&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#204a87">export&lt;/span> &lt;span style="color:#000">LD_LIBRARY_PATH&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="tutorial-our-own-puts">Tutorial: Our own &lt;code>puts()&lt;/code>&lt;/h3>
+&lt;p>The dynamically-linked executables have a nice &lt;em>feature&lt;/em>: the libraries are loaded at runtime.
+Because of this, the actual code of the functions from a library can be changed.
+How?
+We can specify the loader to load a library before it loads anything else.
+That library can overload symbols from other libraries.
+In this task, we modify the &lt;code>puts()&lt;/code> function to print the same string, ignoring the string supplied as a parameter.
+The first thing needed is to find the header of the function we want to modify.
+In our case, &lt;code>puts()&lt;/code> has this header, in &lt;code>stdio.h&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-C" data-lang="C">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#204a87;font-weight:bold">int&lt;/span> &lt;span style="color:#000">puts&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#204a87;font-weight:bold">const&lt;/span> &lt;span style="color:#204a87;font-weight:bold">char&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span>&lt;span style="color:#000">s&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then, we write an implemengtation of our own, and create a dynamic library containing that implementation.
+At last, we set the &lt;code>LD_PRELAOD&lt;/code> variable with the &lt;strong>absolute path&lt;/strong> to our dynamic library and we run the executable.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">LD_PRELOAD&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&amp;lt;insert_path&amp;gt;/essentials/application-lifetime/activities/my-own-puts/puts.so ./main
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Instead of printing &amp;ldquo;Hello World&amp;rdquo;, the program now displays &amp;ldquo;I do what I want&amp;rdquo;.&lt;/p>
+&lt;h3 id="challenge-secretive-binary">Challenge: Secretive Binary&lt;/h3>
+&lt;p>Someone left an executable, a library and a header file from that library.
+It seems the function should print something, but it doesn&amp;rsquo;t want to.
+Make it talk.&lt;/p>
+&lt;p>Submit the flag on CyberEDU.&lt;/p>
+&lt;h3 id="tutorial-take-ro-out-of-rodata">Tutorial: Take RO out of RODATA&lt;/h3>
+&lt;p>This task aims to show how to use &lt;code>mprotect()&lt;/code>, to modify the memory of a process.
+We have a variable declared in &lt;strong>RODATA&lt;/strong>.
+We will change the permission, so we can write in that variable a new value.
+&lt;code>mprotect()&lt;/code> takes 3 arguments:&lt;/p>
+&lt;ul>
+&lt;li>a page-size aligned address, in the form of a pointer&lt;/li>
+&lt;li>the page size&lt;/li>
+&lt;li>the permissions to assign&lt;/li>
+&lt;/ul>
+&lt;p>First, we need to take the address of our read-only variable, and the size of a page.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-C" data-lang="C">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#204a87;font-weight:bold">int&lt;/span> &lt;span style="color:#000">page_size&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">getpagesize&lt;/span>&lt;span style="color:#000;font-weight:bold">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#204a87;font-weight:bold">void&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span>&lt;span style="color:#000">ro_addr&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">&amp;amp;&lt;/span>&lt;span style="color:#000">read_only_var&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then, we align the address of the variable to page-size.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-C" data-lang="C">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">ro_page&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">ro_addr&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">-&lt;/span> &lt;span style="color:#000;font-weight:bold">((&lt;/span>&lt;span style="color:#204a87;font-weight:bold">unsigned&lt;/span> &lt;span style="color:#204a87;font-weight:bold">int&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>&lt;span style="color:#000">ro_addr&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">%&lt;/span> &lt;span style="color:#000">page_size&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Finally, we can use &lt;code>mprotect()&lt;/code> to change the permissions, by adding write permissions.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-C" data-lang="C">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">mprotect&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ro_page&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">page_size&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">PROT_READ&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">|&lt;/span> &lt;span style="color:#000">PROT_WRITE&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="tutorial-file-basics">Tutorial: File Basics&lt;/h3>
+&lt;p>This task aims to show the main operations that can be performed on a file.
+Follow the comments in &lt;code>basics.c&lt;/code>.&lt;/p>
+&lt;h3 id="tutorial-fork-me">Tutorial: Fork Me&lt;/h3>
+&lt;p>In this task, we spawn a child process, using fork, wait for its termination, then check the return code.
+Follow the comments in &lt;code>fork.c&lt;/code>.&lt;/p>
+&lt;h3 id="challenge-blackbox">Challenge: Blackbox&lt;/h3>
+&lt;p>You have access to a service that seems vulnerable.
+See if you can find its secrets.&lt;/p>
+&lt;h4 id="challenge-open-my-files">Challenge: Open My Files&lt;/h4>
+&lt;p>It seems the service lets you open some files.
+Maybe you find some interesting things there.&lt;/p>
+&lt;p>Submit the flag on CyberEDU.&lt;/p>
+&lt;h4 id="challenge-reveal-my-data">Challenge: Reveal My Data&lt;/h4>
+&lt;p>Why would someone have a write-only memory zone?
+It must be hiding something there.&lt;/p>
+&lt;p>Submit the flag on CyberEDU.&lt;/p>
+&lt;h4 id="challenge-if-you-want-something-done-well-do-it-yourself">Challenge: If You Want Something Done Well, Do It Yourself&lt;/h4>
+&lt;p>This process hides something.
+Can you open a shell and find what it&amp;rsquo;s hiding?&lt;/p>
+&lt;p>Submit the flag on CyberEDU.&lt;/p>
+&lt;h4 id="challenge-hidden">Challenge: Hidden&lt;/h4>
+&lt;p>There must be a glitch in the Matrix.
+That text doesn&amp;rsquo;t make any sense.&lt;/p>
+&lt;p>Submit the flag on CyberEDU.&lt;/p>
+&lt;h4 id="challenge-hidden-2">Challenge: Hidden 2&lt;/h4>
+&lt;p>Can you find all the hidden videos?
+Hint: there are 8.&lt;/p>
 &lt;h2 id="further-reading">Further Reading&lt;/h2>
-&lt;p>Any links or references to extra information.&lt;/p></description></item><item><title>Web:</title><link>/web/exotic-attacks/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/exotic-attacks/</guid><description>
+&lt;p>&lt;a href="https://en.wikipedia.org/wiki/Position-independent_code">PIC&lt;/a>&lt;/p>
+&lt;p>&lt;a href="https://reverseengineering.stackexchange.com/questions/1992/what-is-plt-got">GOT and PLT&lt;/a>&lt;/p>
+&lt;p>&lt;a href="https://man7.org/linux/man-pages/man7/vdso.7.html">vDSO&lt;/a>&lt;/p>
+&lt;p>&lt;a href="https://unix.stackexchange.com/questions/400621/what-is-lib64-ld-linux-x86-64-so-2-and-why-can-it-be-used-to-execute-file">ld&lt;/a>&lt;/p></description></item><item><title>Web:</title><link>/web/exotic-attacks/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/web/exotic-attacks/</guid><description>
 &lt;h1 id="introduction">Introduction&lt;/h1>
 &lt;p>As a web developer, you need to pay attention to the quirks of your chosen programming language.
 There are lots of vulnerabilities generated by the developer’s disregard to language-specific details or just by programming mistakes.&lt;/p>
