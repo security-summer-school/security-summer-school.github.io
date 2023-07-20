@@ -4120,73 +4120,7 @@ The WPScan CLI tool uses a database of WordPress vulnerabilities - from WordPres
 &lt;li>&lt;a href="https://sss-web.cyberedu.ro/challenge/2026cea0-0617-11ed-8d3f-19288a331f73">The Accountant&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://github.com/vavkamil/dvwp">Damn Vulnerable WordPress&lt;/a>&lt;/li>
 &lt;/ul></description></item><item><title>Essentials:</title><link>/essentials/application-lifetime/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/application-lifetime/</guid><description>
-&lt;h2 id="table-of-contents">Table of Contents&lt;/h2>
-&lt;ul>
-&lt;li>&lt;a href="#prerequisites">Prerequisites&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#reminders">Reminders&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#introduction">Introduction&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#from-code-to-application">From Code to Application&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#compiling">Compiling&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#linking">Linking&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#static-libraries">Static Libraries&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#static-linking">Static Linking&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#dynamic-libraries">Dynamic Libraries&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#demo-see-dynamic-libraries-used-by-an-executable">Demo: See dynamic libraries used by an executable&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#dynamic-linking">Dynamic Linking&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#loading">Loading&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#processes">Processes&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#process-address-space">Process Address Space&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#mprotect">mprotect&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#file-descriptors">File Descriptors&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#open-openat-close">open, openat, close&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#read-write">read, write&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#creating-a-process">Creating a Process&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#fork">Fork&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#exec">Exec&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>[Summary]&lt;/li>
-&lt;li>[Activities]
-&lt;ul>
-&lt;li>&lt;a href="#tutorial-static-linking">Tutorial: Static Linking&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#tutorial-dynamic-linking">Tutorial: Dynamic Linking&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#tutorial-our-own-puts">Tutorial: Our own &lt;code>puts&lt;/code>&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#challenge-secretive-binary">Challenge: Secretive Binary&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#tutorial-take-ro-out-of-rodata">Tutorial: Take RO out of RODATA&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#tutorial-file-basics">Tutorial: File Basics&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#tutorial-fork-me">Tutorial: Fork Me&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#challenge-blackbox">Challenge: Blackbox&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#challenge-open-my-files">Challenge: Open My Files&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#challenge-reveal-my-data">Challenge: Reveal My Data&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#challenge-if-you-want-something-done-well-do-it-yourself">Challenge: If You Want Something Done Well, Do It Yourself&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#challenge-hidden">Challenge: Hidden&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#challenge-hidden-2">Challenge: Hidden 2&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#further-reading">Further Reading&lt;/a>&lt;/li>
-&lt;/ul>
+&lt;h1 id="application-lifetime">Application Lifetime&lt;/h1>
 &lt;h2 id="prerequisites">Prerequisites&lt;/h2>
 &lt;ul>
 &lt;li>familiarity with C&lt;/li>
@@ -4214,7 +4148,7 @@ When the code is interpreted, another application reads the contents of the sour
 Interpreted code isn&amp;rsquo;t the focus of the session, but can be interesting for those that want to delve into web security - the browser can be seen as an interpreter for JavaScript code.
 Bash and Python are other examples of interpreted languages.&lt;/p>
 &lt;p>In this session we will focus mainly on compiled code.
-For compiled code to become a working application, 3 steps are needed: &lt;strong>compling&lt;/strong>, &lt;strong>linking&lt;/strong> and &lt;strong>loading&lt;/strong>.
+For compiled code to become a working application, 3 steps are needed: &lt;strong>compiling&lt;/strong>, &lt;strong>linking&lt;/strong> and &lt;strong>loading&lt;/strong>.
 Some languages, like C and C++, require an additional step before compiling, &lt;strong>preprocessing&lt;/strong>.&lt;/p>
 &lt;p>&lt;img src="assets/from_code_to_process.svg" alt="From Code to Process">&lt;/p>
 &lt;p>The diagram above represents the process through which some source code becomes a running application.
@@ -4254,7 +4188,7 @@ This leads to big executables, that generally run faster and can run on other sy
 However, the statically-linked executables aren&amp;rsquo;t more portable - maybe the library uses something not present on the system.&lt;/p>
 &lt;p>&lt;img src="assets/static_linking.svg" alt="Static Linking Overview">&lt;/p>
 &lt;h4 id="dynamic-libraries">Dynamic Libraries&lt;/h4>
-&lt;p>Dynamic libraries aren&amp;rsquo;t copied in the exectable, like their static counterparts.
+&lt;p>Dynamic libraries aren&amp;rsquo;t copied in the executable, like their static counterparts.
 Instead, they are loaded into memory when needed, and each executable that uses them has a way to access the exported functions and variables (collectively called symbols) from those libraries.
 The exact process is detailed in the first session of the binary track, &lt;a href="https://security-summer-school.github.io/binary/executables-and-processes/">Executables and Processes&lt;/a>.
 For now, the only thing you must remember is that all executables use the same dynamic library.&lt;/p>
@@ -4296,7 +4230,7 @@ Each process has access to the main resources of a system: &lt;strong>CPU&lt;/st
 Those abstractions are there to isolate different processes in a system.&lt;/p>
 &lt;p>&lt;img src="assets/process_layout.svg" alt="Process Overview">&lt;/p>
 &lt;p>To see what processes are running, the &lt;code>ps&lt;/code> command can be used.&lt;/p>
-&lt;p>A simple &lt;code>$ ps&lt;/code> command whill show only the child processes of the current terminal, and the terminal itself.&lt;/p>
+&lt;p>A simple &lt;code>$ ps&lt;/code> command will show only the child processes of the current terminal, and the terminal itself.&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ ps
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> PID TTY TIME CMD
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#0000cf;font-weight:bold">9116&lt;/span> pts/0 00:00:00 bash
@@ -4306,7 +4240,7 @@ The TTY and TIME parameters will be ignored, as they aren&amp;rsquo;t relevant.&
 &lt;p>To display all processes on a system, &lt;code>$ ps -e&lt;/code> can be used.&lt;/p>
 &lt;h3 id="process-address-space">Process Address Space&lt;/h3>
 &lt;p>From a process point-of-view, the entire memory of a system is available, and almost any portion of it can be used.
-Behind the scenes, the OS maps the process memory to physical memory, and ensures that two unrelated processes can&amp;rsquo;t see eachother&amp;rsquo;s virtual memory.
+Behind the scenes, the OS maps the process memory to physical memory, and ensures that two unrelated processes can&amp;rsquo;t see each other&amp;rsquo;s virtual memory.
 The process memory is split into sections, which can contain one or more pages.&lt;/p>
 &lt;p>A memory page is a division of the virtual memory of a process, that has its own permissions.
 Each page can have one or more of the following permissions: &lt;strong>read (R)&lt;/strong>, &lt;strong>write (W)&lt;/strong>, &lt;strong>execute (X)&lt;/strong>.&lt;/p>
@@ -4328,19 +4262,20 @@ you can read about them in the &lt;a href="#further-reading">Further Reading&lt;
 &lt;p>&lt;img src="assets/memory_layout.svg" alt="Process Address Space Layout">&lt;/p>
 &lt;p>To explore the sections of an executable, &lt;code>objdump&lt;/code> can be used.
 To see the contents of the &lt;strong>DATA&lt;/strong> section, run &lt;code>$ objdump -s -j .data &amp;lt;executable&amp;gt;&lt;/code>&lt;/p>
-&lt;p>Now, some security stuff: all sections must follow the NX princpile - if a section is writable, it can&amp;rsquo;t be executable.
+&lt;p>Now, some security stuff: all sections must follow the NX principle - if a section is writable, it can&amp;rsquo;t be executable.
 Why?
 You don&amp;rsquo;t want your application to be able to execute code that wasn&amp;rsquo;t written by you, but was injected by someone else.&lt;/p>
 &lt;p>This can be exploited, if the principle isn&amp;rsquo;t respected, by an attack method called &lt;strong>shellcode&lt;/strong>.
 Shellcodes represent a big part of the &lt;a href="https://security-summer-school.github.io/binary/shellcodes/">SSS Binary track&lt;/a>.&lt;/p>
-&lt;p>The process address space isn&amp;rsquo;t fixed during the execution of a program; it can be changed by the program itself, using &lt;code>mmap()&lt;/code> to create new entries, and &lt;code>mprotect()&lt;/code> to change the permissions.&lt;/p>
+&lt;p>The process address space isn&amp;rsquo;t fixed during the execution of a program;
+it can be changed by the program itself, using &lt;code>mmap()&lt;/code> to create new entries, and &lt;code>mprotect()&lt;/code> to change the permissions.&lt;/p>
 &lt;h4 id="mprotect">mprotect&lt;/h4>
 &lt;p>&lt;code>mprotect()&lt;/code> is used to change the permissions of a memory zone.
 Using &lt;code>mprotect()&lt;/code>, an application can change, for example, a page belonging to the &lt;code>rodata&lt;/code> section to be writeable.&lt;/p>
 &lt;h3 id="file-descriptors">File Descriptors&lt;/h3>
 &lt;p>I/O access is usually done through files.
 Each process keeps track of the files it has opened using file descriptors.
-Opening, closing, modifiying a file in any way can be done only by the OS.
+Opening, closing, modifying a file in any way can be done only by the OS.
 In order for the application to interact with files, it needs to use system calls: &lt;code>open()&lt;/code>, &lt;code>close()&lt;/code>, &lt;code>read()&lt;/code>, &lt;code>write()&lt;/code> and many others.&lt;/p>
 &lt;p>&lt;img src="assets/file_descriptors.svg" alt="File descriptors">&lt;/p>
 &lt;h4 id="open-openat-close">open, openat, close&lt;/h4>
@@ -4354,7 +4289,7 @@ However, there are ways to modify a file, but have those modifications visible o
 &lt;p>Now let&amp;rsquo;s discuss what happens when an application is started.
 Let&amp;rsquo;s consider the case when we are in a terminal (bash) and we launch an executable file.
 That executable becomes a process, which is a child of the current bash process.
-This is because the bash process launches the exectable, using the &lt;code>fork()&lt;/code> and &lt;code>exec()&lt;/code> system calls.
+This is because the bash process launches the executable, using the &lt;code>fork()&lt;/code> and &lt;code>exec()&lt;/code> system calls.
 Basically, what happens is that the bash process duplicates itself, then loads the code of our executable into the duplicate process.&lt;/p>
 &lt;h3 id="fork">Fork&lt;/h3>
 &lt;p>The duplication is done by the &lt;code>fork()&lt;/code> call.
@@ -4364,7 +4299,7 @@ Otherwise, it remains active, until it is cleaned-up by the OS.&lt;/p>
 &lt;p>&lt;img src="assets/fork.svg" alt="Fork Overview">&lt;/p>
 &lt;h3 id="exec">Exec&lt;/h3>
 &lt;p>&lt;code>exec()&lt;/code> and its variants are used to change the executable run by the process, or the &lt;strong>image&lt;/strong>, as it is called in this context.
-&lt;code>exec()&lt;/code> can be used toghether with fork, as done by the terminal, or without it.
+&lt;code>exec()&lt;/code> can be used together with &lt;code>fork()&lt;/code>, as done by the terminal, or without it.
 One use that you may encounter in the security world is using &lt;code>exec()&lt;/code> to make a process spawn a terminal, after you have gained control of the process.&lt;/p>
 &lt;p>&lt;img src="assets/exec.svg" alt="Exec Overview">&lt;/p>
 &lt;h2 id="summary">Summary&lt;/h2>
@@ -4395,7 +4330,7 @@ The required command is&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>-static&lt;/code> tells gcc to perform a static linking&lt;/li>
 &lt;li>&lt;code>-L.&lt;/code> indicates that a custom path, &lt;code>.&lt;/code>, the current directory, should be considered when looking for the required libraries - libhello in the current directory&lt;/li>
-&lt;li>&lt;code>-lhello&lt;/code> indicates that the executable should contain &lt;code>libhello.aconsider the case when we are in a terminal (bash) and we launch an executable file.consider the case when we are in a terminal (bash) and we launch an executable file.&lt;/code>&lt;/li>
+&lt;li>&lt;code>-lhello&lt;/code> indicates that the executable should contain &lt;code>libhello.a&lt;/code>&lt;/li>
 &lt;/ul>
 &lt;p>After the command is added in the Makefile, a simple &lt;code>make&lt;/code> will create our executable.
 We can see that it is statically-linked, by issuing the following command:&lt;/p>
@@ -4426,7 +4361,7 @@ In this task, we modify the &lt;code>puts()&lt;/code> function to print the same
 The first thing needed is to find the header of the function we want to modify.
 In our case, &lt;code>puts()&lt;/code> has this header, in &lt;code>stdio.h&lt;/code>:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-C" data-lang="C">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#204a87;font-weight:bold">int&lt;/span> &lt;span style="color:#000">puts&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#204a87;font-weight:bold">const&lt;/span> &lt;span style="color:#204a87;font-weight:bold">char&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span>&lt;span style="color:#000">s&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then, we write an implemengtation of our own, and create a dynamic library containing that implementation.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then, we write an implementation of our own, and create a dynamic library containing that implementation.
 At last, we set the &lt;code>LD_PRELAOD&lt;/code> variable with the &lt;strong>absolute path&lt;/strong> to our dynamic library and we run the executable.&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">LD_PRELOAD&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&amp;lt;insert_path&amp;gt;/essentials/application-lifetime/activities/my-own-puts/puts.so ./main
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Instead of printing &amp;ldquo;Hello World&amp;rdquo;, the program now displays &amp;ldquo;I do what I want&amp;rdquo;.&lt;/p>
