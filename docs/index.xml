@@ -4943,51 +4943,8 @@ In conclusion, the code should be properly tested before being put in production
 &lt;li>&lt;a href="https://sss-web.cyberedu.ro/challenge/06d17960-084a-11ed-95a0-a9f50e1b83e7">Pro Replacer&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://sss-web.cyberedu.ro/challenge/1cb64670-084a-11ed-8430-29d0d2a909b5">TODO App&lt;/a>&lt;/li>
 &lt;/ul></description></item><item><title>Essentials:</title><link>/essentials/binary-analysis/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/binary-analysis/</guid><description>
-&lt;h2 id="table-of-contents">Table of Contents&lt;/h2>
-&lt;ul>
-&lt;li>&lt;a href="#static-analysis">Static Analysis&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#strings">strings&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#file">file&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#counter-measures">Counter-measures&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#nm">nm&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#counter-measures-strip">Counter-measures: Strip&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#objdump">objdump&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#counter-measures-1">Counter-measures&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#ghidra">Ghidra&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#counter-measures-2">Counter-measures&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#dynamic-analysis">Dynamic Analysis&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#strace">strace&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#ltrace">ltrace&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#gdb">gdb&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#summary">Summary&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#activities">Activities&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#challenge-easy-to-spot">Challenge: Easy to Spot&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#challenge-packaging-is-important">Challenge: Packaging is Important&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#challenge-ghidra-killer">Challenge: Ghidra Killer&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#challenge-spaghetti">Challenge: Spaghetti&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;h2 id="recap">Recap&lt;/h2>
+&lt;h1 id="binary-analysis">Binary Analysis&lt;/h1>
+&lt;h2 id="reminders">Reminders&lt;/h2>
 &lt;ul>
 &lt;li>code can&amp;rsquo;t just be run;
 it needs to be compiled and linked, becoming an executable&lt;/li>
