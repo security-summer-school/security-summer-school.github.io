@@ -5034,7 +5034,8 @@ One of those people left you a binary, to investigate.&lt;/p>
 &lt;h3 id="challenge-spaghetti">Challenge: Spaghetti&lt;/h3>
 &lt;p>Someone felt like cooking today.
 Can you find the flag?&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/assembly-language/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/assembly-language/</guid><description>
-&lt;h1 id="introduction">Introduction&lt;/h1>
+&lt;h1 id="assembly-language">Assembly Language&lt;/h1>
+&lt;h2 id="introduction">Introduction&lt;/h2>
 &lt;p>In the previous 2 sessions you started discovering what binary security looks like.
 &lt;a href="../binary-analysis/">Last session&lt;/a> you learnt two very powerful means of investigating and even reverse engineering executables: static and dynamic analysis.
 In order to leverage them efficiently, you used Ghidra for static analysis.
@@ -5045,16 +5046,16 @@ It infers the original C code from its compiled representation (learn more about
 This representation is called &lt;strong>assembly language&lt;/strong>.
 Both Ghidra and GDB can display the program&amp;rsquo;s code in assembly language.
 Today we will demystify this low-level language and learn to understand it.&lt;/p>
-&lt;h1 id="reminders-and-prerequisites">Reminders and Prerequisites&lt;/h1>
+&lt;h2 id="reminders-and-prerequisites">Reminders and Prerequisites&lt;/h2>
 &lt;p>For this session, you need:&lt;/p>
 &lt;ul>
 &lt;li>a working knowledge of the C programming language and familiarity with pointers&lt;/li>
 &lt;li>basic skills with Ghidra and GDB&lt;/li>
 &lt;li>understand how an executable file is created, as described in the &lt;a href="../application-lifetime/">Application Lifetime session&lt;/a>&lt;/li>
-&lt;li>knowledge of the following means of representing data: ASCII, binary, hexadecimal.
-Check out the session on &lt;a href="../data-representation/">Data Representation&lt;/a> for a reminder.&lt;/li>
+&lt;li>knowledge of the following means of representing data: ASCII, binary, hexadecimal.&lt;/li>
 &lt;/ul>
-&lt;h1 id="assembly">Assembly&lt;/h1>
+&lt;p>Check out the session on &lt;a href="../data-representation/">Data Representation&lt;/a> for a reminder.&lt;/p>
+&lt;h2 id="assembly">Assembly&lt;/h2>
 &lt;p>Assembly is a low-level language used as a human-readable representation of instructions executed by the CPU.
 There is a one-to-one mapping between the binary code executed by the CPU and Assembly.
 Few people write Assembly, but many people are required to read it:&lt;/p>
@@ -5066,7 +5067,7 @@ Few people write Assembly, but many people are required to read it:&lt;/p>
 &lt;/ul>
 &lt;p>Simply put, if a field is close to CPU it requires (some knowledge of) Assembly.
 So let&amp;rsquo;s learn this language!&lt;/p>
-&lt;h1 id="registers">Registers&lt;/h1>
+&lt;h2 id="registers">Registers&lt;/h2>
 &lt;p>You might have already seen the image below.
 It shows the various places where data can be kept.
 Note that this data can be both non-persistent and persistent.
@@ -5075,41 +5076,41 @@ It&amp;rsquo;s kept in all levels from &amp;ldquo;Main Memory&amp;rdquo; upwards
 The &amp;ldquo;Main Memory&amp;rdquo; is simply referred to as &lt;strong>memory&lt;/strong> or RAM.&lt;/p>
 &lt;p>Persistent storage refers to data on &lt;strong>disks&lt;/strong>: HDD, SSD, CDs, DVDs, magnetic tapes, even in the cloud (where cloud storage providers also use HDDs, SSDs etc.).
 If you shut down your laptop or your mobile phone, your pictures or video games remain unchanged.
-This is because they are stored &lt;strong>on your device&amp;rsquo;s disk&lt;/strong>.
+This is because they are stored &lt;em>on your device&amp;rsquo;s disk&lt;/em>.
 We simply refer to persistent storage as &lt;strong>storage&lt;/strong>.
 Take note of the difference between &lt;em>storage&lt;/em> and &lt;em>memory&lt;/em>.&lt;/p>
 &lt;p>&lt;img src="./assets/memory-hierarchy.png" alt="Memory Hierarchy">&lt;/p>
 &lt;p>In most programming languages you can freely access data everywhere up to and including the memory.
-In assembly however, you also have access to the &lt;strong>registers&lt;/strong> and can influence the &lt;em>cache&lt;/em>.
+In assembly however, you also have access to the &lt;strong>registers&lt;/strong> and can influence the &lt;strong>cache&lt;/strong>.
 We won&amp;rsquo;t be dealing with the cache in this session, but you can read more about them &lt;a href="#caches">at the end of this session&lt;/a>
-They are the fastest form of memory available and are implemented &lt;em>inside the CPU&lt;/em>.
+They are the fastest form of memory available and are implemented &lt;strong>inside the CPU&lt;/strong>.
 We can access data in registers in less than 1 ns (nanoseconds), as opposed to a few dozen ns when fetching data from the RAM.&lt;/p>
 &lt;p>Then why not make more registers and only use them instead of RAM?
 Registers are fast because they are few in number.
-This allows them to be efficiently wired to the CPU&amp;rsquo;s Arithmetic and Logic Unit (ALU), which is responsible for executing basic operations, sch as addition, subtraction, bitwise and, or, shifts etc.
+This allows them to be efficiently wired to the CPU&amp;rsquo;s Arithmetic and Logic Unit (ALU), which is responsible for executing basic operations, such as addition, subtraction, bitwise and, or, shifts etc.
 The more registers, the more complex and the less efficient the logic.&lt;/p>
-&lt;h2 id="registers-in-an-x64-cpu">Registers in an X64 CPU&lt;/h2>
+&lt;h3 id="registers-in-an-x64-cpu">Registers in an X64 CPU&lt;/h3>
 &lt;p>Registers are like variables with fixed names embedded in the CPU.
 They can be assigned values that can be modified via instructions.
 There are several types of registers inside a CPU.
 All of them can be assigned data and that data can be modified using the assembly-level operations described &lt;a href="#assembly-instructions">further in this session&lt;/a>.&lt;/p>
 &lt;p>All registers are &lt;strong>64-bits&lt;/strong> wide.
 So they each can store up to 8 bytes of data.&lt;/p>
-&lt;h3 id="rip">&lt;code>rip&lt;/code>&lt;/h3>
+&lt;h4 id="rip">&lt;code>rip&lt;/code>&lt;/h4>
 &lt;p>We&amp;rsquo;ll start with a very special and illusive one: the &lt;strong>instruction pointer&lt;/strong> - &lt;code>rip&lt;/code>.
 In &lt;a href="../binary-analysis/">the previous session&lt;/a>, you learned that the code of any process is also in its memory.
 In order to read and execute it, the CPU must &amp;ldquo;follow&amp;rdquo; it just like children follow text with their fingers.
 The CPU does this using &lt;code>rip&lt;/code>.
 This register stores te &lt;strong>address of the currently executed instruction&lt;/strong>.
 We will never use this instruction per-se in instructions, but you will see and make use of it in GDB.&lt;/p>
-&lt;h3 id="general-purpose-registers">General Purpose Registers&lt;/h3>
+&lt;h4 id="general-purpose-registers">General Purpose Registers&lt;/h4>
 &lt;p>Then there are &lt;strong>general purpose registers&lt;/strong>.
 As their name implies, they are used to store &lt;em>anything&lt;/em>: addresses, user input, function parameters, data read from files or from the web etc.
 Some of them also have some special functions, especially regarding function calls:&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>rax&lt;/code>: accumulator register&lt;/li>
 &lt;li>&lt;code>rbx&lt;/code>: base register&lt;/li>
-&lt;li>&lt;code>rcx&lt;/code>: counter register; used with the &lt;a href="#loop">&lt;code>loop&lt;/code>&lt;/a> instruction&lt;/li>
+&lt;li>&lt;code>rcx&lt;/code>: counter register; used with the &lt;a href="#loops">&lt;code>loop&lt;/code>&lt;/a> instruction&lt;/li>
 &lt;li>&lt;code>rdx&lt;/code>: data register&lt;/li>
 &lt;li>&lt;code>rdi&lt;/code>: destination register&lt;/li>
 &lt;li>&lt;code>Rsi&lt;/code>: source register&lt;/li>
@@ -5119,7 +5120,7 @@ Some of them also have some special functions, especially regarding function cal
 And also do not bother with their extra meanings.
 We will make use of those only when specified.
 Otherwise, treat them as simple variables.&lt;/p>
-&lt;h3 id="smaller-registers">Smaller Registers&lt;/h3>
+&lt;h4 id="smaller-registers">Smaller Registers&lt;/h4>
 &lt;p>Sometimes you only need to access 32 or 16 or 8 bits out of a 64-bit register.
 This is possible by slightly changing the name of the register like so:&lt;/p>
 &lt;table>
@@ -5165,20 +5166,20 @@ It doesn&amp;rsquo;t make sense to access 4 bytes of an address.
 The lower 2 bytes can be accessed due to historical reasons.
 In the 70s, when the first CPU of this family (8086) was launched, it only supported 2-byte addresses.
 All registers &lt;code>r9&lt;/code> to &lt;code>r15&lt;/code> have the same subdivisions as &lt;code>r8&lt;/code>.&lt;/p>
-&lt;h1 id="assembly-instructions">Assembly Instructions&lt;/h1>
+&lt;h2 id="assembly-instructions">Assembly Instructions&lt;/h2>
 &lt;p>We&amp;rsquo;ve now learned what assembly is theoretically and what registers are, but how do we use them?
 Each CPU exposes an &lt;strong>ISA (Instruction Set Architecture)&lt;/strong>: a set of instructions with which to modify and interact with its registers and with the RAM.
 There are over 1000 instructions in the x64 ISA.
 There are even instructions for efficiently encrypting data.
 Find out more about them by enrolling in the &lt;a href="https://github.com/security-summer-school/hardware-sec/">Hardware Assisted Security track&lt;/a>.&lt;/p>
 &lt;p>Before we dive into the instructions themselves, it&amp;rsquo;s useful to first look at their generic syntax:&lt;/p>
-&lt;pre tabindex="0">&lt;code>instruction_name destination, source
-&lt;/code>&lt;/pre>&lt;p>Most Assembly instructions have 2 operands: a source and a destination.
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-asm" data-lang="asm">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">instruction_name&lt;/span> &lt;span style="color:#000">destination&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">source&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Most Assembly instructions have 2 operands: a source and a destination.
 For some operations, such as arithmetic, the destination is also an operand.
-The result of each instruction always stored in the destination.&lt;/p>
+The result of each instruction is always stored in the destination.&lt;/p>
 &lt;p>Below we&amp;rsquo;ll list some fundamental instructions.
 We will be using the Intel Assembly syntax.&lt;/p>
-&lt;h2 id="mov">&lt;code>mov&lt;/code>&lt;/h2>
+&lt;h3 id="mov">&lt;code>mov&lt;/code>&lt;/h3>
 &lt;p>&lt;code>mov&lt;/code> is the most basic instruction in Assembly.
 It &lt;em>copies&lt;/em> (or &lt;em>moves&lt;/em>) data from the source to the destination.
 Also note that comments in Assembly are preceded by &lt;code>;&lt;/code> and that the language is case-insensitive.&lt;/p>
@@ -5189,7 +5190,7 @@ Also note that comments in Assembly are preceded by &lt;code>;&lt;/code> and tha
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8f5902;font-style:italic">&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">mov&lt;/span> &lt;span style="color:#000">r8b&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">bh&lt;/span> &lt;span style="color:#8f5902;font-style:italic">; r8b = bh
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8f5902;font-style:italic">; The sizes of the operands must be equal (1 byte each in this case).
-&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="data-manipulation">Data Manipulation&lt;/h2>
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="data-manipulation">Data Manipulation&lt;/h3>
 &lt;p>Now that we&amp;rsquo;ve learnt how to place data in registers we need to learn how to do math with it.
 As you&amp;rsquo;ve seen so far, Assembly instructions are really simple.
 Below is a table with the most common and useful arithmetic instructions.
@@ -5252,11 +5253,11 @@ The result is always stored in the &lt;code>destination&lt;/code>&lt;/p>
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
-&lt;h2 id="control-flow">Control Flow&lt;/h2>
+&lt;h3 id="control-flow">Control Flow&lt;/h3>
 &lt;p>Now we know how to do maths and move bits around.
 This is all good, but we still can&amp;rsquo;t write full programs.
 We need a mechanism similar to &lt;code>if&lt;/code>s from Python and also loops in order to make the code run based on conditions.&lt;/p>
-&lt;h3 id="jmp">&lt;code>jmp&lt;/code>&lt;/h3>
+&lt;h4 id="jmp">&lt;code>jmp&lt;/code>&lt;/h4>
 &lt;p>The simplest instruction for control flow is the &lt;code>jmp&lt;/code> instruction.
 It simply loads an address into the &lt;code>rip&lt;/code> register.
 But when Assembly code is generated or written either by the compiler or by us, instructions don&amp;rsquo;t have addresses yet.
@@ -5282,7 +5283,7 @@ They are simply ignored by anything except for &lt;code>jmp&lt;/code>.&lt;/p>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f57900">some_label:&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">mov&lt;/span> &lt;span style="color:#000">rbx&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">3&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8f5902;font-style:italic">; rax = 2; rbx = 3
-&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="eflags">&lt;code>eflags&lt;/code>&lt;/h3>
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="eflags">&lt;code>eflags&lt;/code>&lt;/h4>
 &lt;p>Each instruction (except for &lt;code>mov&lt;/code>) changes the &lt;strong>inner state of the CPU&lt;/strong>.
 In other words, several aspects regarding the result of the instruction are stored in a special register that we cannot access directly, called &lt;code>eflags&lt;/code>.
 There are &lt;a href="https://stackoverflow.com/questions/1406783/how-to-read-and-write-x86-flags-registers-directly">instructions&lt;/a> that can set or clear some flags in &lt;code>eflags&lt;/code>, but we cannot write something like &lt;code>mov eflags, 2&lt;/code>.&lt;/p>
@@ -5291,16 +5292,16 @@ We won&amp;rsquo;t be using these flags per se with one exception: &lt;code>ZF&l
 When active, it means that the result of the last instruction was&amp;hellip; 0, duh!
 This is useful for testing if numbers are equal for example.
 We&amp;rsquo;ll talk about this in the next section.&lt;/p>
-&lt;h3 id="conditional-jumps">Conditional jumps&lt;/h3>
+&lt;h4 id="conditional-jumps">Conditional jumps&lt;/h4>
 &lt;p>Now we know that there is an internal state of the CPU which is modified by each instruction, except for &lt;code>mov&lt;/code>.
 We still need a way to leverage this state.
 We can do this via &lt;strong>conditional jumps&lt;/strong>.&lt;/p>
 &lt;p>They are like &lt;code>jmp&lt;/code> instructions, but the jump is made only when certain conditions are met.
 Otherwise, code execution continues from the next instruction.
 The general syntax of a conditional jump is&lt;/p>
-&lt;pre tabindex="0">&lt;code>j[n]&amp;lt;cond&amp;gt; jabel
-&lt;/code>&lt;/pre>&lt;p>where the letter &lt;code>n&lt;/code> is optional and means the jump will be made if the condition is &lt;strong>not&lt;/strong> met.&lt;/p>
-&lt;h4 id="cmp-and-test">&lt;code>cmp&lt;/code> and &lt;code>test&lt;/code>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-asm" data-lang="asm">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">j&lt;/span>&lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#000">n&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>&lt;span style="color:#a40000">&amp;lt;&lt;/span>&lt;span style="color:#000">cond&lt;/span>&lt;span style="color:#a40000">&amp;gt;&lt;/span> &lt;span style="color:#000">label&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>where the letter &lt;code>n&lt;/code> is optional and means the jump will be made if the condition is &lt;strong>not&lt;/strong> met.&lt;/p>
+&lt;h5 id="cmp-and-test">&lt;code>cmp&lt;/code> and &lt;code>test&lt;/code>&lt;/h5>
 &lt;p>We can use the regular arithmetic instructions that we&amp;rsquo;ve learned so far to modify &lt;code>eflags&lt;/code>.
 But this has the drawback of also modifying our data.
 It would be great if we had a means to modify &lt;code>eflags&lt;/code> without changing the data that we evaluate.
@@ -5309,12 +5310,12 @@ We can do this using &lt;code>cmp&lt;/code> and &lt;code>test&lt;/code>.&lt;/p>
 This is great for testing if 2 things are equal, or for testing which is greater or lower.&lt;/p>
 &lt;p>&lt;code>test dest, src&lt;/code> is similar to &lt;code>cmp&lt;/code>, but modifies &lt;code>eflags&lt;/code> according to the &lt;code>and&lt;/code> instruction.
 This comes in handy when we want to check if a register is 0.&lt;/p>
-&lt;pre tabindex="0">&lt;code>test rax, rax
-jz rax_is_zero
-&lt;/code>&lt;/pre>&lt;p>is equivalent to&lt;/p>
-&lt;pre tabindex="0">&lt;code>cmp rax, 0
-jz rax_is_zero
-&lt;/code>&lt;/pre>&lt;p>Now let&amp;rsquo;s have a look at some conditional jumps:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-asm" data-lang="asm">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">test&lt;/span> &lt;span style="color:#000">rax&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">rax&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">jz&lt;/span> &lt;span style="color:#000">rax_is_zero&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>is equivalent to&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-asm" data-lang="asm">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">cmp&lt;/span> &lt;span style="color:#000">rax&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">jz&lt;/span> &lt;span style="color:#000">rax_is_zero&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now let&amp;rsquo;s have a look at some conditional jumps:&lt;/p>
 &lt;table>
 &lt;thead>
 &lt;tr>
@@ -5365,7 +5366,7 @@ jz rax_is_zero
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
-&lt;h3 id="loops">Loops&lt;/h3>
+&lt;h4 id="loops">Loops&lt;/h4>
 &lt;p>We can create loops simply by combining labels and conditional jumps.
 For example, &lt;code>for i in range(0, 10)&lt;/code> from Python is equivalent to:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-asm" data-lang="asm">&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">xor&lt;/span> &lt;span style="color:#000">rcx&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">rcx&lt;/span> &lt;span style="color:#8f5902;font-style:italic">; i = rcx; same as mov rcx, 0
@@ -5389,7 +5390,7 @@ For example, &lt;code>for i in range(0, 10)&lt;/code> from Python is equivalent 
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">jb&lt;/span> &lt;span style="color:#000">for_loop&lt;/span> &lt;span style="color:#8f5902;font-style:italic">; verify i &amp;lt; 10
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8f5902;font-style:italic">&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8f5902;font-style:italic">; The code here is executed only after the loop ends.
-&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="dereferencing-addresses">Dereferencing Addresses&lt;/h1>
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="dereferencing-addresses">Dereferencing Addresses&lt;/h2>
 &lt;p>Up to this point we know how to operate with data and can write complex programs using conditional jumps.
 But we know that data is stored mostly in the RAM.
 How do we fetch it from there to our registers?&lt;/p>
@@ -5398,14 +5399,14 @@ Each byte is a cell in this array.
 Therefore, each byte is found at a given &lt;strong>index&lt;/strong> in this array.
 Indices start at 0, so the first byte is found at index 0, the third 3 at index 2 and so on.
 These indices are also called &lt;strong>memory addresses&lt;/strong>, or simply &lt;strong>addresses&lt;/strong>.&lt;/p>
-&lt;p>In order to load data from the RAM into our registers or vice-versa, we need to specify to CPU which RAM address to access.
+&lt;p>In order to load data from the RAM into our registers or vice-versa, we need to specify the CPU which RAM address to access.
 This is called &lt;strong>dereferencing that address&lt;/strong>.
 Syntactically, this is very easy and is done by wrapping the address in &lt;code>[]&lt;/code>.
 The address can be either a raw number, or a register, or an expression:&lt;/p>
-&lt;pre tabindex="0">&lt;code>mov rax, [0xdeadbeef] ; load 8 bytes from the address 0xdeadbeef into rax
-mov bx, [0xdeadbeef] ; load 2 bytes from the address 0xdeadbeef into bx
-mov [0xdeadbeef], ecx ; store 4 bytes from ecx at the address 0xdeadbeef
-&lt;/code>&lt;/pre>&lt;p>Notice that the number of bytes that are transferred between the RAM and registers is given by the size of the register.
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-asm" data-lang="asm">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">mov&lt;/span> &lt;span style="color:#000">rax&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0xdeadbeef&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span> &lt;span style="color:#8f5902;font-style:italic">; load 8 bytes from the address 0xdeadbeef into rax
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8f5902;font-style:italic">&lt;/span>&lt;span style="color:#000">mov&lt;/span> &lt;span style="color:#000">bx&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0xdeadbeef&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span> &lt;span style="color:#8f5902;font-style:italic">; load 2 bytes from the address 0xdeadbeef into bx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8f5902;font-style:italic">&lt;/span>&lt;span style="color:#000">mov&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0xdeadbeef&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span> &lt;span style="color:#000">ecx&lt;/span> &lt;span style="color:#8f5902;font-style:italic">; store 4 bytes from ecx at the address 0xdeadbeef
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Notice that the number of bytes that are transferred between the RAM and registers is given by the size of the register.
 But what happens when we don&amp;rsquo;t use a register?
 The code below is incorrect because it is impossible to tell how many bytes to use to write 0x69.
 We could write it using one byte of course, but what if we wanted to write it on 4 bytes and store &lt;code>[ 0x00 | 0x00 | 0x00 | 0x69 ]&lt;/code>?
@@ -5424,7 +5425,7 @@ In the snippet below, the CPU computes the address given by &lt;code>rdi + rcx *
 &lt;li>&lt;code>edx&lt;/code> = &lt;code>something&lt;/code>&lt;/li>
 &lt;/ul>
 &lt;p>Therefore, whenever you see &lt;code>[...]&lt;/code> in Assembly, what between the square brackets is being dereferenced &lt;a href="#lea">&lt;strong>with one exception&lt;/strong>&lt;/a>.&lt;/p>
-&lt;h2 id="endianness">Endianness&lt;/h2>
+&lt;h3 id="endianness">Endianness&lt;/h3>
 &lt;p>This is all nice, but how does all this look like in the memory?
 The order in which the bytes are stored in the RAM is called &lt;strong>endianness&lt;/strong>.
 Most CPUs store bytes &lt;strong>in reverse order&lt;/strong>, or &lt;strong>little endian&lt;/strong> order, because the least significant byte is the first.
@@ -5439,12 +5440,12 @@ Notice we don&amp;rsquo;t have to write it in reverse order like &lt;code>zluR S
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">mov&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0x100&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span> &lt;span style="color:#000">rax&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8f5902;font-style:italic">; We need to use a register because mov cannot take both an address and a 64-bit immediate as operands.
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8f5902;font-style:italic">; https://www.felixcloutier.com/x86/mov
-&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="reading-assembly">Reading Assembly&lt;/h1>
-&lt;h2 id="objdump">&lt;code>objdump&lt;/code>&lt;/h2>
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="reading-assembly">Reading Assembly&lt;/h2>
+&lt;h3 id="objdump">&lt;code>objdump&lt;/code>&lt;/h3>
 &lt;p>Starting from an executable file, we can read its Assembly code by &lt;strong>disassembling&lt;/strong> it.
 The standard tool for doing this is &lt;code>objdump&lt;/code>:&lt;/p>
-&lt;pre tabindex="0">&lt;code>root@kali:~$ objdump -M intel -d &amp;lt;binary&amp;gt; | less
-&lt;/code>&lt;/pre>&lt;ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">root@kali:~$ objdump -M intel -d &amp;lt;binary&amp;gt; | less
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
 &lt;li>Use &lt;code>-M intel&lt;/code> for Intel syntax.
 The default syntax is AT&amp;amp;T.&lt;/li>
 &lt;li>&lt;code>-d&lt;/code> stands for &amp;ldquo;disassembly&amp;rdquo;.&lt;/li>
@@ -5453,7 +5454,7 @@ The default syntax is AT&amp;amp;T.&lt;/li>
 &lt;p>Notice that every line contains an address, an opcode and an instruction.
 The opcode is simply the binary representation of that instruction.&lt;/p>
 &lt;p>Alternatively, you can use GDB and Ghidra that you learned about &lt;a href="../binary-analysis/">in the previous session&lt;/a>.&lt;/p>
-&lt;h2 id="gdb">GDB&lt;/h2>
+&lt;h3 id="gdb">GDB&lt;/h3>
 &lt;p>The undisputed king of Assembly is by far the &lt;strong>GNU DeBugger (GDB)&lt;/strong>.
 It&amp;rsquo;s just what its name says it is, but its beauty is in its versatility.
 GDB is a command-line debugger that allows us to print registers, variables, dump memory from any address, step through the code, go back through the call stack and much more.
@@ -5506,27 +5507,27 @@ If a name is specified, only the value in that register is displayed&lt;/p>
 &lt;p>&lt;code>p &amp;lt;variable&amp;gt;&lt;/code> / &lt;code>&amp;lt;name&amp;gt;&lt;/code> = print the variable / number; similar to &lt;code>printf&lt;/code>&lt;/p>
 &lt;/li>
 &lt;/ul>
-&lt;pre tabindex="0">&lt;code>p/d = printf(&amp;#34;%d&amp;#34;)
-p/c = printf(&amp;#34;%c&amp;#34;)
-p/x = printf(“%x”)
-p/u = printf(“%u”)
-&lt;/code>&lt;/pre>&lt;ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">p/d = printf(&amp;#34;%d&amp;#34;)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">p/c = printf(&amp;#34;%c&amp;#34;)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">p/x = printf(“%x”)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">p/u = printf(“%u”)
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
 &lt;li>&lt;code>x &amp;lt;address&amp;gt;&lt;/code> = print data at the address (dereference it).
 By default, the output is represented in hex&lt;/li>
 &lt;li>&lt;code>x/&amp;lt;n&amp;gt;&amp;lt;d&amp;gt;&amp;lt;f&amp;gt; &amp;lt;address&amp;gt;&lt;/code> -&amp;gt; print &lt;code>n&lt;/code> memory areas of size &lt;code>d&lt;/code> with format &lt;code>f&lt;/code>:&lt;/li>
 &lt;/ul>
-&lt;pre tabindex="0">&lt;code>n = any number; default = 1
-d = b (byte - default) / h (half-word = short) / w (word = int)
-f = (like p): x (hex - default) / c (char) / d (int, decimal) / u (unsigned) / s (string)
-&lt;/code>&lt;/pre>&lt;p>Examples:&lt;/p>
-&lt;pre tabindex="0">&lt;code>x/20wx = 20 hex words (ints)
-x/10hd = 10 decimal half-words (shortsuri)
-x/10c = 10 ASCII characters
-x/10b = 10 hex bytes (because x is the default)
-&lt;/code>&lt;/pre>&lt;ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">n = any number; default = 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">d = b (byte - default) / h (half-word = short) / w (word = int)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">f = (like p): x (hex - default) / c (char) / d (int, decimal) / u (unsigned) / s (string)
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Examples:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">x/20wx = 20 hex words (ints)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">x/10hd = 10 decimal half-words (shorts)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">x/10c = 10 ASCII characters
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">x/10b = 10 hex bytes (because x is the default)
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
 &lt;li>&lt;code>set $&amp;lt;register&amp;gt; &amp;lt;value&amp;gt;&lt;/code> = sets the register to that value&lt;/li>
 &lt;/ul>
-&lt;h1 id="summary">Summary&lt;/h1>
+&lt;h2 id="summary">Summary&lt;/h2>
 &lt;p>The key takeaways from this session are:&lt;/p>
 &lt;ul>
 &lt;li>Assembly is a human-readable representation of instructions executed by the CPU&lt;/li>
@@ -5534,29 +5535,30 @@ x/10b = 10 hex bytes (because x is the default)
 &lt;li>It uses a fixed set of instructions called ISA&lt;/li>
 &lt;li>&lt;strong>Memory&lt;/strong> is the RAM, &lt;strong>storage&lt;/strong> is the disk&lt;/li>
 &lt;li>Data is stored in memory using the little endian representation&lt;/li>
-&lt;li>You can disassemble a program with &lt;code>objdump&lt;/code> like so: &lt;code>objdump -M intel -d &amp;lt;program&amp;gt; |less&lt;/code>&lt;/li>
+&lt;li>You can disassemble a program with &lt;code>objdump&lt;/code> like so:&lt;/li>
 &lt;/ul>
-&lt;h1 id="activities">Activities&lt;/h1>
-&lt;h2 id="in-plain-assembly">In Plain Assembly&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">root@kali:~$ objdump -M intel -d &amp;lt;program&amp;gt; |less
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="activities">Activities&lt;/h2>
+&lt;h3 id="in-plain-assembly">In Plain Assembly&lt;/h3>
 &lt;p>The flag is almost right there in your face.&lt;/p>
-&lt;h2 id="gotta-link-em-all">Gotta Link Em All&lt;/h2>
+&lt;h3 id="gotta-link-em-all">Gotta Link Em All&lt;/h3>
 &lt;p>I wonder what hides in all those object files&amp;hellip;&lt;/p>
-&lt;h2 id="jump-maze">Jump Maze&lt;/h2>
+&lt;h3 id="jump-maze">Jump Maze&lt;/h3>
 &lt;p>Theseus has nothing on you!
 Navigate the maze and get the flag.&lt;/p>
-&lt;h2 id="crypto">Crypto&lt;/h2>
+&lt;h3 id="crypto">Crypto&lt;/h3>
 &lt;p>Is it really about crypto?&lt;/p>
-&lt;h2 id="call-me-little-sunshine">Call Me Little Sunshine&lt;/h2>
+&lt;h3 id="call-me-little-sunshine">Call Me Little Sunshine&lt;/h3>
 &lt;p>Do what the binary asks you to do.
 What, it doesn&amp;rsquo;t work?&lt;/p>
-&lt;h1 id="further-reading">Further Reading&lt;/h1>
-&lt;h2 id="the-whole-isa">The Whole ISA&lt;/h2>
+&lt;h2 id="further-reading">Further Reading&lt;/h2>
+&lt;h3 id="the-whole-isa">The Whole ISA&lt;/h3>
 &lt;p>If you want to search for an instruction, use &lt;a href="https://www.felixcloutier.com/x86/">this&lt;/a> website.
 Each instruction has its own table with all possible operands and what they do.
-Note that &lt;code>imm8&lt;/code> means &amp;ldquo;8-bit immediate&amp;rdquo;, i.e an 8-byte regular number, &lt;code>imm64&lt;/code> means a 64-bit immediate and so on.
+Note that &lt;code>imm8&lt;/code> means &amp;ldquo;8-bit immediate&amp;rdquo; (an 8-byte regular number), &lt;code>imm64&lt;/code> means a 64-bit immediate and so on.
 Similarly, &lt;code>reg32&lt;/code> means a 32-bit register and &lt;code>m16&lt;/code> for example means a 16-bit (2-byte) memory area.
 You&amp;rsquo;ll see &lt;code>reg&lt;/code>, &lt;code>imm&lt;/code> and &lt;code>m&lt;/code> combined with &lt;code>8&lt;/code>, &lt;code>16&lt;/code>, &lt;code>32&lt;/code> and &lt;code>64&lt;/code> depending on what each instruction does.&lt;/p>
-&lt;h2 id="caches">Caches&lt;/h2>
+&lt;h3 id="caches">Caches&lt;/h3>
 &lt;p>Many programs access the same addresses repeatedly over a short period of time.
 Take a short 1000-step loop.
 It uses the same code 1000 times.
@@ -5566,31 +5568,31 @@ For this reason, there is an intermediary level of memory between the RAM and th
 We say &lt;em>caches&lt;/em>, in plural because they are laid out hierarchically, each lower level being faster and smaller than the ones below.
 Usually, CPUs have 3 levels of cache memory.
 You can query their sizes with the &lt;code>lscpu&lt;/code> command:&lt;/p>
-&lt;pre tabindex="0">&lt;code>root@kali:~$ lscpu
-[...]
-L1d cache: 128 KiB
-L1i cache: 128 KiB
-L2 cache: 1 MiB
-L3 cache: 6 MiB
-[...]
-&lt;/code>&lt;/pre>&lt;p>Notice the L1 (level 1) cache is split between a data cache (&lt;code>L1d&lt;/code>) and an instruction cache &lt;code>L1i&lt;/code>.
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">root@kali:~$ lscpu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">[...]
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">L1d cache: 128 KiB
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">L1i cache: 128 KiB
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">L2 cache: 1 MiB
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">L3 cache: 6 MiB
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-style:italic">[...]
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Notice the L1 (level 1) cache is split between a data cache (&lt;code>L1d&lt;/code>) and an instruction cache &lt;code>L1i&lt;/code>.
 The other caches do not store data and instructions separately.&lt;/p>
-&lt;h2 id="assembly-syntaxes">Assembly Syntaxes&lt;/h2>
+&lt;h3 id="assembly-syntaxes">Assembly Syntaxes&lt;/h3>
 &lt;p>This session we&amp;rsquo;ve used the Intel syntax for writing and displaying Assembly.
 We did so because it&amp;rsquo;s more straightforward than its alternative: the AT&amp;amp;T syntax.
 You can find the differences on &lt;a href="https://en.wikipedia.org/wiki/X86_assembly_language#Syntax">Wikipedia&lt;/a>.&lt;/p>
-&lt;h2 id="lea">&lt;code>lea&lt;/code>&lt;/h2>
+&lt;h3 id="lea">&lt;code>lea&lt;/code>&lt;/h3>
 &lt;p>&lt;code>lea&lt;/code> stands for &amp;ldquo;Load Effective Address&amp;rdquo;.
-It syntax is:&lt;/p>
-&lt;pre tabindex="0">&lt;code>lea dest, [address]
-&lt;/code>&lt;/pre>&lt;p>It loads &lt;code>address&lt;/code> into the &lt;code>dest&lt;/code> register (it can only be a register).
+Its syntax is:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-asm" data-lang="asm">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">lea&lt;/span> &lt;span style="color:#000">dest&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#000">address&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>It loads &lt;code>address&lt;/code> into the &lt;code>dest&lt;/code> register (it can only be a register).
 What&amp;rsquo;s interesting about it is that it also uses the &lt;code>[...]&lt;/code> syntax, but &lt;strong>does not dereference the address&lt;/strong>.
 In the snippet below, &lt;code>0xdeadbeef&lt;/code> is simply copied to &lt;code>rax&lt;/code>.&lt;/p>
-&lt;pre tabindex="0">&lt;code>lea rax, [0xdeadbeef]
-&lt;/code>&lt;/pre>&lt;p>Its true power comes from the fact that it can also compute an address.
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-asm" data-lang="asm">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">lea&lt;/span> &lt;span style="color:#000">rax&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">0xdeadbeef&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Its true power comes from the fact that it can also compute an address.
 For example, the code below will first compute the address given by &lt;code>rdi + rcx * 8 + 7&lt;/code> and then write this address into &lt;code>rax&lt;/code>.&lt;/p>
-&lt;pre tabindex="0">&lt;code>lea rax, [rdi + rcx * 8 + 7]
-&lt;/code>&lt;/pre></description></item><item><title>Essentials:</title><link>/essentials/taming-the-stack/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/taming-the-stack/</guid><description>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-asm" data-lang="asm">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">lea&lt;/span> &lt;span style="color:#000">rax&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#000">rdi&lt;/span> &lt;span style="color:#a40000">+&lt;/span> &lt;span style="color:#000">rcx&lt;/span> &lt;span style="color:#000;font-weight:bold">*&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">8&lt;/span> &lt;span style="color:#a40000">+&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">7&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Essentials:</title><link>/essentials/taming-the-stack/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/taming-the-stack/</guid><description>
 &lt;h1 id="taming-the-stack">Taming the Stack&lt;/h1>
 &lt;h2 id="table-of-contents">Table of Contents&lt;/h2>
 &lt;p>Use &lt;a href="https://github.com/ekalinin/github-markdown-toc">gh-md-toc&lt;/a>.&lt;/p>
