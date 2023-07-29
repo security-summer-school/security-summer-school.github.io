@@ -15,7 +15,16 @@ $1 = {int (const char *)} 0x7ffff7a64a30 &amp;lt;_IO_puts&amp;gt;
 &lt;p>Assume ASLR disabled. To disable ASLR (it&amp;rsquo;s enabled by default on Linux) use:&lt;/p>
 &lt;pre tabindex="0">&lt;code>setarch x86_64 -R /bin/bash
 &lt;/code>&lt;/pre></description></item><item><title>Binary:</title><link>/binary/bypassing-mitigations/activities/09-challenge-bypass-dep-aslr-libc/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/binary/bypassing-mitigations/activities/09-challenge-bypass-dep-aslr-libc/readme/</guid><description>
-&lt;p>ASLR is enabled for this challenge.&lt;/p></description></item><item><title>Binary:</title><link>/binary/copying/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/binary/copying/</guid><description>
+&lt;p>ASLR is enabled for this challenge.&lt;/p></description></item><item><title>Binary:</title><link>/binary/contributing/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/binary/contributing/</guid><description>
+&lt;h1 id="contributing-to-the-binary-security-track">Contributing to the Binary Security Track&lt;/h1>
+&lt;p>We welcome contributions to the content and source code of the Binary Security Track.
+You may contribute by:&lt;/p>
+&lt;ul>
+&lt;li>opening &lt;a href="https://github.com/security-summer-school/binary/issues">issues&lt;/a>&lt;/li>
+&lt;li>taking part in &lt;a href="https://github.com/security-summer-school/binary/discussions">discussions&lt;/a>&lt;/li>
+&lt;li>creating &lt;a href="https://github.com/security-summer-school/binary/pulls">pull requests&lt;/a> to update the content&lt;/li>
+&lt;/ul>
+&lt;p>Before you make any contribution, make sure it follows the &lt;a href="https://github.com/security-summer-school/meta/blob/master/docs/contributing.md">community guide&lt;/a>.&lt;/p></description></item><item><title>Binary:</title><link>/binary/copying/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/binary/copying/</guid><description>
 &lt;h1 id="license">License&lt;/h1>
 &lt;p>This repository consists of actual content (Markdown files, slides) and support code (for challenges and activities and for automation and deployment).
 Unless otherwise stated, actual content is licensed under the &lt;a href="https://creativecommons.org/licenses/by-sa/4.0/">Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) license&lt;/a>.
