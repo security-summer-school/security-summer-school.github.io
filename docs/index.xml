@@ -4462,7 +4462,46 @@ The total number of requests generated in the attack is the product of the numbe
 &lt;/ul>
 &lt;p>There are also many different types of payloads you can use (&lt;a href="https://portswigger.net/burp/documentation/desktop/tools/intruder/payloads/types">here&lt;/a> is the entire list), from specifying your own list of words to generating random bytes.
 You can find lists of popular credentials online, for instance, &lt;a href="https://github.com/danielmiessler/SecLists/tree/master/Passwords">here&lt;/a> is a repo with lists of most used passwords.&lt;/p>
-&lt;h2 id="web-content-enumeration-web-content-discovery-dirbusting">Web Content Enumeration/ Web Content Discovery/ Dirbusting&lt;/h2>
+&lt;h2 id="testing-for-default-credentials">Testing for default credentials&lt;/h2>
+&lt;p>Using the system&amp;rsquo;s default credentials is a relatively easy and popular technique to gain first access.
+The default non-random passwords that come with many devices (especially those in the Internet of Things) are frequently left untouched.&lt;/p>
+&lt;p>You can read more about this &lt;a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/04-Authentication_Testing/02-Testing_for_Default_Credentials">here&lt;/a>.
+You can also find wordlists that have all the default credentials for most known vendors in one place, such as &lt;a href="https://github.com/ihebski/DefaultCreds-cheat-sheet">this one&lt;/a>.&lt;/p>
+&lt;h2 id="types-of-brute-force-attacks">Types of brute force attacks&lt;/h2>
+&lt;p>There are many different types of performing a brute force attack, but we will mention just three.&lt;/p>
+&lt;h3 id="dictionary-attack">Dictionary attack&lt;/h3>
+&lt;p>This is a straighforward technique and maybe the default one that comes to mind when trying to discover a set of (username, password) credentials.
+Given a wordlist of usernames and a wordlist of passwords, for all the usernames, all the passwords are tried.&lt;/p>
+&lt;p>Example:&lt;/p>
+&lt;pre tabindex="0">&lt;code>usernames = [user1, user2]
+passwords = [pass1, pass2]
+We try, in this order: (user1, pass1), (user1, pass2), (user2, pass1), (user2, pass2)
+&lt;/code>&lt;/pre>&lt;h3 id="password-spray-attack">Password-spray attack&lt;/h3>
+&lt;p>This technique is a bit more complicated, but it is suitable for situations where we want to avoid username lockout.
+That is, when the target blocks us after a number of wrong attempts for a username and, for a certain period of time, we can&amp;rsquo;t make any more attempts.&lt;/p>
+&lt;p>Taking this into account, the process is as follows:&lt;/p>
+&lt;ul>
+&lt;li>We take one password at a time and try all usernames for it (instead of taking a username and trying all passwords, like for Dictionary attack).&lt;/li>
+&lt;li>At the beginning we define a constant representing the &lt;em>maximum number of attempts to try the same username&lt;/em> in a period.&lt;/li>
+&lt;li>After this limit is reached, we introduce a &lt;em>delay&lt;/em> (which can be viewed as the lockout period) and perform a &amp;ldquo;sleep&amp;rdquo;.&lt;/li>
+&lt;li>After this, we resume the attack.&lt;/li>
+&lt;/ul>
+&lt;p>Example:&lt;/p>
+&lt;pre tabindex="0">&lt;code>usernames = [user1, user2]
+passwords = [pass1, pass2]
+username_attempts_per_period = 1
+lockout_period = 5
+We try, in this order: (pass1, user1), (pass1, user2), sleep(5), (pass2, user1), (pass2, user2)
+&lt;/code>&lt;/pre>&lt;h3 id="credential-stuffing-attack">Credential Stuffing attack&lt;/h3>
+&lt;p>Given a wordlist of usernames and a wordlist of passwords, this technique involves trying them in pairs.
+For each username, we try it with the password on the corresponding position.
+This usually implies that the wordlists are of the same length.
+The technique is suitable when using the default credentials wordlists, for example.&lt;/p>
+&lt;p>Example:&lt;/p>
+&lt;pre tabindex="0">&lt;code>usernames = [user1, user2]
+passwords = [pass1, pass2]
+We try, in this order: (user1, pass1), (user2, pass2)
+&lt;/code>&lt;/pre>&lt;h2 id="web-content-discovery">Web Content Discovery&lt;/h2>
 &lt;p>Let&amp;rsquo;s say we have the target server &lt;strong>&lt;a href="https://security.cs.pub.ro/">https://security.cs.pub.ro/&lt;/a>&lt;/strong> and we want to discover hidden files, directories or other resources there.
 Manually, we would make multiple requests like &lt;em>&lt;a href="https://security.cs.pub.ro/docs">https://security.cs.pub.ro/docs&lt;/a>&lt;/em>, &lt;em>&lt;a href="https://security.cs.pub.ro/config.php">https://security.cs.pub.ro/config.php&lt;/a>&lt;/em> etc. or whatever we imagine might find and see if we get a 404 Not Found response or not.
 Luckily, there are command line tools and predefined wordlists in Kali (&lt;strong>/usr/share/wordlists/&lt;/strong>) doing exactly this for us.&lt;/p>
@@ -4486,10 +4525,48 @@ Can do DNS and VHost busting, S3 buckets enumeration.&lt;/li>
 &lt;li>&lt;a href="https://github.com/xmendez/wfuzz">wfuzz&lt;/a> - on GitHub, written in Python, can be easily installed with pip.&lt;/li>
 &lt;li>&lt;a href="https://github.com/ffuf/ffuf">ffuf&lt;/a> - on GitHub, written in Go, has the option to mutate the files found.
 Can do VHost discovery.&lt;/li>
+&lt;li>Burp Intruder - also on the Commercial side.&lt;/li>
 &lt;/ul>
 &lt;p>You can find a detailed comparison &lt;a href="https://blog.sec-it.fr/en/2021/02/16/fuzz-dir-tools/">here&lt;/a>.
 We don&amp;rsquo;t recommend DirBuster and DirSearch since the others are newer, improved and better-maintained tools.
 DIRB is also not maintained anymore, but can come in handy if you want to do a quick content discovery, with not many options to configure.&lt;/p>
+&lt;h2 id="web-content-discovery-vs-web-fuzzing">Web Content Discovery vs Web Fuzzing&lt;/h2>
+&lt;p>While these terms are interchangeable because the techniques and the goals are similar, let&amp;rsquo;s also break them down and establish some particularities.&lt;/p>
+&lt;h3 id="web-content-enumeration--web-content-discovery--web-content-scanning--dirbusting--directory-brute-forcing">Web Content Enumeration / Web Content Discovery / Web Content Scanning / Dirbusting / Directory brute forcing&lt;/h3>
+&lt;p>All these synonyms indicate a clear purpose: discovering (hidden/juicy) files on a web server.
+They usually involve sending GET requests (or even HEAD, since it is faster and we are mainly interested in the returned status code).
+An input wordlist might usually sound like &lt;em>Common config filenames&lt;/em>.
+Also, watch out for common filename extensions, such as &lt;strong>.log&lt;/strong> for log files, &lt;strong>.bak&lt;/strong> for backup files.&lt;/p>
+&lt;h3 id="web-fuzzing-dirbusting">Web Fuzzing (Dirbusting++)&lt;/h3>
+&lt;p>As a general term, &lt;em>fuzzing&lt;/em> means sending random, unexpected payloads, to try to trigger unexpected behaviors, so we can add this to the attack goals.
+A web fuzzer tool generally allows for more customization:&lt;/p>
+&lt;ul>
+&lt;li>we can try any HTTP method&lt;/li>
+&lt;li>we can insert the payload in more various location, even in the headers or POST body&lt;/li>
+&lt;li>the wordlist may include weird characters (e.g. non UTF-8, foreign languages), very long words etc.&lt;/li>
+&lt;/ul>
+&lt;h2 id="hard-404-vs-soft-404">Hard 404 vs Soft 404&lt;/h2>
+&lt;p>You might be used to think that, when you make a request to a web server for a filename that doesn&amp;rsquo;t exist, it should return 404 Not Found.
+In reality, it is not always the case.
+Let&amp;rsquo;s see some different behaviors of websites when we try to make such a request.
+For starters: how do we know how to make a request with a filename that doesn&amp;rsquo;t exist?
+Well, this one is easy: we could just make a request with a very random filename, such as: &lt;code>http://example.com/jf31yrf7ugfr&lt;/code>.&lt;/p>
+&lt;h3 id="hard-404">Hard 404&lt;/h3>
+&lt;p>We call a &lt;strong>hard 404&lt;/strong> a non-existent page that returns the 404 Not Found HTTP code &lt;strong>OR&lt;/strong> &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/410">410 Gone&lt;/a> - this is also included, because it denotes a resource that is no longer available.&lt;/p>
+&lt;h3 id="soft-404">Soft 404&lt;/h3>
+&lt;p>A &lt;strong>soft 404&lt;/strong> is a non-existent page that, when requested, returns&amp;hellip; basically anything else besides 404 or 410.
+Some examples of what can be returned:&lt;/p>
+&lt;ul>
+&lt;li>200 OK and a custom 404 page&lt;/li>
+&lt;li>3xx redirect to a login page / home page / other 200 OK page&lt;/li>
+&lt;li>5xx server error&lt;/li>
+&lt;li>a WAF response may be triggered (e.g. by requesting some specific config files, such as &lt;strong>.htaccess&lt;/strong>)&lt;/li>
+&lt;/ul>
+&lt;p>But we should also distinguish the situations where the page exists, but it redirects to the login page because you just have to be logged in to see it.
+But this usually happens for common pages, such as &lt;strong>my-account&lt;/strong>, while the real website behavior can be determined by requesting a random filename, as mentioned earlier.&lt;/p>
+&lt;p>A takeaway from here is that real-world websites are very unpredictible and you can expect anything. :)&lt;/p>
+&lt;p>Also note that an enumeration / brute force / fuzzing attack implies sending many requests to a server, usually in parallel (using threads), in a short period of time.
+This stresses the server and it might become unresponsive, reply slower, trigger the WAF (sometimes in the middle of the attack) or even cause DoS.&lt;/p>
 &lt;h2 id="recap-with-dvwa">Recap with DVWA&lt;/h2>
 &lt;p>DVWA (Damn Vulnerable Web Application) is a deliberately vulnerable application which you can use to test your skills and exploit some of the most common web vulnerabilities, like XSS, SQL, LFI, with various difficulty levels.&lt;/p>
 &lt;h3 id="setup-instructions">Setup instructions&lt;/h3>
@@ -4510,12 +4587,15 @@ After running it, you can simply access it in your browser at http://127.0.0.1:8
 &lt;li>&lt;a href="https://hackr.io/blog/top-10-open-source-security-testing-tools-for-web-applications">https://hackr.io/blog/top-10-open-source-security-testing-tools-for-web-applications&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.knowledgehut.com/blog/security/enumeration-in-ethical-hacking">https://www.knowledgehut.com/blog/security/enumeration-in-ethical-hacking&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.greycampus.com/opencampus/ethical-hacking/enumeration-and-its-types">https://www.greycampus.com/opencampus/ethical-hacking/enumeration-and-its-types&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.searchenginejournal.com/technical-seo/404-vs-soft-404-errors/#close">https://www.searchenginejournal.com/technical-seo/404-vs-soft-404-errors/#close&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://blog.sec-it.fr/en/2021/02/16/fuzz-dir-tools/">https://blog.sec-it.fr/en/2021/02/16/fuzz-dir-tools/&lt;/a>&lt;/li>
 &lt;/ul>
 &lt;h3 id="wordlists">Wordlists&lt;/h3>
 &lt;ul>
 &lt;li>&lt;a href="https://github.com/Bo0oM/fuzz.txt">https://github.com/Bo0oM/fuzz.txt&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://github.com/aels/subdirectories-discover">https://github.com/aels/subdirectories-discover&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://github.com/danielmiessler/SecLists">https://github.com/danielmiessler/SecLists&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/ihebski/DefaultCreds-cheat-sheet">https://github.com/ihebski/DefaultCreds-cheat-sheet&lt;/a>&lt;/li>
 &lt;/ul>
 &lt;h3 id="bug-bounty-program-lists">Bug Bounty Program Lists&lt;/h3>
 &lt;ul>
@@ -4525,9 +4605,10 @@ After running it, you can simply access it in your browser at http://127.0.0.1:8
 &lt;/ul>
 &lt;h1 id="activities">Activities&lt;/h1>
 &lt;ol>
-&lt;li>&lt;a href="https://sss-web.cyberedu.ro/challenge/268a2910-02d8-11ed-9675-abf36c35783f">Not So Random&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://sss-web.cyberedu.ro/challenge/7ba65330-02d8-11ed-9270-29119375f24f">Lamer Login&lt;/a>&lt;/li>
+&lt;li>Not So Random&lt;/li>
+&lt;li>Lamer Login&lt;/li>
 &lt;li>&lt;a href="https://hub.docker.com/r/vulnerables/web-dvwa/">DVWA&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://ginandjuice.shop/">Gin &amp;amp; Juice Shop&lt;/a>&lt;/li>
 &lt;/ol></description></item><item><title>Essentials:</title><link>/essentials/data-security/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/data-security/</guid><description>
 &lt;h1 id="data-security">Data Security&lt;/h1>
 &lt;h2 id="table-of-contents">Table of Contents&lt;/h2>
