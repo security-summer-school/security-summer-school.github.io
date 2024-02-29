@@ -455,7 +455,7 @@ Write the answer to the instructor.&lt;/p>
 &lt;strong>11.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Give to Get&lt;/a>&lt;br>
 &lt;strong>12.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Give to Post&lt;/a>&lt;br>
 &lt;strong>13.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">One by One&lt;/a>&lt;br>
-&lt;strong>14.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Produce-consume&lt;/a>&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/welcome-to-linux/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/welcome-to-linux/</guid><description>
+&lt;strong>14.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Produce-consume&lt;/a>&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/scratch-linux/welcome-to-linux/reading/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/scratch-linux/welcome-to-linux/reading/readme/</guid><description>
 &lt;h1 id="welcome-to-linux">Welcome to Linux&lt;/h1>
 &lt;h2 id="introduction">Introduction&lt;/h2>
 &lt;p>In this session, we will familiarise ourselves with our working environment.
@@ -1351,7 +1351,7 @@ It could be useful to open a context-menu with one click and edit a cookie on th
 &lt;strong>6.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Mind your own business&lt;/a>&lt;br>
 &lt;strong>7.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Beep Beep Boop&lt;/a>&lt;br>
 &lt;strong>8.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Let&amp;rsquo;s traverse the universe&lt;/a>&lt;br>
-&lt;strong>9.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Color&lt;/a>&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/system-exploration/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/system-exploration/</guid><description>
+&lt;strong>9.&lt;/strong> &lt;a href="https://sss-ctf.security.cs.pub.ro/challenges?category=web-sessions">Color&lt;/a>&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/scratch-linux/system-exploration/reading/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/scratch-linux/system-exploration/reading/readme/</guid><description>
 &lt;h1 id="system-exploration">System Exploration&lt;/h1>
 &lt;h2 id="introduction">Introduction&lt;/h2>
 &lt;p>In the &lt;a href="../welcome-to-linux">previous session&lt;/a>, we introduced the Linux OS family via Kali Linux.
@@ -1844,7 +1844,7 @@ Yes, such a thing really does exist and it&amp;rsquo;s as crazy as you might thi
 Give it a try!&lt;/p>
 &lt;p>Moreover, most programming languages have libraries for regular expressions.
 Python can do so, too.
-Take a look at its &lt;a href="https://docs.python.org/3/library/re.html">regex module&lt;/a>.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/explaining-the-internet/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/explaining-the-internet/</guid><description>
+Take a look at its &lt;a href="https://docs.python.org/3/library/re.html">regex module&lt;/a>.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/explaining-the-internet/reading/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/explaining-the-internet/reading/readme/</guid><description>
 &lt;h1 id="explaining-the-internet">Explaining the Internet&lt;/h1>
 &lt;h2 id="introduction">Introduction&lt;/h2>
 &lt;p>In this session, we&amp;rsquo;ll discuss some networking fundamentals.
@@ -3155,7 +3155,7 @@ In an actual attack this is another part of the attack vector where some server-
 &lt;ul>
 &lt;li>&lt;a href="https://geekflare.com/ssl-test-certificate/">https://geekflare.com/ssl-test-certificate/&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.feistyduck.com/library/openssl-cookbook/">https://www.feistyduck.com/library/openssl-cookbook/&lt;/a>&lt;/li>
-&lt;/ul></description></item><item><title>Essentials:</title><link>/essentials/rediscovering-the-browser/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/rediscovering-the-browser/</guid><description>
+&lt;/ul></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/rediscovering-the-browser/reading/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/rediscovering-the-browser/reading/readme/</guid><description>
 &lt;h1 id="rediscovering-the-browser">(Re)Discovering the Browser&lt;/h1>
 &lt;h2 id="introduction">Introduction&lt;/h2>
 &lt;p>In this session we&amp;rsquo;ll zoom in on one of the application-level protocols mentioned in session &lt;a href="../explaining-the-internet/">Explaining the Internet&lt;/a>: HTTP.
@@ -3982,7 +3982,7 @@ You can see some of the features in this recording.
 &lt;strong>14.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/blind/lab-conditional-responses">Conditional responses&lt;/a>&lt;br>
 &lt;strong>15.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/blind/lab-conditional-errors">Conditional errors&lt;/a>&lt;br>
 &lt;strong>16.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/blind/lab-time-delays">Time delays&lt;/a>&lt;br>
-&lt;strong>17.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/blind/lab-out-of-band">Out-of-band Application Security Testing&lt;/a>&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/hacking-the-web/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/hacking-the-web/</guid><description>
+&lt;strong>17.&lt;/strong> &lt;a href="https://portswigger.net/web-security/sql-injection/blind/lab-out-of-band">Out-of-band Application Security Testing&lt;/a>&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/hacking-the-web/reading/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/hacking-the-web/reading/readme/</guid><description>
 &lt;h1 id="introduction">Introduction&lt;/h1>
 &lt;p>&lt;a href="../rediscovering-the-browser/">Last session&lt;/a> we learned how browsers work, what HTTP and HTML are and how to use &lt;code>curl&lt;/code> and &lt;code>wget&lt;/code> to imitate a browser.
 Today we&amp;rsquo;ll dive deeper into the inner workings of browsers.
@@ -4321,7 +4321,7 @@ It would be a pity if an attacker stole your ID.
 This is what&amp;rsquo;s called &lt;strong>cookie theft&lt;/strong> or &lt;strong>session Hijacking&lt;/strong>.&lt;/p>
 &lt;p>It&amp;rsquo;s a pretty common attack that mostly requires the user to click on a malicious link that leads to a webpage whose JavaScript code reads the victim&amp;rsquo;s cookies.
 Following this attack, hackers can impersonate you wherever you were logged in.&lt;/p>
-&lt;p>&lt;a href="https://www.venafi.com/blog/what-session-hijacking">Here&lt;/a> are more ways in which your session can be stolen.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/data-representation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/data-representation/</guid><description>
+&lt;p>&lt;a href="https://www.venafi.com/blog/what-session-hijacking">Here&lt;/a> are more ways in which your session can be stolen.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/data-and-application-lifetime/data-representation/reading/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/data-and-application-lifetime/data-representation/reading/readme/</guid><description>
 &lt;h1 id="data-representation">Data Representation&lt;/h1>
 &lt;h2 id="table-of-contents">Table of Contents&lt;/h2>
 &lt;p>Use &lt;a href="https://github.com/ekalinin/github-markdown-toc">gh-md-toc&lt;/a>.&lt;/p>
@@ -4609,7 +4609,7 @@ After running it, you can simply access it in your browser at http://127.0.0.1:8
 &lt;li>Lamer Login&lt;/li>
 &lt;li>&lt;a href="https://hub.docker.com/r/vulnerables/web-dvwa/">DVWA&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://ginandjuice.shop/">Gin &amp;amp; Juice Shop&lt;/a>&lt;/li>
-&lt;/ol></description></item><item><title>Essentials:</title><link>/essentials/data-security/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/data-security/</guid><description>
+&lt;/ol></description></item><item><title>Essentials:</title><link>/essentials/chapters/data-and-application-lifetime/data-security/reading/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/data-and-application-lifetime/data-security/reading/readme/</guid><description>
 &lt;h1 id="data-security">Data Security&lt;/h1>
 &lt;h2 id="table-of-contents">Table of Contents&lt;/h2>
 &lt;p>Use &lt;a href="https://github.com/ekalinin/github-markdown-toc">gh-md-toc&lt;/a>.&lt;/p>
@@ -4873,7 +4873,7 @@ The WPScan CLI tool uses a database of WordPress vulnerabilities - from WordPres
 &lt;li>&lt;a href="https://sss-web.cyberedu.ro/challenge/0cb44c00-0617-11ed-80ab-4758bca0c77e">Snoop Doggy Dogg&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://sss-web.cyberedu.ro/challenge/2026cea0-0617-11ed-8d3f-19288a331f73">The Accountant&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://github.com/vavkamil/dvwp">Damn Vulnerable WordPress&lt;/a>&lt;/li>
-&lt;/ul></description></item><item><title>Essentials:</title><link>/essentials/application-lifetime/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/application-lifetime/</guid><description>
+&lt;/ul></description></item><item><title>Essentials:</title><link>/essentials/chapters/data-and-application-lifetime/application-lifetime/reading/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/data-and-application-lifetime/application-lifetime/reading/readme/</guid><description>
 &lt;h1 id="application-lifetime">Application Lifetime&lt;/h1>
 &lt;h2 id="prerequisites">Prerequisites&lt;/h2>
 &lt;ul>
@@ -5696,7 +5696,7 @@ In conclusion, the code should be properly tested before being put in production
 &lt;li>&lt;a href="https://sss-web.cyberedu.ro/challenge/ee04f8d0-0849-11ed-851c-af7641b8a719">Meme Uploader&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://sss-web.cyberedu.ro/challenge/06d17960-084a-11ed-95a0-a9f50e1b83e7">Pro Replacer&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://sss-web.cyberedu.ro/challenge/1cb64670-084a-11ed-8430-29d0d2a909b5">TODO App&lt;/a>&lt;/li>
-&lt;/ul></description></item><item><title>Essentials:</title><link>/essentials/binary-analysis/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/binary-analysis/</guid><description>
+&lt;/ul></description></item><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/binary-analysis/reading/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/binary-analysis/reading/readme/</guid><description>
 &lt;h1 id="binary-analysis">Binary Analysis&lt;/h1>
 &lt;h2 id="reminders">Reminders&lt;/h2>
 &lt;ul>
@@ -5787,7 +5787,7 @@ Really.&lt;/p>
 One of those people left you a binary, to investigate.&lt;/p>
 &lt;h3 id="challenge-spaghetti">Challenge: Spaghetti&lt;/h3>
 &lt;p>Someone felt like cooking today.
-Can you find the flag?&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/assembly-language/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/assembly-language/</guid><description>
+Can you find the flag?&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/assembly-language/reading/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/assembly-language/reading/readme/</guid><description>
 &lt;h1 id="assembly-language">Assembly Language&lt;/h1>
 &lt;h2 id="introduction">Introduction&lt;/h2>
 &lt;p>In the previous 2 sessions you started discovering what binary security looks like.
@@ -6346,7 +6346,7 @@ In the snippet below, &lt;code>0xdeadbeef&lt;/code> is simply copied to &lt;code
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Its true power comes from the fact that it can also compute an address.
 For example, the code below will first compute the address given by &lt;code>rdi + rcx * 8 + 7&lt;/code> and then write this address into &lt;code>rax&lt;/code>.&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-asm" data-lang="asm">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">lea&lt;/span> &lt;span style="color:#000">rax&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#000">rdi&lt;/span> &lt;span style="color:#a40000">+&lt;/span> &lt;span style="color:#000">rcx&lt;/span> &lt;span style="color:#000;font-weight:bold">*&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">8&lt;/span> &lt;span style="color:#a40000">+&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">7&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Essentials:</title><link>/essentials/taming-the-stack/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/taming-the-stack/</guid><description>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/taming-the-stack/reading/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/taming-the-stack/reading/readme/</guid><description>
 &lt;h1 id="taming-the-stack">Taming the Stack&lt;/h1>
 &lt;h2 id="table-of-contents">Table of Contents&lt;/h2>
 &lt;p>Use &lt;a href="https://github.com/ekalinin/github-markdown-toc">gh-md-toc&lt;/a>.&lt;/p>

