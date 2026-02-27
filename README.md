@@ -31,7 +31,7 @@ git clone --recurse-submodules --depth 1 https://github.com/my/example.git
 
 You can now edit your own versions of the site’s source files.
 
-If you want to do SCSS edits and want to publish these, you need to install `PostCSS`
+If you want to do [SCSS](https://www.interviewbit.com/blog/sass-vs-scss) edits and want to publish these, you need to install `PostCSS`
 
 ```bash
 npm install
